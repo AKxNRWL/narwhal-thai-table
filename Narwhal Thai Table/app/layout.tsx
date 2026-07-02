@@ -57,6 +57,38 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             falls back to whatever system font handles each script and the
             line ends up visually uneven across phrases. */}
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&family=Noto+Sans+Thai:wght@400;500&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Noto+Sans+KR:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet" />
+        {/* SEO: Restaurant structured data (Google rich results) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Restaurant',
+              name: 'Narwhal Thai Table',
+              url: SITE_URL,
+              image: `${SITE_URL}/images/og-cover.jpg`,
+              servesCuisine: ['Thai', 'Royal Thai'],
+              priceRange: '$$',
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: '19072 Beach Blvd',
+                addressLocality: 'Huntington Beach',
+                addressRegion: 'CA',
+                postalCode: '92648',
+                addressCountry: 'US',
+              },
+              openingHoursSpecification: [{
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+                opens: '11:00',
+                closes: '23:00',
+              }],
+              founder: { '@type': 'Person', name: 'Chef Rainny' },
+              menu: `${SITE_URL}/menu`,
+              acceptsReservations: `${SITE_URL}/contact/reservation`,
+            }),
+          }}
+        />
       </head>
       <body>
         <ComingSoonTicker />

@@ -80,12 +80,12 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
 
       <div className="hero-inner">
         <div className="hero-text">
-          <span className="label hero-coming-soon">Coming Soon · Huntington Beach</span>
+          <span className="label hero-coming-soon">Soft Opening July 16 · Huntington Beach</span>
           <h1 id="hero-title">
             Come sit<br/>with us, <em>neighbor</em>.
           </h1>
           <p>
-            A Thai family kitchen on Beach Boulevard — where the recipes we grew up with meet the California coast we now call home. Every plate, by Chef Rainny&apos;s own hands. <strong>Opening soon</strong> — pull up a chair while we get the kitchen warm.
+            A Thai family kitchen on Beach Boulevard — where the recipes we grew up with meet the California coast we now call home. Every plate, by Chef Rainny&apos;s own hands. <strong>Soft opening Thursday, July 16</strong> — pull up a chair while we get the kitchen warm.
           </p>
           <div className="hero-cta">
             <Link href="/menu" className="btn-primary">
