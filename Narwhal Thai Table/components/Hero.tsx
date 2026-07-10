@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import NarwhalMark from './NarwhalMark';
 import type { HeroMedia } from '@/lib/media';
 
 /**
@@ -108,7 +107,11 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
                 aria-label="Tap to see the narwhal jump"
                 onClick={(e) => playNarwhal(e.currentTarget)}
               >
-                <NarwhalMark />
+                <span className="nm-stack" aria-hidden="true">
+                  <img className="nm-waves" src="/images/logo-hero-waves.png" alt="" />
+                  <img className="nm-whale" src="/images/logo-hero-whale.png" alt="" />
+                  <img className="nm-spark" src="/images/logo-hero-spark.png" alt="" />
+                </span>
               </button>
               <div className="ornament-text">Narwhal</div>
               <div className="ornament-divider"></div>

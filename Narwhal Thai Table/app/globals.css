@@ -415,6 +415,10 @@ nav.site-nav.scrolled{padding:14px 48px;background:rgba(245,240,230,0.96);}
 .ornament-narwhal:focus{outline:none;}
 .ornament-narwhal:focus-visible{outline:2px solid var(--brass);outline-offset:8px;}
 .ornament-narwhal svg{width:100%;height:100%;overflow:visible;}
+/* Real logo, split into three stacked layers so the whale / waves /
+   sparkle keep their independent animations (classes match the old SVG groups). */
+.ornament-narwhal .nm-stack{position:relative;display:block;width:100%;height:100%;}
+.ornament-narwhal .nm-stack img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
 /* Each animated <g> needs its own transform-origin / box so the rotate
    pivots around the element instead of the SVG root. */
 .ornament-narwhal .nm-whale,
@@ -1365,7 +1369,4 @@ section{padding-block:clamp(52px,8vw,112px);padding-inline:48px;}
   .nara-panel{ left:0; right:0; top:var(--nara-top,0); bottom:auto; width:auto; height:var(--nara-vh,100dvh); max-height:none; border-radius:0; }
   .nara-fab{ right:16px; bottom:16px; }
 }
-@media (prefers-reduced-motion: reduce){
-  .nara-panel, .nara-fab{ transition:none; }
-  .nara-typing span{ animation:none; }
-}
+@media (prefers-reduc
