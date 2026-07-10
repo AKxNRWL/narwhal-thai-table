@@ -406,7 +406,10 @@ nav.site-nav.scrolled{padding:14px 48px;background:rgba(245,240,230,0.96);}
    while the user is interacting (no constant loop). */
 .ornament-narwhal{
   width:240px;height:240px;margin:0 auto 28px;
-  background:none;border:0;padding:0;
+  /* cream medallion with a gold ring — mirrors the printed menu cover */
+  background:radial-gradient(circle at 50% 42%, #FBF6EA 0%, #F7F0E1 72%);
+  border:1px solid rgba(176,141,66,0.9);padding:0;
+  box-shadow:0 0 0 8px rgba(247,240,225,0.06);
   display:block;cursor:pointer;
   border-radius:50%;
   transition:transform 0.5s ease;
@@ -418,7 +421,7 @@ nav.site-nav.scrolled{padding:14px 48px;background:rgba(245,240,230,0.96);}
 /* Real logo, split into three stacked layers so the whale / waves /
    sparkle keep their independent animations (classes match the old SVG groups). */
 .ornament-narwhal .nm-stack{position:relative;display:block;width:100%;height:100%;}
-.ornament-narwhal .nm-stack img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+.ornament-narwhal .nm-stack img{position:absolute;left:7%;top:25.5%;width:86%;height:49%;object-fit:contain;}
 /* Each animated <g> needs its own transform-origin / box so the rotate
    pivots around the element instead of the SVG root. */
 .ornament-narwhal .nm-whale,
