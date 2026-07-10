@@ -4,7 +4,10 @@ export default function Footer() {
   return (
     <footer>
       <div className="footer-inner">
-        <div className="footer-brand">Narwhal <em>Thai Table</em></div>
+        <div className="footer-brand" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/images/logo-mark-cream.png" alt="" style={{ width: 54, height: 'auto', opacity: 0.95 }} />
+          <span>Narwhal <em>Thai Table</em></span>
+        </div>
         {/*
           Social URLs are placeholders — swap to real account URLs once live.
           rel="noopener" set per security best practice; aria-label clarifies

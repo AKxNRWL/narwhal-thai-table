@@ -10,7 +10,7 @@ import { DISHES } from '@/lib/dishes';
  * Tab state is local — the page is fully static apart from the active tab.
  * Each dish card links to /menu/[slug] for the detail page.
  */
-export default function MenuTabs({ initial = 'specials' as CategoryId }: { initial?: CategoryId }) {
+export default function MenuTabs({ initial = 'appetizers' as CategoryId }: { initial?: CategoryId }) {
   const [active, setActive] = useState<CategoryId>(initial);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -85,6 +85,7 @@ export default function MenuTabs({ initial = 'specials' as CategoryId }: { initi
                     <div className="dish-tags">
                       {d.signature && <span className="tag">Signature</span>}
                       {d.spicy && <span className="tag spicy">Spicy</span>}
+                      {d.protein && <span className="tag">Choice of Protein</span>}
                     </div>
                     {d.story && <span className="dish-read">Read the story</span>}
                   </Link>
@@ -95,7 +96,7 @@ export default function MenuTabs({ initial = 'specials' as CategoryId }: { initi
         );
       })}
 
-      <p className="menu-note">★ are Chef Rainny&apos;s signature creations. Tell us about your allergies or spice level when you order — we&apos;ll cook it just for you.</p>
+      <p className="menu-note">★ are Chef Rainny&apos;s signature creations. Dishes marked &ldquo;Choice of Protein&rdquo; are priced before protein — pick yours under Sides &amp; Protein (from +$2). Tell us about your allergies or spice level when you order — we&apos;ll cook it just for you.</p>
     </>
   );
 }
@@ -105,24 +106,30 @@ function SidesPanel() {
   return (
     <div className="menu-aside-grid" style={{ border: 'none', padding: 0, margin: '0 auto' }}>
       <div>
-        <h4>— Choose Your Protein</h4>
+        <h4>&mdash; Choose Your Protein</h4>
         <ul>
-          <li>Chicken</li><li>Pork</li><li>Beef</li><li>Shrimp</li>
-          <li>Ground Pork</li><li>Ground Chicken</li><li>Crispy Pork</li>
-          <li>Fried Tofu</li><li>Soft Tofu</li>
-          <li>Seasonal Seafood — Lobster, Pacific Rockfish, Black Cod, Dungeness (MKT)</li>
+          <li>Chicken +$2</li>
+          <li>Chicken &amp; Shrimp (2 pc) +$2</li>
+          <li>Pork +$2</li>
+          <li>Fried Tofu +$2</li>
+          <li>Soft Tofu +$2</li>
+          <li>Ground Pork +$2</li>
+          <li>Ground Chicken +$2</li>
+          <li>Ground Beef +$5</li>
+          <li>Beef +$5</li>
+          <li>Shrimp +$6</li>
+          <li>Combination &mdash; Chicken, Pork &amp; Beef +$6</li>
+          <li>Seafood +$9</li>
         </ul>
       </div>
       <div>
-        <h4>— On the Side</h4>
+        <h4>&mdash; On the Side</h4>
         <ul>
-          <li>Jasmine White Rice</li>
-          <li>Brown Rice</li>
-          <li>Sticky Rice</li>
-          <li>House Peanut Sauce</li>
-          <li>Fried Egg</li>
-          <li>Omelet</li>
-          <li>Creamy Scrambled Eggs</li>
+          <li>Jasmine Rice $3</li>
+          <li>Brown Rice $4</li>
+          <li>Sticky Rice $4</li>
+          <li>Fried Egg $3</li>
+          <li>Omelet $13 &mdash; add ground pork or chicken +$2, ground shrimp +$3</li>
         </ul>
       </div>
     </div>

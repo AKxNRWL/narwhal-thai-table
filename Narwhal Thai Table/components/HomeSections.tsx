@@ -124,7 +124,7 @@ export function ChefSection() {
    with a CTA pointing to the full /menu page.
    ============================================================ */
 export function MenuPreviewSection() {
-  const signatures = DISHES.filter(d => d.signature && d.category === 'specials').slice(0, 6);
+  const signatures = DISHES.filter(d => d.signature).slice(0, 6);
   return (
     <section className="menu-section" id="menu">
       <div className="container">

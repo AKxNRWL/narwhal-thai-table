@@ -63,7 +63,7 @@ export default function Nav() {
 
       <nav className={`site-nav${scrolled ? ' scrolled' : ''}`} aria-label="Primary">
         <Link href="/" className="logo" aria-label="Narwhal Thai Table home">
-          <span className="logo-mark" aria-hidden="true">N</span>
+          <span className="logo-mark" aria-hidden="true"><img src="/images/logo-mark.png" alt="" /></span>
           Narwhal Thai Table
         </Link>
 

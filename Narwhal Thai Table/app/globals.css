@@ -210,10 +210,12 @@ nav.site-nav.scrolled{padding:14px 48px;background:rgba(245,240,230,0.96);}
   width:34px;height:34px;
   border:1.5px solid var(--brass);
   border-radius:50%;
+  background:#F7F0E1;
   display:flex;align-items:center;justify-content:center;
   font-style:italic;color:var(--brass);font-weight:500;font-size:15px;
   font-family:var(--font-display);
 }
+.logo-mark img{width:25px;height:auto;display:block;}
 .nav-links{display:flex;gap:38px;align-items:center;}
 .nav-links a{
   text-decoration:none;color:var(--navy);
@@ -982,6 +984,7 @@ nav.site-nav.scrolled{box-shadow:0 12px 34px -20px rgba(11,31,51,0.30);}
   nav.site-nav{padding:12px 16px;}
   .logo{font-size:17px;gap:10px;}
   .logo-mark{width:30px;height:30px;font-size:14px;}
+  .logo-mark img{width:22px;}
   .btn-reserve{padding:9px 12px;font-size:9.5px;letter-spacing:0.14em;}
   .hero{padding:130px 18px 60px;}
   .hero-text .label{margin-bottom:24px;font-size:10px;letter-spacing:0.24em;}

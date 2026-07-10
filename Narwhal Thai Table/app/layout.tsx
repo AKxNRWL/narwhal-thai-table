@@ -31,9 +31,8 @@ export const metadata: Metadata = {
     images: ['/images/og-cover.jpg'],
   },
   icons: {
-    icon: [
-      { url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230B1F33'/%3E%3Ctext x='50%25' y='54%25' font-family='Bodoni Moda,Georgia,serif' font-style='italic' font-size='38' fill='%23B08D3C' text-anchor='middle' dominant-baseline='middle'%3EN%3C/text%3E%3C/svg%3E" },
-    ],
+    icon: [{ url: '/images/favicon.png', type: 'image/png' }],
+    apple: [{ url: '/images/favicon.png' }],
   },
 };
 
@@ -67,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               name: 'Narwhal Thai Table',
               url: SITE_URL,
               image: `${SITE_URL}/images/og-cover.jpg`,
+              logo: `${SITE_URL}/images/logo-full-thai.png`,
               servesCuisine: ['Thai', 'Royal Thai'],
               priceRange: '$$',
               address: {
