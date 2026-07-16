@@ -18,14 +18,14 @@
  * stopping the scroll and showing the first phrase only.
  */
 const LANGUAGES = [
-  'Coming Soon',
-  'พบกันเร็วๆนี้',
-  'Próximamente',
-  'Sắp khai trương',
-  '即将开业 / 即將開業',
-  '곧 오픈합니다',
-  'Malapit na kaming magbukas',
-  '近日オープン',
+  'Soft Opening · July 20',
+  'ซอฟต์โอเพนนิ่ง · 20 กรกฎาคมนี้',
+  'Apertura suave · 20 de julio',
+  'Khai trương thử · 20 tháng 7',
+  '软开业 · 7月20日 / 軟開業 · 7月20日',
+  '소프트 오픈 · 7월 20일',
+  'Soft opening · Ika-20 ng Hulyo',
+  'ソフトオープン · 7月20日',
 ];
 
 export default function ComingSoonTicker() {

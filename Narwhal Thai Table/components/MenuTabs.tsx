@@ -109,7 +109,7 @@ function SidesPanel() {
         <h4>&mdash; Choose Your Protein</h4>
         <ul>
           <li>Chicken +$2</li>
-          <li>Chicken &amp; Shrimp (2 pc) +$2</li>
+          <li>Chicken &amp; Shrimp (2 pc) +$3</li>
           <li>Pork +$2</li>
           <li>Fried Tofu +$2</li>
           <li>Soft Tofu +$2</li>
