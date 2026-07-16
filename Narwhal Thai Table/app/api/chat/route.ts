@@ -6,7 +6,7 @@ import { submitMessage, type MessageInput } from '@/lib/message';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = 'claude-sonnet-4-6'; // swap here (e.g. 'claude-haiku-4-5-20251001' to cut cost ~3x)
+const MODEL = 'claude-haiku-4-5-20251001'; // swap here (e.g. 'claude-sonnet-5' for the smartest host)
 const MAX_TOKENS = 700;
 const MAX_HISTORY = 16; // keep only the last N turns
 const MAX_CHARS = 1500; // cap each message length
