@@ -7,6 +7,29 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const MODEL = 'claude-haiku-4-5-20251001'; // swap here (e.g. 'claude-sonnet-5' for the smartest host)
+
+// --- Abuse guards (best-effort, per warm function instance) ---
+// Diners in the restaurant share one WiFi IP, so per-IP limits are generous.
+const RL_WINDOW_MS = 60_000;
+const RL_MAX_PER_MIN = 20;      // requests/minute per IP
+const RL_DAY_MS = 86_400_000;
+const RL_MAX_PER_DAY = 300;     // requests/day per IP
+const MAX_USER_TURNS = 40;      // user messages per conversation
+const rlHits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const arr = (rlHits.get(ip) ?? []).filter((t) => now - t < RL_DAY_MS);
+  const lastMin = arr.filter((t) => now - t < RL_WINDOW_MS);
+  if (lastMin.length >= RL_MAX_PER_MIN || arr.length >= RL_MAX_PER_DAY) {
+    rlHits.set(ip, arr);
+    return true;
+  }
+  arr.push(now);
+  rlHits.set(ip, arr);
+  if (rlHits.size > 5000) rlHits.clear(); // memory guard
+  return false;
+}
 const MAX_TOKENS = 700;
 const MAX_HISTORY = 16; // keep only the last N turns
 const MAX_CHARS = 1500; // cap each message length
@@ -103,7 +126,23 @@ export async function POST(req: Request) {
     return Response.json({ error: 'bad request' }, { status: 400 });
   }
 
+  const ip =
+    req.headers.get('x-nf-client-connection-ip') ??
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    'unknown';
+  if (rateLimited(ip)) {
+    return reply(
+      "You're chatting faster than our woks can keep up! Give it a minute and try again — or just ask any of our team in the restaurant, they'd love to help. 🌊",
+    );
+  }
+
   const incoming = Array.isArray(body.messages) ? body.messages : [];
+  const userTurns = incoming.filter((m) => m.role === 'user').length;
+  if (userTurns > MAX_USER_TURNS) {
+    return reply(
+      "We've had such a lovely long chat! For anything more, our team can help you directly — just wave someone over, call 714-378-6003, or email welcome@narwhalthaihb.com. 🐋",
+    );
+  }
   const apiMessages: ApiMsg[] = incoming
     .filter(
       (m) =>
