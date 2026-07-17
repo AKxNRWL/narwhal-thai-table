@@ -7,6 +7,7 @@ function dishFlags(d: Dish): string {
   const f: string[] = [];
   if (d.signature) f.push('signature');
   if (d.spicy) f.push('spicy');
+  if (d.protein) f.push('CHOICE OF PROTEIN - must ask');
   if (d.allergens && d.allergens.length) f.push('allergens: ' + d.allergens.join('/'));
   return f.length ? ` [${f.join('; ')}]` : '';
 }
