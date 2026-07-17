@@ -65,8 +65,10 @@ export default function ChatWidget() {
         ? [{
             role: 'assistant',
             content:
-              table && /^\d+$/.test(table)
-                ? `Sawasdee ka, table ${table}! 🐳 I'm Aileen — I can suggest dishes and take your order right here in the chat. What are you in the mood for?`
+              table && /^togo$/i.test(table)
+                ? "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!"
+                : table && /^\d+$/.test(table)
+                ? `Sawasdee ka, table ${table}! 🐳 I'm Aileen — browse the menu up there and order right here in the chat. What are you in the mood for?`
                 : pickGreeting(),
           }]
         : m,

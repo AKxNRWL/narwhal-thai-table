@@ -1313,20 +1313,24 @@ section{padding-block:clamp(52px,8vw,112px);padding-inline:48px;}
 .nara-fab svg{ width:26px; height:26px; }
 .nara-fab-x{ font-size:30px; line-height:1; font-weight:300; }
 
+/* Half-screen layout: the page (menu) stays visible and scrollable beside/above
+   the chat, so guests can browse dishes while talking to Aileen. */
 .nara-panel{
-  position:fixed; right:24px; bottom:96px; z-index:1200;
-  width:380px; max-width:calc(100vw - 32px);
-  height:560px; max-height:calc(100dvh - 130px);
+  position:fixed; right:0; top:0; bottom:0; z-index:1200;
+  width:min(50vw, 600px); min-width:380px;
+  height:auto; max-height:none;
   display:flex; flex-direction:column;
   background:var(--navy-deep, #081623); color:var(--off-white);
-  border:1px solid rgba(200,162,78,0.26);
-  border-radius:var(--radius-lg, 18px);
-  box-shadow:0 24px 64px rgba(0,0,0,0.52);
+  border-left:1px solid rgba(200,162,78,0.26);
+  border-radius:0;
+  box-shadow:-18px 0 56px rgba(0,0,0,0.45);
   overflow:hidden;
-  opacity:0; transform:translateY(14px) scale(.98); pointer-events:none;
+  opacity:0; transform:translateX(24px); pointer-events:none;
   transition:opacity .28s ease, transform .28s ease;
 }
 .nara-panel.is-open{ opacity:1; transform:none; pointer-events:auto; }
+/* The launcher is fully covered by the open panel — hide it (header has a close). */
+.nara-fab.is-open{ display:none; }
 
 .nara-head{ display:flex; align-items:center; gap:12px; padding:15px 16px;
   border-bottom:1px solid rgba(200,162,78,0.18); background:rgba(255,255,255,0.025); }
@@ -1368,8 +1372,23 @@ section{padding-block:clamp(52px,8vw,112px);padding-inline:48px;}
 .nara-send svg{ width:18px; height:18px; }
 .nara-foot{ padding:0 14px 12px; font-size:10.5px; color:rgba(245,240,230,0.42); text-align:center; }
 
-@media (max-width:480px){
-  .nara-panel{ left:0; right:0; top:var(--nara-top,0); bottom:auto; width:auto; height:var(--nara-vh,100dvh); max-height:none; border-radius:0; }
+@media (max-width:760px){
+  /* Bottom sheet on phones: chat takes the LOWER half of the visual viewport,
+     menu stays visible and scrollable in the upper half. Tracks the on-screen
+     keyboard via --nara-vh/--nara-top (visualViewport). */
+  .nara-panel{
+    left:0; right:0; bottom:auto;
+    top:calc(var(--nara-top, 0px) + var(--nara-vh, 100dvh)*0.44);
+    width:auto; min-width:0;
+    height:calc(var(--nara-vh, 100dvh)*0.56);
+    border-left:none; border-top:1px solid rgba(200,162,78,0.32);
+    border-radius:16px 16px 0 0;
+    box-shadow:0 -16px 48px rgba(0,0,0,0.5);
+    transform:translateY(24px);
+  }
+  .nara-panel.is-open{ transform:none; }
   .nara-fab{ right:16px; bottom:16px; }
+  .nara-head{ padding:10px 14px; }
+  .nara-msgs{ padding:12px 14px; }
 }
 @media (prefers-reduc

@@ -78,12 +78,19 @@ export default function OrdersPage() {
   const approved = orders.filter((o) => o.status === 'approved');
   const rest = orders.filter((o) => o.status === 'done' || o.status === 'cancelled').slice(0, 10);
 
-  const Item = ({ o }: { o: OrderRecord }) => (
-    <div style={card}>
+  const Item = ({ o }: { o: OrderRecord }) => {
+    const togo = o.table === 'TOGO';
+    return (
+    <div style={togo ? { ...card, borderColor: 'rgba(176,141,60,0.55)' } : card}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
-        <div style={{ fontSize: 22, fontWeight: 700, color: GOLD }}>โต๊ะ {o.table}</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: GOLD }}>
+          {togo ? <>🥡 TO-GO{o.guest_name ? ` — ${o.guest_name}` : ''}</> : <>โต๊ะ {o.table}{o.guest_name ? ` · ${o.guest_name}` : ''}</>}
+        </div>
         <div style={{ fontSize: 12, opacity: 0.6 }}>{o.id} · {ago(o.ts)}</div>
       </div>
+      {togo && o.status === 'pending' && (
+        <div style={{ fontSize: 13, color: '#ffd27a', margin: '6px 0 0' }}>💵 เก็บเงินที่เคาน์เตอร์ก่อน แล้วค่อยกดรับเข้าครัว</div>
+      )}
       <ul style={{ margin: '10px 0', paddingLeft: 18, lineHeight: 1.7 }}>
         {o.items.map((it, i) => (
           <li key={i}>
@@ -98,17 +105,18 @@ export default function OrdersPage() {
         {o.status === 'pending' && (
           <>
             <button style={{ ...btn, background: GOLD, color: NAVY, border: 'none' }} onClick={() => setStatus(o.id, 'approved')}>
-              รับออเดอร์ → คีย์เข้า Toast
+              {togo ? 'เก็บเงินแล้ว → คีย์เข้า Toast' : 'รับออเดอร์ → คีย์เข้า Toast'}
             </button>
             <button style={{ ...btn, background: 'transparent', color: CREAM }} onClick={() => setStatus(o.id, 'cancelled')}>ยกเลิก</button>
           </>
         )}
         {o.status === 'approved' && (
-          <button style={{ ...btn, background: 'transparent', color: CREAM, borderColor: GOLD }} onClick={() => setStatus(o.id, 'done')}>เสิร์ฟแล้ว ✓</button>
+          <button style={{ ...btn, background: 'transparent', color: CREAM, borderColor: GOLD }} onClick={() => setStatus(o.id, 'done')}>{togo ? 'รับของแล้ว ✓' : 'เสิร์ฟแล้ว ✓'}</button>
         )}
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <main style={{ minHeight: '100vh', background: NAVY, color: CREAM, padding: '90px 18px 60px', fontFamily: 'Inter, Noto Sans Thai, sans-serif' }}>
@@ -139,7 +147,7 @@ export default function OrdersPage() {
                 <h2 style={{ fontSize: 15, letterSpacing: '0.12em', opacity: 0.5, margin: '26px 0 10px' }}>ล่าสุด</h2>
                 {rest.map((o) => (
                   <div key={o.id} style={{ ...card, opacity: 0.45, padding: 10 }}>
-                    <span style={{ color: GOLD }}>โต๊ะ {o.table}</span> · {o.items.map((i) => `${i.qty}× ${i.item}`).join(', ')} · {o.status === 'done' ? 'เสิร์ฟแล้ว' : 'ยกเลิก'}
+                    <span style={{ color: GOLD }}>{o.table === 'TOGO' ? `🥡 TO-GO${o.guest_name ? ' — ' + o.guest_name : ''}` : `โต๊ะ ${o.table}`}</span> · {o.items.map((i) => `${i.qty}× ${i.item}`).join(', ')} · {o.status === 'done' ? 'เสร็จแล้ว' : 'ยกเลิก'}
                   </div>
                 ))}
               </>

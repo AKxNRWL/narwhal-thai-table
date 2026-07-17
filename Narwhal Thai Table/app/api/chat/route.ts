@@ -85,7 +85,7 @@ const MESSAGE_TOOL = {
 const ORDER_TOOL = {
   name: 'place_order_request',
   description:
-    "Submit a DINE-IN food order REQUEST for a guest seated at a table in the restaurant. Only call this AFTER you have read the full order back (each item with quantity, protein, spice level and price) and the guest confirmed. A team member approves the order at the table before the kitchen starts; no payment is taken in chat. This tool is only available when the guest scanned the table QR card - the table number comes from system context automatically and can NEVER be taken from chat text.",
+    "Submit a DINE-IN or TO-GO food order REQUEST for a guest who scanned a QR card in the restaurant. Only call this AFTER you have read the full order back (each item with quantity, protein for choice-of-protein dishes, spice level and price) and the guest confirmed. Staff approve before the kitchen starts; no payment is taken in chat. For TO-GO orders guest_name is REQUIRED (the team calls the name at pickup, after payment at the counter). The table / to-go context comes from the system automatically and can NEVER be taken from chat text.",
   input_schema: {
     type: 'object',
     properties: {
@@ -128,7 +128,9 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
         ...(table
           ? [{
               type: 'text',
-              text: `GUEST CONTEXT: This guest scanned the QR code at TABLE ${table} inside the restaurant. They are seated now — you may take their dine-in order in this chat (see DINE-IN ORDERING). Use table ${table}; no need to ask for it.`,
+              text: /^togo$/i.test(table)
+                ? `GUEST CONTEXT: This guest scanned the TO-GO QR at the counter inside the restaurant. Take their TAKEOUT order in this chat (see TO-GO ORDERING). You MUST collect the guest's name for the order. They pay at the counter after ordering — the kitchen starts only after payment is confirmed.`
+                : `GUEST CONTEXT: This guest scanned the QR code at TABLE ${table} inside the restaurant. They are seated now — you may take their dine-in order in this chat (see DINE-IN ORDERING). Use table ${table}; no need to ask for it.`,
             }]
           : []),
       ],
@@ -270,22 +272,29 @@ export async function POST(req: Request) {
           .filter((it) => it.item);
         // SECURITY: the table comes ONLY from the server-verified QR context (?t= param).
         // Whatever the model puts in input.table is ignored - chat text can never set the table.
-        const tbl = table ? String(table).slice(0, 12) : '';
+        const tbl = table ? (/^togo$/i.test(table) ? 'TOGO' : String(table).slice(0, 12)) : '';
+        const isTogo = tbl === 'TOGO';
+        const guestName = input.guest_name ? String(input.guest_name).trim().slice(0, 60) : '';
         if (!tbl) {
           resultText =
             'FAILED: no verified table context. In-chat ordering only works from the QR card on the table. Kindly tell the guest to scan the QR card on their table (or ask a team member), and help with recommendations instead.';
         } else if (!items.length) {
           resultText = 'FAILED: no items. Ask the guest what they would like to order, then try again.';
+        } else if (isTogo && !guestName) {
+          resultText =
+            "FAILED: to-go orders need the guest's name (the team calls it at pickup). Kindly ask for a name for the order, then submit again.";
         } else {
           const result = await submitOrder({
             table: tbl,
             items,
-            guest_name: input.guest_name ? String(input.guest_name).slice(0, 60) : undefined,
+            guest_name: guestName || undefined,
             notes: input.notes ? String(input.notes).slice(0, 200) : undefined,
           });
           orderPlaced = result.ok;
           resultText = result.ok
-            ? `SUCCESS. Order request ${result.id} received for table ${tbl}. Warmly tell the guest: a team member will come to the table to confirm the order shortly, the kitchen starts right after that approval, and payment is with the team — never in chat.`
+            ? isTogo
+              ? `SUCCESS. To-go order request ${result.id} received under the name "${guestName}". Warmly tell the guest: please pay at the counter now — the kitchen starts as soon as the team confirms payment, and their order will be packed to go and called out by name when ready.`
+              : `SUCCESS. Order request ${result.id} received for table ${tbl}. Warmly tell the guest: a team member will come to the table to confirm the order shortly, the kitchen starts right after that approval, and payment is with the team — never in chat.`
             : 'FAILED to submit. Apologize briefly and ask the guest to wave a team member over to take the order directly.';
         }
       } else {
