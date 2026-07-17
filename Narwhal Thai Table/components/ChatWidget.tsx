@@ -30,6 +30,7 @@ function NarwhalIcon({ className, style }: { className?: string; style?: React.C
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [table, setTable] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: GREETINGS[0] }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,16 +42,36 @@ export default function ChatWidget() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [msgs, open, loading]);
 
+  // Table QR (/menu?t=5): remember the table and open the chat after a beat.
+  useEffect(() => {
+    try {
+      const t = new URLSearchParams(window.location.search).get('t');
+      if (t && /^[a-zA-Z0-9-]{1,12}$/.test(t)) {
+        setTable(t);
+        const id = window.setTimeout(() => setOpen(true), 900);
+        return () => window.clearTimeout(id);
+      }
+    } catch {
+      /* no-op */
+    }
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     inputRef.current?.focus();
     // Fresh greeting each time the panel opens (only before any conversation).
     setMsgs((m) =>
       m.length === 1 && m[0].role === 'assistant'
-        ? [{ role: 'assistant', content: pickGreeting() }]
+        ? [{
+            role: 'assistant',
+            content:
+              table && /^\d+$/.test(table)
+                ? `Sawasdee ka, table ${table}! 🐳 I'm Aileen — I can suggest dishes and take your order right here in the chat. What are you in the mood for?`
+                : pickGreeting(),
+          }]
         : m,
     );
-  }, [open]);
+  }, [open, table]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -93,7 +114,7 @@ export default function ChatWidget() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         // drop the canned greeting (index 0) before sending
-        body: JSON.stringify({ messages: next.slice(1) }),
+        body: JSON.stringify({ messages: next.slice(1), table }),
       });
       const data = (await res.json()) as { reply?: string };
       setMsgs((m) => [

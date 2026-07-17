@@ -2,6 +2,7 @@ import { buildSystemPrompt } from '@/lib/chatKnowledge';
 import { logChat } from '@/lib/chatLog';
 import { submitReservation, type ReservationInput } from '@/lib/reservation';
 import { submitMessage, type MessageInput } from '@/lib/message';
+import { submitOrder, type OrderInput, type OrderItem } from '@/lib/orders';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -80,7 +81,38 @@ const MESSAGE_TOOL = {
   },
 } as const;
 
-async function callAnthropic(key: string, messages: ApiMsg[]) {
+// Tool: lets Aileen submit a DINE-IN order request (staff approve before the kitchen starts).
+const ORDER_TOOL = {
+  name: 'place_order_request',
+  description:
+    "Submit a DINE-IN food order REQUEST for a guest seated at a table in the restaurant. Only call this AFTER you have read the full order back (each item with quantity, protein, spice level and price, plus the table number) and the guest confirmed. A team member approves the order at the table before the kitchen starts; no payment is taken in chat. Only use when a table number is known from context or given by the guest.",
+  input_schema: {
+    type: 'object',
+    properties: {
+      table: { type: 'string', description: 'Table number or label from the QR card on the table' },
+      items: {
+        type: 'array',
+        description: 'The dishes ordered',
+        items: {
+          type: 'object',
+          properties: {
+            item: { type: 'string', description: 'Exact menu item name' },
+            qty: { type: 'number', description: 'Quantity, default 1' },
+            protein: { type: 'string', description: 'Chosen protein for choice-of-protein dishes' },
+            spice: { type: 'string', description: 'Spice level e.g. mild / medium / Thai hot' },
+            notes: { type: 'string', description: 'Allergies or special requests (optional)' },
+          },
+          required: ['item'],
+        },
+      },
+      guest_name: { type: 'string', description: "Guest's name (optional)" },
+      notes: { type: 'string', description: 'Order-level notes (optional)' },
+    },
+    required: ['table', 'items'],
+  },
+} as const;
+
+async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null) {
   return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -93,8 +125,14 @@ async function callAnthropic(key: string, messages: ApiMsg[]) {
       max_tokens: MAX_TOKENS,
       system: [
         { type: 'text', text: buildSystemPrompt(), cache_control: { type: 'ephemeral' } },
+        ...(table
+          ? [{
+              type: 'text',
+              text: `GUEST CONTEXT: This guest scanned the QR code at TABLE ${table} inside the restaurant. They are seated now — you may take their dine-in order in this chat (see DINE-IN ORDERING). Use table ${table}; no need to ask for it.`,
+            }]
+          : []),
       ],
-      tools: [RESERVATION_TOOL, MESSAGE_TOOL],
+      tools: [RESERVATION_TOOL, MESSAGE_TOOL, ORDER_TOOL],
       messages,
     }),
   });
@@ -119,7 +157,7 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { messages?: Msg[] };
+  let body: { messages?: Msg[]; table?: string };
   try {
     body = (await req.json()) as { messages?: Msg[] };
   } catch {
@@ -135,6 +173,9 @@ export async function POST(req: Request) {
       "You're chatting faster than our woks can keep up! Give it a minute and try again — or just ask any of our team in the restaurant, they'd love to help. 🌊",
     );
   }
+
+  const table =
+    typeof body.table === 'string' && /^[a-zA-Z0-9-]{1,12}$/.test(body.table) ? body.table : null;
 
   const incoming = Array.isArray(body.messages) ? body.messages : [];
   const userTurns = incoming.filter((m) => m.role === 'user').length;
@@ -159,7 +200,7 @@ export async function POST(req: Request) {
   const lastUserText = typeof lastUser?.content === 'string' ? lastUser.content : '';
 
   try {
-    let r = await callAnthropic(key, apiMessages);
+    let r = await callAnthropic(key, apiMessages, table);
     if (!r.ok) {
       const detail = await r.text();
       console.error('Anthropic API error', r.status, detail);
@@ -173,6 +214,7 @@ export async function POST(req: Request) {
     // prevents any accidental infinite loop.
     let reservationMade = false;
     let messageSent = false;
+    let orderPlaced = false;
     let guard = 0;
     while (data.stop_reason === 'tool_use' && guard < 3) {
       guard++;
@@ -208,6 +250,37 @@ export async function POST(req: Request) {
         resultText = result.ok
           ? `SUCCESS. Message sent to the team (ref ${result.id}). Warmly let the guest know the team received it and will reply by email to the address they gave.`
           : `FAILED to send automatically. Apologize briefly and ask the guest to use the form at /contact/message or to email welcome@narwhalthaihb.com directly.`;
+      } else if (toolUse.name === 'place_order_request') {
+        const input = (toolUse.input ?? {}) as Partial<OrderInput> & { items?: unknown };
+        const rawItems = Array.isArray(input.items) ? input.items : [];
+        const items: OrderItem[] = rawItems
+          .slice(0, 20)
+          .map((it) => {
+            const o = (it ?? {}) as Record<string, unknown>;
+            return {
+              item: String(o.item ?? '').slice(0, 80),
+              qty: Math.max(1, Math.min(20, Number(o.qty ?? 1) || 1)),
+              protein: o.protein ? String(o.protein).slice(0, 40) : undefined,
+              spice: o.spice ? String(o.spice).slice(0, 30) : undefined,
+              notes: o.notes ? String(o.notes).slice(0, 120) : undefined,
+            };
+          })
+          .filter((it) => it.item);
+        const tbl = String(input.table ?? table ?? '').slice(0, 12);
+        if (!items.length || !tbl) {
+          resultText = 'FAILED: missing table number or items. Ask the guest for the missing detail, then try again.';
+        } else {
+          const result = await submitOrder({
+            table: tbl,
+            items,
+            guest_name: input.guest_name ? String(input.guest_name).slice(0, 60) : undefined,
+            notes: input.notes ? String(input.notes).slice(0, 200) : undefined,
+          });
+          orderPlaced = result.ok;
+          resultText = result.ok
+            ? `SUCCESS. Order request ${result.id} received for table ${tbl}. Warmly tell the guest: a team member will come to the table to confirm the order shortly, the kitchen starts right after that approval, and payment is with the team — never in chat.`
+            : 'FAILED to submit. Apologize briefly and ask the guest to wave a team member over to take the order directly.';
+        }
       } else {
         resultText = 'Unknown tool; ignore and answer normally.';
       }
@@ -218,11 +291,13 @@ export async function POST(req: Request) {
         content: [{ type: 'tool_result', tool_use_id: toolUse.id, content: resultText }],
       });
 
-      r = await callAnthropic(key, apiMessages);
+      r = await callAnthropic(key, apiMessages, table);
       if (!r.ok) {
         const detail = await r.text();
         console.error('Anthropic API error (post-tool)', r.status, detail);
-        const safe = reservationMade
+        const safe = orderPlaced
+          ? "Got it! Your order request is in - a team member will come confirm it at your table shortly, and the kitchen starts right after. 🐋"
+          : reservationMade
           ? "Thanks! I've sent your reservation request to the team - they'll confirm by phone or email within a few hours."
           : messageSent
           ? "Thanks! I've passed your message to the team - they'll reply by email shortly."
