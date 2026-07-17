@@ -30,7 +30,7 @@ function rateLimited(ip: string): boolean {
   if (rlHits.size > 5000) rlHits.clear(); // memory guard
   return false;
 }
-const MAX_TOKENS = 700;
+const MAX_TOKENS = 1500;
 const MAX_HISTORY = 16; // keep only the last N turns
 const MAX_CHARS = 1500; // cap each message length
 
