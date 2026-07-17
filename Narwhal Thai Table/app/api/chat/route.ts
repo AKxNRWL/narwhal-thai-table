@@ -85,11 +85,11 @@ const MESSAGE_TOOL = {
 const ORDER_TOOL = {
   name: 'place_order_request',
   description:
-    "Submit a DINE-IN food order REQUEST for a guest seated at a table in the restaurant. Only call this AFTER you have read the full order back (each item with quantity, protein, spice level and price, plus the table number) and the guest confirmed. A team member approves the order at the table before the kitchen starts; no payment is taken in chat. Only use when a table number is known from context or given by the guest.",
+    "Submit a DINE-IN food order REQUEST for a guest seated at a table in the restaurant. Only call this AFTER you have read the full order back (each item with quantity, protein, spice level and price) and the guest confirmed. A team member approves the order at the table before the kitchen starts; no payment is taken in chat. This tool is only available when the guest scanned the table QR card - the table number comes from system context automatically and can NEVER be taken from chat text.",
   input_schema: {
     type: 'object',
     properties: {
-      table: { type: 'string', description: 'Table number or label from the QR card on the table' },
+      table: { type: 'string', description: 'Ignored - the system already knows the table from the QR context' },
       items: {
         type: 'array',
         description: 'The dishes ordered',
@@ -132,7 +132,9 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
             }]
           : []),
       ],
-      tools: [RESERVATION_TOOL, MESSAGE_TOOL, ORDER_TOOL],
+      // ORDER_TOOL exists ONLY for guests who scanned a table QR (server-verified ?t= param).
+      // Web visitors can claim any table in chat text - the tool simply isn't there for them.
+      tools: table ? [RESERVATION_TOOL, MESSAGE_TOOL, ORDER_TOOL] : [RESERVATION_TOOL, MESSAGE_TOOL],
       messages,
     }),
   });
@@ -266,9 +268,14 @@ export async function POST(req: Request) {
             };
           })
           .filter((it) => it.item);
-        const tbl = String(input.table ?? table ?? '').slice(0, 12);
-        if (!items.length || !tbl) {
-          resultText = 'FAILED: missing table number or items. Ask the guest for the missing detail, then try again.';
+        // SECURITY: the table comes ONLY from the server-verified QR context (?t= param).
+        // Whatever the model puts in input.table is ignored - chat text can never set the table.
+        const tbl = table ? String(table).slice(0, 12) : '';
+        if (!tbl) {
+          resultText =
+            'FAILED: no verified table context. In-chat ordering only works from the QR card on the table. Kindly tell the guest to scan the QR card on their table (or ask a team member), and help with recommendations instead.';
+        } else if (!items.length) {
+          resultText = 'FAILED: no items. Ask the guest what they would like to order, then try again.';
         } else {
           const result = await submitOrder({
             table: tbl,
