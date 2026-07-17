@@ -82,7 +82,10 @@ function extractText(content: Block[] | undefined): string {
     .filter((b) => b.type === 'text')
     .map((b) => b.text ?? '')
     .join('\n')
-    .trim();
+    .trim()
+    // The chat window renders plain text — strip any markdown emphasis the model sneaks in.
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*\n]+)\*/g, '$1');
 }
 
 export async function POST(req: Request) {
