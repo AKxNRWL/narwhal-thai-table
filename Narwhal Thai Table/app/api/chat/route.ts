@@ -6,7 +6,7 @@ import { submitMessage, type MessageInput } from '@/lib/message';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = 'claude-haiku-4-5-20251001'; // swap here (e.g. 'claude-sonnet-5' for the smartest host)
+const MODEL = 'claude-sonnet-5'; // swap here (e.g. 'claude-haiku-4-5-20251001' to cut cost ~3x)
 
 // --- Abuse guards (best-effort, per warm function instance) ---
 // Diners in the restaurant share one WiFi IP, so per-IP limits are generous.
