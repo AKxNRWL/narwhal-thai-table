@@ -79,17 +79,18 @@ export default function OrdersPage() {
   const rest = orders.filter((o) => o.status === 'done' || o.status === 'cancelled').slice(0, 10);
 
   const Item = ({ o }: { o: OrderRecord }) => {
-    const togo = o.table === 'TOGO';
+    const phone = o.table === 'PHONE';
+    const togo = o.table === 'TOGO' || phone;
     return (
     <div style={togo ? { ...card, borderColor: 'rgba(176,141,60,0.55)' } : card}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 8 }}>
         <div style={{ fontSize: 22, fontWeight: 700, color: GOLD }}>
-          {togo ? <>🥡 TO-GO{o.guest_name ? ` — ${o.guest_name}` : ''}</> : <>โต๊ะ {o.table}{o.guest_name ? ` · ${o.guest_name}` : ''}</>}
+          {phone ? <>📞 โทรสั่ง{o.guest_name ? ` — ${o.guest_name}` : ''}</> : togo ? <>🥡 TO-GO{o.guest_name ? ` — ${o.guest_name}` : ''}</> : <>โต๊ะ {o.table}{o.guest_name ? ` · ${o.guest_name}` : ''}</>}
         </div>
         <div style={{ fontSize: 12, opacity: 0.6 }}>{o.id} · {ago(o.ts)}</div>
       </div>
       {togo && o.status === 'pending' && (
-        <div style={{ fontSize: 13, color: '#ffd27a', margin: '6px 0 0' }}>💵 เก็บเงินที่เคาน์เตอร์ก่อน แล้วค่อยกดรับเข้าครัว</div>
+        <div style={{ fontSize: 13, color: '#ffd27a', margin: '6px 0 0' }}>💵 เก็บเงินตอนลูกค้ามารับ แล้วค่อยกดรับเข้าครัว</div>
       )}
       <ul style={{ margin: '10px 0', paddingLeft: 18, lineHeight: 1.7 }}>
         {o.items.map((it, i) => (
@@ -147,7 +148,7 @@ export default function OrdersPage() {
                 <h2 style={{ fontSize: 15, letterSpacing: '0.12em', opacity: 0.5, margin: '26px 0 10px' }}>ล่าสุด</h2>
                 {rest.map((o) => (
                   <div key={o.id} style={{ ...card, opacity: 0.45, padding: 10 }}>
-                    <span style={{ color: GOLD }}>{o.table === 'TOGO' ? `🥡 TO-GO${o.guest_name ? ' — ' + o.guest_name : ''}` : `โต๊ะ ${o.table}`}</span> · {o.items.map((i) => `${i.qty}× ${i.item}`).join(', ')} · {o.status === 'done' ? 'เสร็จแล้ว' : 'ยกเลิก'}
+                    <span style={{ color: GOLD }}>{o.table === 'PHONE' ? `📞 โทรสั่ง${o.guest_name ? ' — ' + o.guest_name : ''}` : o.table === 'TOGO' ? `🥡 TO-GO${o.guest_name ? ' — ' + o.guest_name : ''}` : `โต๊ะ ${o.table}`}</span> · {o.items.map((i) => `${i.qty}× ${i.item}`).join(', ')} · {o.status === 'done' ? 'เสร็จแล้ว' : 'ยกเลิก'}
                   </div>
                 ))}
               </>
