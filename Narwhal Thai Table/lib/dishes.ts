@@ -165,7 +165,7 @@ export const DISHES: Dish[] = [
   { slug: 'krapow-over-rice', name: 'Krapow · Spicy Basil', thai: 'ผัดกะเพรา', category: 'overrice', spicy: true, protein: true,
     description: "Thailand's lunchtime legend — fiery, fragrant chili & holy basil over rice.", price: '$11' },
   { slug: 'og-pad-thai', name: 'OG Pad Thai', thai: 'ผัดไทยต้นตำรับ', category: 'noodles', signature: true, protein: true,
-    description: 'Chewy rice noodles in tamarind-sweet sauce, bean sprouts & chives — lime for spark, peanuts for crunch.', price: '$19',
+    description: 'Chewy rice noodles in tamarind-sweet sauce, bean sprouts & chives — lime for spark, peanuts for crunch.', price: '$12',
     ingredients: [
       'Hand-cut chantaboon rice noodles (jantaboon)',
       'House tamarind concentrate, palm sugar, fish sauce',
