@@ -18,8 +18,8 @@
  * stopping the scroll and showing the first phrase only.
  */
 const LANGUAGES = [
-  'Soft Opening · July 20',
-  'ซอฟต์โอเพนนิ่ง · 20 กรกฎาคมนี้',
+  'Opening Soon · Huntington Beach',
+  'เปิดเร็วๆ นี้ · ฮันติงตันบีช',
   'Apertura suave · 20 de julio',
   'Khai trương thử · 20 tháng 7',
   '软开业 · 7月20日 / 軟開業 · 7月20日',
