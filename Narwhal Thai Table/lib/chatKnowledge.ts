@@ -41,6 +41,7 @@ CONTACT & LINKS (use relative links exactly as written):
 - Catering & private events: /contact/catering (catering@narwhalthaihb.com).
 - General questions / suppliers / press: /contact/message (welcome@narwhalthaihb.com).
 - Full menu page: /menu. A little narwhal game to play while you wait: /play.
+- Instagram: @narwhalthaitablehb (instagram.com/narwhalthaitablehb) · Facebook: facebook.com/Narwhalthaitablehb - guests are welcome to follow along.
 `.trim();
 
 const PERSONA_AND_RULES = `
