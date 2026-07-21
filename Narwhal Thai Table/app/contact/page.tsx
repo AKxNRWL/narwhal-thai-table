@@ -43,16 +43,7 @@ export default function ContactHubPage() {
             <h3>Visit the table</h3>
             <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Open daily &middot; 11:00&nbsp;AM &ndash; 11:00&nbsp;PM</p>
           </div>
-          <a className="map-placeholder" href="https://www.google.com/maps/search/?api=1&query=19072+Beach+Blvd+Huntington+Beach+CA+92648" target="_blank" rel="noopener">
-            <div className="map-content">
-              <svg className="map-pin" viewBox="0 0 56 56" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
-                <path d="M28 6c-9 0-16 7-16 16 0 12 16 28 16 28s16-16 16-28c0-9-7-16-16-16z" />
-                <circle cx="28" cy="22" r="6" />
-              </svg>
-              <div className="addr">19072 Beach Boulevard</div>
-              <div className="city">Huntington Beach, California &middot; open in Google Maps</div>
-            </div>
-          </a>
+          <MapEmbed />
         </div>
       </div>
     </section>

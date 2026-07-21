@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
@@ -99,6 +100,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <Footer />
         <ChatWidget />
+        {/* Google Analytics 4 — property "narwhalthaihb.com", stream "Narwhal Thai Table Website" (welcome@ account) */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-XJF37GZ4NB" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XJF37GZ4NB');
+        `}</Script>
       </body>
     </html>
   );
