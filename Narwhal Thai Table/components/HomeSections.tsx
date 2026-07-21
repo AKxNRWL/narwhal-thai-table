@@ -27,13 +27,13 @@ export function StorySection() {
           </FadeUp>
           <FadeUp className="about-text">
             <span className="label">Our Story</span>
-            <h2>A Thai kitchen, raised by the <em>California coast</em>.</h2>
-            <p>We&apos;re a Thai family who fell in love with Huntington Beach — the salt air, the sunsets over PCH, the way neighbors wave at each other on the way to the pier. So we did what every Thai family does when they love a place: we cooked for it.</p>
-            <p>Narwhal Thai Table is our home table, opened wide. The curries are pounded by hand the way our grandmothers taught us. The fish comes off California boats. The smiles are real, because the people serving you are the same people who own the place.</p>
-            <p style={{ color: 'var(--brass-deep)', fontStyle: 'italic' }}>Come hungry. Stay a while. You&apos;re family here.</p>
+            <h2>Some families build houses. <em>Ours builds tables</em>.</h2>
+            <p>We are three siblings — Aileen, Annie, and AK — with thirty years of restaurant life between us: opening rooms, running kitchens, learning what makes a stranger relax into a chair. Somewhere along the way, Huntington Beach won us over — the salt air, the long gold light down PCH, the way this town waves at itself on the walk to the pier.</p>
+            <p>So we did what our family has always done with the places we love: we cooked for it. Narwhal Thai Table is the promise we&apos;ve been keeping our whole working lives — Thai recipes rooted in the royal-court tradition, made fresh for every single plate, from ingredients we choose the slow, stubborn way. No shortcuts, no almost.</p>
+            <p style={{ color: 'var(--brass-deep)', fontStyle: 'italic' }}>Because what we serve isn&apos;t just dinner. It&apos;s everything around it — the warmth, the welcome, the wanting you back.</p>
             <div className="about-stats">
-              <div className="stat"><div className="num">1800s</div><div className="lbl">Royal-Court Roots</div></div>
-              <div className="stat"><div className="num">100%</div><div className="lbl">Made by Hand</div></div>
+              <div className="stat"><div className="num">3</div><div className="lbl">Siblings, One Table</div></div>
+              <div className="stat"><div className="num">30</div><div className="lbl">Years of Restaurant Life</div></div>
               <div className="stat"><div className="num">HB</div><div className="lbl">Our Hometown</div></div>
             </div>
           </FadeUp>
@@ -131,8 +131,8 @@ export function MenuPreviewSection() {
       <div className="container">
         <FadeUp className="section-head">
           <span className="label">What&apos;s Cooking</span>
-          <h2>Pull up a chair — <em>the kitchen&apos;s got something for you</em>.</h2>
-          <p>Here&apos;s a taste of the house signature plates. The full menu — thirteen categories from appetizers to dessert — lives on its own page.</p>
+          <h2>Fresh isn&apos;t a claim here. <em>It&apos;s a schedule</em>.</h2>
+          <p>Nothing at this table is made ahead and nothing waits under a lamp — every plate begins when you ask for it. These are the house signatures; the full menu, thirteen categories deep, has a page of its own.</p>
         </FadeUp>
 
         <FadeUp className="sig-grid">
@@ -192,8 +192,8 @@ export function ExperienceSection() {
       <div className="container">
         <FadeUp className="section-head">
           <span className="label">The Experience</span>
-          <h2>More than a meal — <em>a table to come home to</em>.</h2>
-          <p>Three things hold every plate together. They&apos;re the same three things our grandmothers taught us in the family kitchen.</p>
+          <h2>You come for dinner. <em>You leave with more</em>.</h2>
+          <p>Three things hold this house together. Thirty years of restaurant life taught them to us, and we&apos;d rather stay small forever than compromise a single one.</p>
         </FadeUp>
         <div className="pillars">
           <FadeUp className="pillar">
@@ -203,8 +203,8 @@ export function ExperienceSection() {
               <circle cx="24" cy="34" r="10" />
               <path d="M16 38c2-2 14-2 16 0" />
             </svg>
-            <h3>Cooked by Hand</h3>
-            <p>Curries pounded fresh in the stone mortar. Broths simmered slow. No shortcuts — the way home cooking is supposed to be.</p>
+            <h3>Fresh, Every Plate</h3>
+            <p>Curry paste pounded in the stone mortar. The wok lit for your order, not before it. Herbs cut the same hour you taste them. If it isn&apos;t fresh, it doesn&apos;t leave our kitchen.</p>
           </FadeUp>
           <FadeUp className="pillar">
             <span className="pillar-num">II.</span>
@@ -214,8 +214,8 @@ export function ExperienceSection() {
               <path d="M24 8v6" />
               <circle cx="24" cy="26" r="3" fill="currentColor" />
             </svg>
-            <h3>California Sourced</h3>
-            <p>Seafood off our coast. Produce from California farms. Thai aromatics flown in weekly so nothing tastes tired or far from home.</p>
+            <h3>Chosen by Hand</h3>
+            <p>We source the slow way — seafood off California boats, produce from farms we can name, Thai aromatics flown in weekly. We&apos;re fussy about every ingredient so you never have to be.</p>
           </FadeUp>
           <FadeUp className="pillar">
             <span className="pillar-num">III.</span>
@@ -227,7 +227,7 @@ export function ExperienceSection() {
               <path d="M20 18c1 2 3 3 4 3s3-1 4-3" />
             </svg>
             <h3>From Our Family</h3>
-            <p>Owner-operated by the Angsawothai family. The faces you see at the door are the faces who cook your food. That&apos;s the whole thing.</p>
+            <p>Aileen, Annie, and AK — three siblings who grew up in dining rooms and never wanted to leave. We still believe the finest thing a restaurant can serve is the feeling of being expected.</p>
           </FadeUp>
         </div>
       </div>
@@ -246,7 +246,7 @@ export function ReserveSection() {
           <FadeUp className="reserve-info">
             <span className="label">Save a Seat</span>
             <h2>We saved a seat <em>for you</em>.</h2>
-            <p>It&apos;s a cozy room. Give us a call, send a note, or fill out the form — we&apos;ll have your table ready when you get here. Birthdays, anniversaries, big family nights — just tell us, we love a good occasion.</p>
+            <p>It&apos;s a cozy room, and we like it that way. Send a note or fill out the form — your table will be ready before you are. Birthdays, anniversaries, the big family night out: tell us what the evening means, and we&apos;ll treat it that way.</p>
             <div className="hours-block">
               <h4>Hours of Service</h4>
               <div className="hours-row"><span className="day">Monday – Sunday</span><span className="time">11:00 AM — 11:00 PM</span></div>
@@ -271,28 +271,28 @@ export function ContactSection() {
       <div className="container">
         <FadeUp className="section-head">
           <span className="label" style={{ color: 'var(--brass-light)' }}>Come See Us</span>
-          <h2 style={{ color: 'var(--off-white)' }}>How can we <em style={{ color: 'var(--brass-light)' }}>help?</em></h2>
+          <h2 style={{ color: 'var(--off-white)' }}>Tell us you&apos;re coming — <em style={{ color: 'var(--brass-light)' }}>we&apos;ll do the rest</em>.</h2>
         </FadeUp>
 
         <FadeUp className="contact-cards">
           <Link className="contact-card" href="/contact/reservation">
             <span className="contact-card-num">01</span>
             <h3>Reservations</h3>
-            <p>Request a table &mdash; we&apos;ll confirm within a few hours.</p>
+            <p>Ask for a table and consider it held &mdash; we confirm within a few hours.</p>
             <span className="contact-card-email">reservations@narwhalthaihb.com</span>
             <span className="contact-card-go">Book a table <span aria-hidden="true">&rarr;</span></span>
           </Link>
           <Link className="contact-card" href="/contact/catering">
             <span className="contact-card-num">02</span>
             <h3>Catering &amp; Events</h3>
-            <p>Buyouts, family-style tastings, off-site catering.</p>
+            <p>Buyouts, family-style feasts, catering that travels well &mdash; your occasion, our table.</p>
             <span className="contact-card-email">catering@narwhalthaihb.com</span>
             <span className="contact-card-go">Plan an event <span aria-hidden="true">&rarr;</span></span>
           </Link>
           <Link className="contact-card" href="/contact/message">
             <span className="contact-card-num">03</span>
             <h3>Say Hello</h3>
-            <p>Questions, suppliers, press &mdash; we&apos;ll get back to you.</p>
+            <p>Questions, ideas, a hello from down the street &mdash; every note reaches one of us three.</p>
             <span className="contact-card-email">welcome@narwhalthaihb.com</span>
             <span className="contact-card-go">Send a message <span aria-hidden="true">&rarr;</span></span>
           </Link>

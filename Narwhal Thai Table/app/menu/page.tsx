@@ -18,7 +18,7 @@ export default function MenuPage() {
           <span className="label">The Menu</span>
           <h2>The full menu — <em>tap a plate to hear its story</em>.</h2>
           <p>
-            Thirteen categories, from appetizers to dessert. ★ marks the house signatures. Each plate has its own page with the recipe&apos;s history, how to eat it, and what it pairs with.
+            Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe&apos;s history, how to eat it well, and what belongs beside it.
           </p>
         </div>
         <MenuTabs />
