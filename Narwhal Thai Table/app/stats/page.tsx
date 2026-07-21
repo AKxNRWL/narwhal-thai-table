@@ -22,12 +22,34 @@ type Stats = {
   recent: Recent[];
 };
 type Rec = Record<string, unknown>;
+type CouponT = { code: string; offer: string; issuedAt: string; expiresAt: string; redeemedAt?: string };
+type CustomerT = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  firstSeen: string;
+  lastSeen: string;
+  visits: number;
+  sources: string[];
+  coupons: CouponT[];
+};
+type Segments = {
+  total: number;
+  new7d: number;
+  regulars: number;
+  lapsed21d: number;
+  withActiveCoupon: number;
+  redeemed: number;
+};
 type DataResp = {
   ok: boolean;
   tenant: { id: string; name: string };
   stats: Stats;
   reservations: Rec[];
   messages: Rec[];
+  customers?: CustomerT[];
+  customerSegments?: Segments;
 };
 
 const NAVY = 'var(--navy, #0B1F33)';
@@ -72,6 +94,11 @@ export default function StatsPage() {
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
   const [booted, setBooted] = useState(false);
+  // Retention panel state
+  const [couponBusy, setCouponBusy] = useState('');
+  const [copied, setCopied] = useState('');
+  const [redeemCode, setRedeemCode] = useState('');
+  const [redeemMsg, setRedeemMsg] = useState('');
 
   const loadData = useCallback(async (): Promise<boolean> => {
     const r = await fetch('/api/owner/data', { credentials: 'same-origin', cache: 'no-store' });
@@ -126,6 +153,68 @@ export default function StatsPage() {
       /* ignore */
     }
     setData(null);
+  }
+
+  /* ── Retention: customer book + comeback coupons ────────────────────── */
+  const customers = data?.customers ?? [];
+  const seg: Segments =
+    data?.customerSegments ?? { total: 0, new7d: 0, regulars: 0, lapsed21d: 0, withActiveCoupon: 0, redeemed: 0 };
+
+  async function issue(customerId: string) {
+    setCouponBusy(customerId);
+    try {
+      await fetch('/api/owner/customers', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'issue', customerId, offer: '10% off next visit · ลด 10% ครั้งถัดไป' }),
+      });
+      await loadData();
+    } catch {
+      /* ignore */
+    } finally {
+      setCouponBusy('');
+    }
+  }
+
+  async function redeem(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    if (!redeemCode.trim()) return;
+    setRedeemMsg('');
+    try {
+      const r = await fetch('/api/owner/customers', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action: 'redeem', code: redeemCode.trim() }),
+      });
+      const j = (await r.json()) as { ok: boolean; customerName?: string; offer?: string; error?: string };
+      if (j.ok) {
+        setRedeemMsg(`✅ ใช้ได้ — ${j.offer ?? ''}${j.customerName ? ' (คุณ' + j.customerName + ')' : ''}`);
+        setRedeemCode('');
+        await loadData();
+      } else {
+        const why =
+          j.error === 'already redeemed' ? 'โค้ดนี้ถูกใช้ไปแล้ว' : j.error === 'expired' ? 'โค้ดหมดอายุแล้ว' : 'ไม่พบโค้ดนี้';
+        setRedeemMsg('❌ ' + why);
+      }
+    } catch {
+      setRedeemMsg('❌ เช็คไม่สำเร็จ ลองใหม่');
+    }
+  }
+
+  function copyInvite(c: CustomerT, ac: CouponT) {
+    const d = new Date(ac.expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const name = c.name || 'ลูกค้า';
+    const text = `สวัสดีค่ะคุณ${name} 🙏 ขอบคุณที่มาอุดหนุน Narwhal Thai Table นะคะ ครั้งหน้ารับ ${ac.offer} เพียงแจ้งโค้ด ${ac.code} ที่ร้านได้เลยค่ะ (ใช้ได้ถึง ${d})
+Hi ${name}! Thank you for visiting Narwhal Thai Table 🐋 Show code ${ac.code} on your next visit for ${ac.offer} (valid until ${d}) — 19072 Beach Blvd, Huntington Beach · narwhalthaihb.com`;
+    try {
+      void navigator.clipboard.writeText(text);
+      setCopied(c.id);
+      setTimeout(() => setCopied(''), 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
   }
 
   const days = data ? Object.entries(data.stats.byDay).sort((a, b) => (a[0] < b[0] ? -1 : 1)) : [];
@@ -217,6 +306,85 @@ export default function StatsPage() {
                       <div style={{ color: OFF, fontSize: 14, fontWeight: 600 }}>{head}</div>
                       <div style={{ color: 'rgba(245,240,230,0.7)', fontSize: 13, marginTop: 3 }}>{str(m, 'message')}</div>
                       <div style={{ color: 'rgba(245,240,230,0.4)', fontSize: 11.5, marginTop: 3 }}>{meta}</div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* ── ลูกค้า & คูปองชวนกลับ (Retention loop) ──────────────── */}
+            <div style={{ ...card, marginBottom: 22 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 10, flexWrap: 'wrap' }}>
+                <div style={label}>🔁 ลูกค้า & คูปองชวนกลับ</div>
+                <a href="/api/owner/customers?format=csv" style={{ color: BRASSL, fontSize: 12.5 }}>⬇ ดาวน์โหลด CSV</a>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(115px,1fr))', gap: 10, marginBottom: 16 }}>
+                <div><div style={label}>ในสมุดลูกค้า</div><div style={{ ...big, fontSize: 26 }}>{seg.total}</div></div>
+                <div><div style={label}>ใหม่ 7 วัน</div><div style={{ ...big, fontSize: 26 }}>{seg.new7d}</div></div>
+                <div><div style={label}>มา 2 ครั้ง+</div><div style={{ ...big, fontSize: 26, color: BRASSL }}>{seg.regulars}</div></div>
+                <div><div style={label}>เงียบ 21 วัน+</div><div style={{ ...big, fontSize: 26, color: seg.lapsed21d ? '#e0907a' : OFF }}>{seg.lapsed21d}</div></div>
+                <div><div style={label}>คูปองถูกใช้</div><div style={{ ...big, fontSize: 26 }}>{seg.redeemed}</div></div>
+              </div>
+
+              {/* กล่องเช็คคูปองหน้าเคาน์เตอร์ — พนักงานพิมพ์โค้ดที่ลูกค้าโชว์ */}
+              <form onSubmit={redeem} style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+                <input
+                  value={redeemCode}
+                  onChange={(ev) => setRedeemCode(ev.target.value)}
+                  placeholder="โค้ดคูปอง เช่น NWT-7K2F"
+                  style={{ padding: '9px 13px', borderRadius: 999, background: 'rgba(255,255,255,0.06)', border: '1px solid ' + LINE, color: OFF, fontSize: 14, outline: 'none', width: 190 }}
+                />
+                <button type="submit" style={{ padding: '9px 16px', borderRadius: 999, background: BRASS, color: NAVY, border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}>
+                  เช็ค / ใช้คูปอง
+                </button>
+                {redeemMsg && <span style={{ fontSize: 13, color: redeemMsg.startsWith('✅') ? BRASSL : '#e0907a' }}>{redeemMsg}</span>}
+              </form>
+
+              {customers.length === 0 ? (
+                <div style={{ color: 'rgba(245,240,230,0.5)', fontSize: 14 }}>
+                  ยังไม่มีลูกค้าในสมุด — ทุกการจอง / ข้อความ / โทรสั่ง ที่มีเบอร์หรืออีเมลจะเข้ามาที่นี่เอง
+                </div>
+              ) : (
+                customers.slice(0, 20).map((c, i, arr) => {
+                  const ac = c.coupons.find((x) => !x.redeemedAt && Date.parse(x.expiresAt) > Date.now());
+                  const wasRedeemed = c.coupons.some((x) => x.redeemedAt);
+                  return (
+                    <div key={c.id} style={{ padding: '10px 0', borderBottom: i < arr.length - 1 ? '1px solid ' + LINE : 'none' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
+                        <div>
+                          <div style={{ color: OFF, fontSize: 14, fontWeight: 600 }}>
+                            {(c.name || 'ไม่ระบุชื่อ') + (c.visits >= 2 ? ' ⭐' : '') + (wasRedeemed ? ' 🔁' : '')}
+                          </div>
+                          <div style={{ color: 'rgba(245,240,230,0.6)', fontSize: 12.5, marginTop: 2 }}>
+                            {[c.phone, c.email].filter(Boolean).join(' · ') || '—'}
+                          </div>
+                          <div style={{ color: 'rgba(245,240,230,0.4)', fontSize: 11.5, marginTop: 2 }}>
+                            {'มา ' + c.visits + ' ครั้ง · ล่าสุด ' + fmtDate(c.lastSeen) + ' · ' + c.sources.join(', ')}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                          {ac ? (
+                            <>
+                              <span style={{ fontSize: 12.5, color: BRASSL, border: '1px dashed ' + LINE, borderRadius: 8, padding: '4px 9px' }}>🎟 {ac.code}</span>
+                              <button
+                                onClick={() => copyInvite(c, ac)}
+                                style={{ padding: '7px 13px', borderRadius: 999, background: 'rgba(255,255,255,0.06)', border: '1px solid ' + LINE, color: OFF, cursor: 'pointer', fontSize: 12.5 }}
+                              >
+                                {copied === c.id ? '✅ คัดลอกแล้ว' : '📋 คัดลอกข้อความชวน'}
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => issue(c.id)}
+                              disabled={couponBusy === c.id}
+                              style={{ padding: '7px 13px', borderRadius: 999, background: BRASS, color: NAVY, border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: 12.5, opacity: couponBusy === c.id ? 0.6 : 1 }}
+                            >
+                              🎟 ออกคูปองชวนกลับ
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   );
                 })

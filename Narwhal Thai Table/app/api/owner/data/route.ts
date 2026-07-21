@@ -1,6 +1,7 @@
 import { getStore } from '@netlify/blobs';
 import { readCookie, readSession } from '@/lib/session';
-import { dataFor, getTenant } from '@/lib/tenants';
+import { dataFor, getTenant, TENANT_NARWHAL_ID } from '@/lib/tenants';
+import { listCustomers, segmentCustomers } from '@/lib/customers';
 import { aggregateChatLogs } from '@/lib/statsAggregate';
 import type { LogEntry } from '@/lib/chatLog';
 
@@ -33,6 +34,10 @@ export async function GET(req: Request) {
     readArray<Record<string, unknown>>(loc.messages.store, loc.messages.key),
   ]);
 
+  // Customer book: pilot store is Narwhal-only for now (namespaced per-tenant
+  // later, mirroring dataFor) — other tenants just see an empty book.
+  const customers = tenant.id === TENANT_NARWHAL_ID ? await listCustomers() : [];
+
   return Response.json(
     {
       ok: true,
@@ -40,6 +45,8 @@ export async function GET(req: Request) {
       stats: aggregateChatLogs(logs),
       reservations: reservations.slice(-50).reverse(),
       messages: messages.slice(-50).reverse(),
+      customers: customers.slice(-200).reverse(),
+      customerSegments: segmentCustomers(customers),
     },
     { headers: { 'cache-control': 'no-store' } },
   );

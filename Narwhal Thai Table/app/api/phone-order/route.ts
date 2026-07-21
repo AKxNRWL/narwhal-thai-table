@@ -1,4 +1,5 @@
 import { submitOrder, type OrderItem } from '@/lib/orders';
+import { upsertCustomer } from '@/lib/customers';
 import { DISHES } from '@/lib/dishes';
 
 /**
@@ -78,6 +79,10 @@ export async function POST(req: Request) {
   if (!result.ok) {
     return Response.json({ ok: false, error: 'queue write failed' }, { status: 500 });
   }
+
+  // Retention: phone callers who leave a number go into the customer book
+  // (best-effort; never blocks the order response back to the voice agent).
+  if (phone) await upsertCustomer({ name: guestName, phone, source: 'phone' });
 
   return Response.json({
     ok: true,

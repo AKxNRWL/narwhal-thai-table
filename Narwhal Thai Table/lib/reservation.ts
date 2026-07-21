@@ -13,6 +13,7 @@
  * REQUEST — the team still confirms by phone/email; no payment is taken.
  */
 import { getStore } from '@netlify/blobs';
+import { upsertCustomer } from './customers';
 
 export const RESV_STORE = 'aileen-reservations';
 export const RESV_KEY = 'list';
@@ -89,6 +90,15 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
   } catch {
     stored = false;
   }
+
+  // 3) Retention: remember the guest in the customer book (best-effort —
+  //    upsertCustomer never throws, and must never block a reservation).
+  await upsertCustomer({
+    name: [rec.first_name, rec.last_name].filter(Boolean).join(' '),
+    phone: rec.phone,
+    email: rec.email,
+    source: 'reservation',
+  });
 
   return { ok: emailed || stored, id, emailed, stored };
 }

@@ -4,8 +4,7 @@ import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
-
-const SITE_URL = 'https://narwhalthaihb.com'; // update when domain is live
+import { RESTAURANT, SITE_URL, socialUrls } from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -86,6 +85,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               founder: { '@type': 'Person', name: 'Chef Rainny' },
               menu: `${SITE_URL}/menu`,
               acceptsReservations: `${SITE_URL}/contact/reservation`,
+              // Filled from lib/site.ts the moment real values exist there.
+              ...(RESTAURANT.phone ? { telephone: RESTAURANT.phone } : {}),
+              ...(socialUrls().length ? { sameAs: socialUrls() } : {}),
             }),
           }}
         />

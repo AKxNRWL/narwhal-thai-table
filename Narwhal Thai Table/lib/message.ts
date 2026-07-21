@@ -11,6 +11,7 @@
  * Returns ok=true if EITHER channel succeeded.
  */
 import { getStore } from '@netlify/blobs';
+import { upsertCustomer } from './customers';
 
 export const MSG_STORE = 'aileen-messages';
 export const MSG_KEY = 'list';
@@ -75,6 +76,9 @@ export async function submitMessage(input: MessageInput): Promise<MessageResult>
   } catch {
     stored = false;
   }
+
+  // Retention: remember the guest in the customer book (best-effort).
+  await upsertCustomer({ name: rec.name, phone: rec.phone, email: rec.email, source: 'message' });
 
   return { ok: emailed || stored, id, emailed, stored };
 }

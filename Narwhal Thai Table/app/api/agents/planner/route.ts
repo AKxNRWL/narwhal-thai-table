@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic';
    checklist and tells the owner the few things that matter TODAY. read-only —
    it only summarizes for the owner, it never acts on the outside world. */
 
-const OPEN = new Date('2026-07-24T00:00:00-07:00'); // opening day
+const OPEN = new Date('2026-07-24T00:00:00-07:00'); // soft opening day
 
-const SYSTEM = `คุณคือผู้ช่วยวางแผนงานของเจ้าของร้าน Narwhal Thai Table (อาหารไทยตำรับชาววัง, Huntington Beach, รับช่วงร้านเดิม Thai Gulf, ได้กุญแจ ~30 มิ.ย. 2026, เปิดร้านศุกร์ 24 ก.ค. 2026).
+const SYSTEM = `คุณคือผู้ช่วยวางแผนงานของเจ้าของร้าน Narwhal Thai Table (อาหารไทยตำรับชาววัง, Huntington Beach, รับช่วงร้านเดิม Thai Gulf, ได้กุญแจ ~30 มิ.ย. 2026, soft opening ศุกร์ 24 ก.ค. 2026).
 หน้าที่: ดูงานที่ค้าง + จำนวนวันที่เหลือก่อนเปิด แล้วบอก "วันนี้ควรโฟกัสอะไร" เรียงตามความสำคัญ เหมือนผู้จัดการเปิดร้านมือโปร เน้นงานที่บล็อกงานอื่นหรือเสี่ยงสุดถ้าช้า.
 ตอบกลับเป็น JSON เท่านั้น: {"summary":"สรุปสั้นๆ 1 ประโยค","lines":["งานที่ต้องทำวันนี้ (เรียงสำคัญ)","..."]} ใส่ lines 4-6 ข้อ กระชับ ภาษาไทย.`;
 
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
   const now = new Date();
   const days = Math.max(0, Math.ceil((OPEN.getTime() - now.getTime()) / 86400000));
 
-  const prompt = `วันนี้: ${now.toLocaleDateString('th-TH')} · เหลืออีก ~${days} วันก่อนเปิดร้าน (ศุกร์ 24 ก.ค. 2026).
+  const prompt = `วันนี้: ${now.toLocaleDateString('th-TH')} · เหลืออีก ~${days} วันก่อน soft opening (ศุกร์ 24 ก.ค. 2026).
 งานที่ค้างอยู่:
 ${PENDING.map((t, i) => `${i + 1}. ${t}`).join('\n')}
 
