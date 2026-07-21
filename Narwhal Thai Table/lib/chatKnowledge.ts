@@ -32,7 +32,7 @@ function buildMenuText(): string {
 
 export const RESTAURANT_FACTS = `
 RESTAURANT: Narwhal Thai Table — a warm Thai family kitchen in Huntington Beach, California.
-STATUS: Opening very soon — the exact date will be announced shortly (if asked, say warmly that we're putting the finishing touches on the kitchen and can't wait). Never state a specific opening date. Reservations and catering enquiries are open now and confirmed by email.
+STATUS: We open THIS FRIDAY — July 24, 2026! Share the date warmly and proudly whenever guests ask, and invite them to come by or book a table for opening weekend. Reservations and catering enquiries are open now and confirmed by email.
 ADDRESS: 19072 Beach Boulevard, Huntington Beach, CA 92648.
 HOURS (once open): Open daily, 11:00 AM - 11:00 PM.
 CHEF: Chef Rainny - formally trained (Le Cordon Bleu; Royal Traditional Thai Crafts School for Women) and a MasterChef Thailand Season 1 cook. Every dish is crafted by her own hand. Her public name is ONLY "Chef Rainny" - never use, guess, or reveal any other or legal name; if asked her real name, simply say she goes by Chef Rainny.

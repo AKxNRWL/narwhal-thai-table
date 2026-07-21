@@ -18,19 +18,19 @@
  * stopping the scroll and showing the first phrase only.
  */
 const LANGUAGES = [
-  'Opening Soon · Huntington Beach',
-  'เปิดเร็วๆ นี้ · ฮันติงตันบีช',
-  'Apertura suave · 20 de julio',
-  'Khai trương thử · 20 tháng 7',
-  '软开业 · 7月20日 / 軟開業 · 7月20日',
-  '소프트 오픈 · 7월 20일',
-  'Soft opening · Ika-20 ng Hulyo',
-  'ソフトオープン · 7月20日',
+  'Opening Friday, July 24 · Huntington Beach',
+  'เปิดศุกร์นี้ 24 ก.ค. · ฮันติงตันบีช',
+  'Abrimos el viernes 24 de julio',
+  'Khai trương thứ Sáu 24/7',
+  '7月24日(周五)开业 / 7月24日(週五)開業',
+  '7월 24일 금요일 오픈',
+  'Bukas sa Biyernes, Hulyo 24',
+  '7月24日(金)オープン',
 ];
 
 export default function ComingSoonTicker() {
   return (
-    <div className="cs-ticker" role="status" aria-label="Coming Soon — opening soon in Huntington Beach">
+    <div className="cs-ticker" role="status" aria-label="Opening Friday, July 24 in Huntington Beach">
       <div className="cs-ticker-track">
         {LANGUAGES.map((phrase, i) => (
           <span key={`a-${i}`} className="cs-ticker-item">{phrase}</span>
