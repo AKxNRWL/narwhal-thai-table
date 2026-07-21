@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import MapEmbed from '@/components/MapEmbed';
 
 export const metadata: Metadata = {
   title: 'Contact',
