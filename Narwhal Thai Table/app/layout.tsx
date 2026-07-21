@@ -12,21 +12,21 @@ export const metadata: Metadata = {
     default: 'Narwhal Thai Table · A Thai Family Table in Huntington Beach',
     template: '%s · Narwhal Thai Table',
   },
-  description: "A Thai family table on Beach Boulevard, Huntington Beach. Every dish hand-prepared by Chef Rainny, of MasterChef Thailand Season 1.",
+  description: "A Thai family table on Beach Boulevard, Huntington Beach — royal-court Thai recipes, made by hand. Soft opening Friday, July 24.",
   formatDetection: { telephone: false },
   openGraph: {
     type: 'website',
     siteName: 'Narwhal Thai Table',
     locale: 'en_US',
     title: 'Narwhal Thai Table · Huntington Beach',
-    description: 'A Thai family table on Beach Boulevard. Every dish by Chef Rainny, of MasterChef Thailand Season 1.',
+    description: 'A Thai family table on Beach Boulevard — royal-court Thai recipes, made by hand.',
     url: SITE_URL,
     images: [{ url: '/images/og-cover.jpg', width: 1200, height: 630, alt: 'Narwhal Thai Table — a Thai family feast in Huntington Beach' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Narwhal Thai Table · Huntington Beach',
-    description: 'A Thai family table on Beach Boulevard. Every dish by Chef Rainny, of MasterChef Thailand Season 1.',
+    description: 'A Thai family table on Beach Boulevard — royal-court Thai recipes, made by hand.',
     images: ['/images/og-cover.jpg'],
   },
   icons: {
@@ -82,7 +82,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 opens: '11:00',
                 closes: '23:00',
               }],
-              founder: { '@type': 'Person', name: 'Chef Rainny' },
+              // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):
+              // founder: { '@type': 'Person', name: 'Chef Rainny' },
               menu: `${SITE_URL}/menu`,
               acceptsReservations: `${SITE_URL}/contact/reservation`,
               // Filled from lib/site.ts the moment real values exist there.

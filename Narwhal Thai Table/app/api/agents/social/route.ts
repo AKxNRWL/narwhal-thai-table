@@ -17,12 +17,12 @@ function demoResult(topic: string): AgentResult {
   const items: AgentItem[] = [
     {
       title: 'Instagram',
-      body: `🌊 เปิดแล้วที่ Huntington Beach! Narwhal Thai Table — อาหารไทยตำรับชาววังโดยเชฟ Rainny\n${topic}\nจองโต๊ะวันนี้ 📍 19072 Beach Blvd`,
+      body: `🌊 เปิดแล้วที่ Huntington Beach! Narwhal Thai Table — อาหารไทยตำรับชาววัง ทำมือทุกจาน\n${topic}\nจองโต๊ะวันนี้ 📍 19072 Beach Blvd`,
       meta: 'ร่าง · รออนุมัติ · #NarwhalThai #HuntingtonBeach #ThaiFood',
     },
     {
       title: 'Facebook',
-      body: `Grand flavors, royal Thai roots 👑 เชฟ Rainny (MasterChef Thailand Top 10) นำตำรับชาววังมาที่ HB — ${topic} มากันเป็นกลุ่มได้เลย!`,
+      body: `Grand flavors, royal Thai roots 👑 ตำรับชาววังแท้ๆ มาถึง HB แล้ว — ${topic} มากันเป็นกลุ่มได้เลย!`,
       meta: 'ร่าง · รออนุมัติ',
     },
     {

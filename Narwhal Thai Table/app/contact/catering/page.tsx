@@ -4,7 +4,7 @@ import CateringForm from '@/components/CateringForm';
 
 export const metadata: Metadata = {
   title: 'Catering & Private Events',
-  description: 'Catering, buyouts and private events with Chef Rainny at Narwhal Thai Table.',
+  description: 'Catering, buyouts and private events at Narwhal Thai Table.',
 };
 
 export default function CateringPage() {

@@ -8,7 +8,7 @@ const GREETINGS = [
   "Hi, I'm Aileen — your host at Narwhal Thai Table. 🌿 Ask me about the menu, what to order, our hours, or book a table. What are you in the mood for?",
   "Sawasdee ka! 🙏 I'm Aileen, the host here at Narwhal Thai Table. Curious about a dish, our hours, or want me to save you a seat?",
   "Hey there — I'm Aileen, your Narwhal Thai Table host. 🐳 I can help you pick a dish, plan a visit, or book a table. Where shall we start?",
-  "Welcome in! I'm Aileen. Want a recommendation from Chef Rainny's menu, our hours, or a table booked? Just say the word. 🌿",
+  "Welcome in! I'm Aileen. Want a recommendation from our menu, our hours, or a table booked? Just say the word. 🌿",
   "So glad you stopped by — Aileen here, hosting at Narwhal Thai Table. Hungry for ideas, checking hours, or booking a table?",
   "Hi! Aileen, your host at Narwhal Thai Table. 🐳 Ask me anything about the menu or your visit — I can even pass a note to the team for you.",
 ];

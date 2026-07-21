@@ -31,8 +31,8 @@ export function StorySection() {
             <p>Narwhal Thai Table is our home table, opened wide. The curries are pounded by hand the way our grandmothers taught us. The fish comes off California boats. The smiles are real, because the people serving you are the same people who own the place.</p>
             <p style={{ color: 'var(--brass-deep)', fontStyle: 'italic' }}>Come hungry. Stay a while. You&apos;re family here.</p>
             <div className="about-stats">
-              <div className="stat"><div className="num">S1</div><div className="lbl">MasterChef Thailand</div></div>
-              <div className="stat"><div className="num">100%</div><div className="lbl">By Chef&apos;s Hand</div></div>
+              <div className="stat"><div className="num">1800s</div><div className="lbl">Royal-Court Roots</div></div>
+              <div className="stat"><div className="num">100%</div><div className="lbl">Made by Hand</div></div>
               <div className="stat"><div className="num">HB</div><div className="lbl">Our Hometown</div></div>
             </div>
           </FadeUp>
@@ -130,7 +130,7 @@ export function MenuPreviewSection() {
       <div className="container">
         <FadeUp className="section-head">
           <span className="label">What&apos;s Cooking</span>
-          <h2>Pull up a chair — <em>Chef Rainny&apos;s got something for you</em>.</h2>
+          <h2>Pull up a chair — <em>the kitchen&apos;s got something for you</em>.</h2>
           <p>Here&apos;s a taste of her signature plates. The full menu — thirteen categories from appetizers to dessert — lives on its own page.</p>
         </FadeUp>
 

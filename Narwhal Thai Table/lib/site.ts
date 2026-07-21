@@ -11,6 +11,13 @@
 
 export const SITE_URL = 'https://narwhalthaihb.com';
 
+/**
+ * Chef visibility switch. false = "hidden mode": the chef section, nav link,
+ * name mentions and metadata credits are hidden across the site (kept in code,
+ * nothing deleted). Flip to true for the grand-opening chef reveal.
+ */
+export const SHOW_CHEF = false;
+
 export type RestaurantInfo = {
   name: string;
   /** Display form, e.g. '+1 (657) 464-1214'. Empty = hidden everywhere. */

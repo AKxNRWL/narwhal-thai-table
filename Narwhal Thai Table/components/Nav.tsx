@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { SHOW_CHEF } from '@/lib/site';
 
 const NAV_LINKS = [
   { href: '/#story',       label: 'Our Story' },
-  { href: '/#chef',        label: 'The Chef' },
+  ...(SHOW_CHEF ? [{ href: '/#chef', label: 'The Chef' }] : []),
   { href: '/menu',         label: 'Menu' },
   { href: '/#experience',  label: 'Experience' },
   { href: '/play',         label: 'Play' },

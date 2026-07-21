@@ -84,7 +84,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             Come sit<br/>with us, <em>neighbor</em>.
           </h1>
           <p>
-            A Thai family kitchen on Beach Boulevard — where the recipes we grew up with meet the California coast we now call home. Every plate, by Chef Rainny&apos;s own hands. <strong>Soft opening Friday, July 24</strong> — come hungry, Huntington Beach.
+            A Thai family kitchen on Beach Boulevard — where recipes rooted in Thailand&apos;s royal-court tradition meet the California coast we now call home. <strong>Soft opening Friday, July 24</strong> — come hungry, Huntington Beach.
           </p>
           <div className="hero-cta">
             <Link href="/menu" className="btn-primary">

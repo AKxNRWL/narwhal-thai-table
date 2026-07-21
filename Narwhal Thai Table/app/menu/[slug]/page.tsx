@@ -152,7 +152,7 @@ function DishDetail({ dish }: { dish: Dish }) {
 
             {dish.story?.chefNote && (
               <div className="dish-chef-note">
-                <div className="who">— Chef Rainny</div>
+                <div className="who">— From our kitchen</div>
                 <p>&ldquo;{dish.story.chefNote}&rdquo;</p>
               </div>
             )}
@@ -160,7 +160,7 @@ function DishDetail({ dish }: { dish: Dish }) {
             {!dish.story && (
               <div className="dish-section">
                 <p style={{ color: 'var(--muted-dark)', fontStyle: 'italic' }}>
-                  Chef Rainny is still writing the story for this plate — it&apos;ll show up here soon. In the meantime, ask your server about the dish when you visit; she&apos;ll tell you herself.
+                  We&apos;re still writing the story for this plate — it&apos;ll show up here soon. In the meantime, ask your server about the dish when you visit.
                 </p>
               </div>
             )}

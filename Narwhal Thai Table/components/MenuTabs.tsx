@@ -96,7 +96,7 @@ export default function MenuTabs({ initial = 'appetizers' as CategoryId }: { ini
         );
       })}
 
-      <p className="menu-note">★ are Chef Rainny&apos;s signature creations. Dishes marked &ldquo;Choice of Protein&rdquo; are priced before protein — pick yours under Sides &amp; Protein (from +$2). Tell us about your allergies or spice level when you order — we&apos;ll cook it just for you.</p>
+      <p className="menu-note">★ are the house signature creations. Dishes marked &ldquo;Choice of Protein&rdquo; are priced before protein — pick yours under Sides &amp; Protein (from +$2). Tell us about your allergies or spice level when you order — we&apos;ll cook it just for you.</p>
     </>
   );
 }

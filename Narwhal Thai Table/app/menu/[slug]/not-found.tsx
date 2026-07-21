@@ -15,7 +15,7 @@ export default function NotFound() {
           fontFamily: 'var(--font-serif)', fontSize: 20, fontStyle: 'italic',
           color: 'var(--muted-dark)', marginBottom: 32,
         }}>
-          Maybe the link is old, or we&apos;ve renamed the dish. Take a look at the full menu — Chef Rainny probably has something even better for you.
+          Maybe the link is old, or we&apos;ve renamed the dish. Take a look at the full menu — our kitchen probably has something even better for you.
         </p>
         <Link href="/menu" className="btn-primary" style={{ color: 'var(--navy)' }}>See the full menu</Link>
       </div>
