@@ -131,7 +131,7 @@ export function MenuPreviewSection() {
         <FadeUp className="section-head">
           <span className="label">What&apos;s Cooking</span>
           <h2>Pull up a chair — <em>the kitchen&apos;s got something for you</em>.</h2>
-          <p>Here&apos;s a taste of her signature plates. The full menu — thirteen categories from appetizers to dessert — lives on its own page.</p>
+          <p>Here&apos;s a taste of the house signature plates. The full menu — thirteen categories from appetizers to dessert — lives on its own page.</p>
         </FadeUp>
 
         <FadeUp className="sig-grid">
