@@ -10,10 +10,10 @@ import { RESTAURANT, SITE_URL, socialUrls } from '@/lib/site';
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Narwhal Thai Table · A Thai Family Table in Huntington Beach',
+    default: 'Narwhal Thai Table · Thai Restaurant in Huntington Beach, CA',
     template: '%s · Narwhal Thai Table',
   },
-  description: "Three siblings, thirty years of restaurant life, one table on Beach Boulevard. Royal-court Thai recipes cooked fresh for every plate. Soft opening Friday, July 24 — Huntington Beach.",
+  description: "Family-run Thai restaurant in Huntington Beach — three siblings, thirty years of restaurant life, one table on Beach Boulevard. Royal-court Thai recipes cooked fresh for every plate. Soft opening Friday, July 24.",
   formatDetection: { telephone: false },
   openGraph: {
     type: 'website',
@@ -76,6 +76,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 addressRegion: 'CA',
                 postalCode: '92648',
                 addressCountry: 'US',
+              },
+              geo: {
+                '@type': 'GeoCoordinates',
+                latitude: 33.685691,
+                longitude: -117.988278,
               },
               openingHoursSpecification: [{
                 '@type': 'OpeningHoursSpecification',

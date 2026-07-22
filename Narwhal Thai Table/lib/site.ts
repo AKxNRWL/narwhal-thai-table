@@ -28,7 +28,7 @@ export type RestaurantInfo = {
 
 export const RESTAURANT: RestaurantInfo = {
   name: 'Narwhal Thai Table',
-  phone: '',
+  phone: '+1 (714) 378-6003',
   email: 'welcome@narwhalthaihb.com',
   address: {
     street: '19072 Beach Blvd',
