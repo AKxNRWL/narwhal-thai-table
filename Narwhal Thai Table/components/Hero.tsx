@@ -81,10 +81,10 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
         <div className="hero-text">
           <span className="label hero-coming-soon">Soft Opening Friday, July 24 · Huntington Beach</span>
           <h1 id="hero-title">
-            Come sit<br/>with us, <em>neighbor</em>.
+            From Siam&apos;s royal court<br/><em>to Huntington Beach</em>.
           </h1>
           <p>
-            Three siblings. Thirty years of restaurant life. Every recipe we&apos;ve ever loved, brought to Beach Boulevard and cooked fresh, plate by plate. <strong>Soft opening Friday, July 24</strong> — come hungry, Huntington Beach. Leave with more than dinner.
+            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>Soft opening Friday, July 24</strong> — come hungry, Huntington Beach. Leave with more than dinner.
           </p>
           <div className="hero-cta">
             <Link href="/menu" className="btn-primary">
