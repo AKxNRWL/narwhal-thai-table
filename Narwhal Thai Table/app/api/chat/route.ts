@@ -3,6 +3,7 @@ import { logChat } from '@/lib/chatLog';
 import { submitReservation, type ReservationInput } from '@/lib/reservation';
 import { submitMessage, type MessageInput } from '@/lib/message';
 import { submitOrder, type OrderInput, type OrderItem } from '@/lib/orders';
+import { submitCall } from '@/lib/calls';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -112,6 +113,24 @@ const ORDER_TOOL = {
   },
 } as const;
 
+// Tool: lets Aileen call a server to a dine-in table (soft-opening flow —
+// servers take every dine-in order at the table on the Toast handheld).
+const CALL_SERVER_TOOL = {
+  name: 'call_server',
+  description:
+    "Call a server over to this guest's table. Use when a seated dine-in guest is ready to order, wants the check, or needs anything physical (water, utensils, a box, help). The table number comes from the system automatically. A staff display lights up immediately with the table number — a server heads over right away.",
+  input_schema: {
+    type: 'object',
+    properties: {
+      reason: {
+        type: 'string',
+        description: 'Very short reason shown to staff, e.g. "ready to order", "check please", "water" (optional)',
+      },
+    },
+    required: [],
+  },
+} as const;
+
 async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null) {
   return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -130,13 +149,19 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
               type: 'text',
               text: /^togo$/i.test(table)
                 ? `GUEST CONTEXT: This guest scanned the TO-GO QR at the counter inside the restaurant. Take their TAKEOUT order in this chat (see TO-GO ORDERING). You MUST collect the guest's name for the order. They pay at the counter after ordering — the kitchen starts only after payment is confirmed.`
-                : `GUEST CONTEXT: This guest scanned the QR code at TABLE ${table} inside the restaurant. They are seated now — you may take their dine-in order in this chat (see DINE-IN ORDERING). Use table ${table}; no need to ask for it.`,
+                : `GUEST CONTEXT: This guest scanned the QR code at TABLE ${table} inside the restaurant. They are seated now. You do NOT take dine-in orders in chat (see DINE-IN below) — help them explore the menu in any language, and when they're ready to order or need anything, use the call_server tool to send a server to table ${table}. Never ask for their table number.`,
             }]
           : []),
       ],
-      // ORDER_TOOL exists ONLY for guests who scanned a table QR (server-verified ?t= param).
-      // Web visitors can claim any table in chat text - the tool simply isn't there for them.
-      tools: table ? [RESERVATION_TOOL, MESSAGE_TOOL, ORDER_TOOL] : [RESERVATION_TOOL, MESSAGE_TOOL],
+      // Tool availability is context-gated (server-verified ?t= param):
+      //   table QR  -> call_server (servers take dine-in orders on the handheld)
+      //   TO-GO QR  -> place_order_request (counter pickup flow)
+      //   plain web -> reservation + message only
+      tools: table
+        ? /^togo$/i.test(table)
+          ? [RESERVATION_TOOL, MESSAGE_TOOL, ORDER_TOOL]
+          : [RESERVATION_TOOL, MESSAGE_TOOL, CALL_SERVER_TOOL]
+        : [RESERVATION_TOOL, MESSAGE_TOOL],
       messages,
     }),
   });
@@ -296,6 +321,19 @@ export async function POST(req: Request) {
               ? `SUCCESS. To-go order request ${result.id} received under the name "${guestName}". Warmly tell the guest: please pay at the counter now — the kitchen starts as soon as the team confirms payment, and their order will be packed to go and called out by name when ready.`
               : `SUCCESS. Order request ${result.id} received for table ${tbl}. Warmly tell the guest: a team member will come to the table to confirm the order shortly, the kitchen starts right after that approval, and payment is with the team — never in chat.`
             : 'FAILED to submit. Apologize briefly and ask the guest to wave a team member over to take the order directly.';
+        }
+      } else if (toolUse.name === 'call_server') {
+        // SECURITY: table comes ONLY from the server-verified QR context.
+        const tbl = table && !/^togo$/i.test(table) ? String(table).slice(0, 12) : '';
+        if (!tbl) {
+          resultText =
+            'FAILED: no verified table context. Calling a server only works from the QR card on a table. Kindly suggest the guest wave a team member over.';
+        } else {
+          const input = (toolUse.input ?? {}) as { reason?: string };
+          const result = await submitCall(tbl, input.reason ? String(input.reason) : undefined);
+          resultText = result.ok
+            ? `SUCCESS. The staff display now shows table ${tbl} calling. Warmly tell the guest a server is on the way to their table right now — vary the phrasing, keep it delightful. The server takes the order (or helps) right at the table; payment is always with the team.`
+            : 'FAILED to reach the staff display. Apologize briefly and suggest the guest wave a team member over.';
         }
       } else {
         resultText = 'Unknown tool; ignore and answer normally.';
