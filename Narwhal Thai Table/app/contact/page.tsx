@@ -42,7 +42,7 @@ export default function ContactHubPage() {
           <div className="contact-visit-info">
             <span className="label">Find us</span>
             <h3>Visit the table</h3>
-            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Open daily &middot; 11:00&nbsp;AM &ndash; 11:00&nbsp;PM</p>
+            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Beta hours &middot; 2:00&nbsp;PM &ndash; 11:00&nbsp;PM daily</p>
           </div>
           <MapEmbed />
         </div>

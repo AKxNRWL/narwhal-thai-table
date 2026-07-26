@@ -85,7 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               openingHoursSpecification: [{
                 '@type': 'OpeningHoursSpecification',
                 dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-                opens: '11:00',
+                opens: '14:00', // beta hours — restore 11:00 at soft opening
                 closes: '23:00',
               }],
               // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):

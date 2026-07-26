@@ -248,9 +248,9 @@ export function ReserveSection() {
             <h2>We saved a seat <em>for you</em>.</h2>
             <p>It&apos;s a cozy room, and we like it that way. Send a note or fill out the form — your table will be ready before you are. Birthdays, anniversaries, the big family night out: tell us what the evening means, and we&apos;ll treat it that way.</p>
             <div className="hours-block">
-              <h4>Hours of Service</h4>
-              <div className="hours-row"><span className="day">Monday – Sunday</span><span className="time">11:00 AM — 11:00 PM</span></div>
-              <div className="hours-row"><span className="day">Open Every Day</span><span className="time">Lunch through Dinner</span></div>
+              <h4>Hours of Service — Beta</h4>
+              <div className="hours-row"><span className="day">Monday – Sunday</span><span className="time">2:00 PM — 11:00 PM</span></div>
+              <div className="hours-row"><span className="day">Full hours from soft opening</span><span className="time">11:00 AM — 11:00 PM</span></div>
             </div>
           </FadeUp>
           <FadeUp className="reserve-form-wrap">
@@ -302,7 +302,7 @@ export function ContactSection() {
           <div className="contact-visit-info">
             <span className="label">Find us</span>
             <h3>Visit the table</h3>
-            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Open daily &middot; 11:00&nbsp;AM &ndash; 11:00&nbsp;PM</p>
+            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Beta hours &middot; 2:00&nbsp;PM &ndash; 11:00&nbsp;PM daily</p>
           </div>
           <MapEmbed />
         </FadeUp>
