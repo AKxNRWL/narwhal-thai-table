@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { SHOW_CHEF } from '@/lib/site';
+import { SHOW_CHEF, ORDER_ONLINE_URL } from '@/lib/site';
 
 const NAV_LINKS = [
   { href: '/#story',       label: 'Our Story' },
@@ -80,7 +80,19 @@ export default function Nav() {
           ))}
         </div>
 
-        <Link href="/contact/reservation" className="btn-reserve desktop-only">Save a Seat</Link>
+        <div className="nav-ctas desktop-only">
+          {ORDER_ONLINE_URL && (
+            <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-reserve">
+              Order Online
+            </a>
+          )}
+          <Link
+            href="/contact/reservation"
+            className={`btn-reserve${ORDER_ONLINE_URL ? ' btn-ghost' : ''}`}
+          >
+            Save a Seat
+          </Link>
+        </div>
 
         <button
           className="nav-toggle"
@@ -110,7 +122,22 @@ export default function Nav() {
             {l.label}
           </Link>
         ))}
-        <Link href="/contact/reservation" className="drawer-cta" onClick={() => setOpen(false)}>
+        {ORDER_ONLINE_URL && (
+          <a
+            href={ORDER_ONLINE_URL}
+            target="_blank"
+            rel="noopener"
+            className="drawer-cta"
+            onClick={() => setOpen(false)}
+          >
+            Order Online
+          </a>
+        )}
+        <Link
+          href="/contact/reservation"
+          className={`drawer-cta${ORDER_ONLINE_URL ? ' drawer-cta-ghost' : ''}`}
+          onClick={() => setOpen(false)}
+        >
           Save a Seat
         </Link>
       </div>

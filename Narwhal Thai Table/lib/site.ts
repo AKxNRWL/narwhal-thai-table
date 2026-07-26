@@ -12,6 +12,14 @@
 export const SITE_URL = 'https://narwhalthaihb.com';
 
 /**
+ * Toast Online Ordering — the hosted pickup-ordering page for the restaurant.
+ * Orders placed here go straight into Toast POS (no re-keying).
+ * Empty string = not live yet: every "Order Online" button and the Aileen
+ * knowledge line are hidden automatically, so we never ship a dead link.
+ */
+export const ORDER_ONLINE_URL = 'https://order.toasttab.com/online/narwhal-thai-table-19072-beach-blvd-unita-b';
+
+/**
  * Chef visibility switch. false = "hidden mode": the chef section, nav link,
  * name mentions and metadata credits are hidden across the site (kept in code,
  * nothing deleted). Flip to true for the grand-opening chef reveal.

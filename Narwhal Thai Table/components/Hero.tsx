@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
+import { ORDER_ONLINE_URL } from '@/lib/site';
 
 /**
  * Hero structure (z-stack inside the .hero section):
@@ -87,7 +88,13 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>We&apos;re in beta:</strong> racing to open our doors, but we care too much about your first visit to rush it. Our soft opening moves to a date we can stand behind — very soon, Huntington Beach.
           </p>
           <div className="hero-cta">
-            <Link href="/menu" className="btn-primary">
+            {ORDER_ONLINE_URL && (
+              <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-primary">
+                Order Online
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            )}
+            <Link href="/menu" className={ORDER_ONLINE_URL ? 'btn-secondary' : 'btn-primary'}>
               Peek at the Menu
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </Link>
