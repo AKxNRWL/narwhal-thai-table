@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import MediaFrame from '@/components/MediaFrame';
 import { DISHES, getDishBySlug, type Dish } from '@/lib/dishes';
 import { getCategoryLabel } from '@/lib/categories';
+import { ORDER_ONLINE_URL } from '@/lib/site';
 
 type Params = { slug: string };
 
@@ -166,10 +167,17 @@ function DishDetail({ dish }: { dish: Dish }) {
             )}
 
             <div className="dish-section" style={{ marginTop: 64 }}>
-              <Link href="/contact/reservation" className="btn-primary" style={{ color: 'var(--navy)' }}>
-                Save a Seat
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </Link>
+              {ORDER_ONLINE_URL ? (
+                <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-primary" style={{ color: 'var(--navy)' }}>
+                  Order Online
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              ) : (
+                <Link href="/contact/reservation" className="btn-primary" style={{ color: 'var(--navy)' }}>
+                  Save a Seat
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </Link>
+              )}
             </div>
           </div>
         </div>
