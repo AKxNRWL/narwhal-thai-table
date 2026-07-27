@@ -82,12 +82,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 latitude: 33.685691,
                 longitude: -117.988278,
               },
-              openingHoursSpecification: [{
-                '@type': 'OpeningHoursSpecification',
-                dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-                opens: '14:00', // beta hours — restore 11:00 at soft opening
-                closes: '23:00',
-              }],
+              // openingHoursSpecification intentionally omitted during beta test —
+              // hours are not final yet; Google reads live hours from the Business
+              // Profile instead. Restore at soft opening (11:00–23:00 daily):
+              // openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification',
+              //   dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+              //   opens: '11:00', closes: '23:00' }],
               // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):
               // founder: { '@type': 'Person', name: 'Chef Rainny' },
               menu: `${SITE_URL}/menu`,

@@ -80,12 +80,12 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
 
       <div className="hero-inner">
         <div className="hero-text">
-          <span className="label hero-coming-soon">Now in Beta · Open Daily 2–11 PM</span>
+          <span className="label hero-coming-soon">Now in Beta · Huntington Beach</span>
           <h1 id="hero-title">
             From Siam&apos;s royal court<br/><em>to Huntington Beach</em>.
           </h1>
           <p>
-            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>We&apos;re in beta:</strong> the door is open daily 2:00–11:00 PM while we fine-tune every plate. We care too much about your first visit to rush it — so our official soft opening moves to a date we can stand behind, very soon. Come be one of the first at the table, Huntington Beach.
+            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>We&apos;re in beta test:</strong> refining every dish and every detail of service for the best experience we can possibly give, before our Soft Opening and Grand Opening. Come taste, be part of it, and grow with us, Huntington Beach.
           </p>
           <div className="hero-cta">
             {ORDER_ONLINE_URL && (
