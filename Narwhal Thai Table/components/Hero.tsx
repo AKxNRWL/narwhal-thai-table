@@ -80,7 +80,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
 
       <div className="hero-inner">
         <div className="hero-text">
-          <span className="label hero-coming-soon">Now in Beta · Huntington Beach</span>
+          <span className="label hero-coming-soon">Now in Beta Test · Huntington Beach</span>
           <h1 id="hero-title">
             From Siam&apos;s royal court<br/><em>to Huntington Beach</em>.
           </h1>
