@@ -13,7 +13,7 @@ function dishFlags(d: Dish): string {
   return f.length ? ` [${f.join('; ')}]` : '';
 }
 
-function buildMenuText(): string {
+export function buildMenuText(): string {
   return CATEGORIES.map((cat) => {
     const items = DISHES.filter((d) => d.category === cat.id);
     if (!items.length) return '';

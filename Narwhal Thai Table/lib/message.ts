@@ -23,6 +23,8 @@ export type MessageInput = {
   message: string;
   topic?: string;
   phone?: string;
+  /** Where the message came from — 'chat' (website) or 'phone' (Aileen call line). */
+  source?: 'chat' | 'phone';
 };
 
 export type MessageResult = { ok: boolean; id: string; emailed: boolean; stored: boolean };
@@ -34,14 +36,15 @@ const clip = (s: string | undefined, n = 200): string =>
 
 export async function submitMessage(input: MessageInput): Promise<MessageResult> {
   const id = 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const via = input.source === 'phone' ? 'Aileen phone line' : 'Aileen chat';
   const rec = {
     id,
     ts: new Date().toISOString(),
-    source: 'aileen-chat',
+    source: input.source === 'phone' ? 'aileen-phone' : 'aileen-chat',
     name: clip(input.name, 80),
     email: clip(input.email, 120),
     phone: clip(input.phone, 40),
-    topic: clip(input.topic, 80) || 'Message via Aileen chat',
+    topic: clip(input.topic, 80) || `Message via ${via}`,
     message: clip(input.message, 1200),
   };
 
@@ -53,7 +56,7 @@ export async function submitMessage(input: MessageInput): Promise<MessageResult>
       email: rec.email,
       phone: rec.phone,
       topic: rec.topic,
-      message: rec.message + ' — Sent via Aileen chat',
+      message: rec.message + ` — Sent via ${via}`,
     });
     const res = await fetch(`${SITE}/__forms.html`, {
       method: 'POST',

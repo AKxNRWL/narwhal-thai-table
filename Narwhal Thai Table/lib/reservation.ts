@@ -28,6 +28,8 @@ export type ReservationInput = {
   time: string;
   party_size: string;
   notes?: string;
+  /** Where the booking came from — 'chat' (website) or 'phone' (Aileen call line). */
+  source?: 'chat' | 'phone';
 };
 
 export type ReservationResult = { ok: boolean; id: string; emailed: boolean; stored: boolean };
@@ -40,10 +42,11 @@ const clip = (s: string | undefined, n = 200): string =>
 
 export async function submitReservation(input: ReservationInput): Promise<ReservationResult> {
   const id = 'r_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const via = input.source === 'phone' ? 'Aileen phone line' : 'Aileen chat';
   const rec = {
     id,
     ts: new Date().toISOString(),
-    source: 'aileen-chat',
+    source: input.source === 'phone' ? 'aileen-phone' : 'aileen-chat',
     first_name: clip(input.first_name, 80),
     last_name: clip(input.last_name, 80),
     phone: clip(input.phone, 40),
@@ -66,7 +69,7 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
       date: rec.date,
       time: rec.time,
       party_size: rec.party_size,
-      notes: (rec.notes ? rec.notes + ' — ' : '') + 'Booked via Aileen chat',
+      notes: (rec.notes ? rec.notes + ' — ' : '') + `Booked via ${via}`,
     });
     const res = await fetch(`${SITE}/__forms.html`, {
       method: 'POST',

@@ -8,3 +8,6 @@ node_modules/
 !.env.example
 
 _utf8_test.txt
+
+# sync-orderline output (local prompt snapshots)
+scripts/agent-prompt.*.txt
