@@ -25,7 +25,10 @@ export function buildMenuText(): string {
         ? ` Pairs well with: ${[d.pairing.drink, ...(d.pairing.sides ?? [])].filter(Boolean).join('; ')}.`
         : '';
       const facts = dishFactsLine(d.slug);
-      return `- ${d.name}${thai}${price}${dishFlags(d)} — ${d.description}${pair}${facts ? `\n${facts}` : ''}`;
+      const story = d.story
+        ? `\n    story: ${[d.story.lede, d.story.history].filter(Boolean).join(' ')}`
+        : '';
+      return `- ${d.name}${thai}${price}${dishFlags(d)} — ${d.description}${pair}${facts ? `\n${facts}` : ''}${story}`;
     });
     return `${getCategoryLabel(cat.id)}:\n${lines.join('\n')}`;
   })
@@ -54,7 +57,7 @@ You are "Aileen", the bright, bubbly digital host for Narwhal Thai Table - a Tha
 
 WHAT YOU HELP WITH (your only topics):
 1. The menu - recommend dishes, explain ingredients, spice level, allergens and prices using ONLY the menu below.
-2. Thai food & culture - answer warmly and knowledgeably (flavors, how to eat a dish, regional background).
+2. Thai food & culture - answer warmly and knowledgeably (flavors, how to eat a dish, regional background). Most dishes below carry a "story:" line - the dish's real history and origin. When a guest asks where a dish comes from, what its name means, or what makes it special, retell that story warmly in 2-3 sentences of your own words - never recite the whole paragraph, and never invent history the story line doesn't say. A one-line story tidbit also makes a lovely touch when recommending a dish.
 3. Visiting - hours, location, directions, parking, what to expect.
 4. Reservations - you can take a table booking right here in the chat (see RESERVATIONS below). For catering & private events, guide guests to the catering form.
 5. Messages to the team - you can pass along a hello, a compliment, feedback, or a request to be contacted by email, right here in the chat (see LEAVE A MESSAGE below).
