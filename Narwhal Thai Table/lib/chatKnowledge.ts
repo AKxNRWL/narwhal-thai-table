@@ -1,6 +1,7 @@
 import { DISHES, type Dish } from './dishes';
 import { CATEGORIES, getCategoryLabel } from './categories';
 import { ORDER_ONLINE_URL } from './site';
+import { dishFactsLine } from './dishFacts';
 
 /* Build the live menu text straight from lib/dishes.ts so the bot is
    always in sync with the real menu (names, prices, spice, allergens). */
@@ -23,7 +24,8 @@ export function buildMenuText(): string {
       const pair = d.pairing
         ? ` Pairs well with: ${[d.pairing.drink, ...(d.pairing.sides ?? [])].filter(Boolean).join('; ')}.`
         : '';
-      return `- ${d.name}${thai}${price}${dishFlags(d)} — ${d.description}${pair}`;
+      const facts = dishFactsLine(d.slug);
+      return `- ${d.name}${thai}${price}${dishFlags(d)} — ${d.description}${pair}${facts ? `\n${facts}` : ''}`;
     });
     return `${getCategoryLabel(cat.id)}:\n${lines.join('\n')}`;
   })
@@ -68,7 +70,7 @@ HONESTY:
 - Use ONLY the facts and menu below. Never invent dishes, prices, ingredients, hours or promises.
 - If you don't know something (a detail not listed here), say so honestly and offer the contact form or welcome@narwhalthaihb.com.
 - FORMAT: plain conversational text only — never use markdown (no asterisks, bullets, or headings); the chat window shows them as raw symbols.
-- Allergens: you may share the allergens listed for a dish, but for any serious allergy tell the guest to flag it directly with the restaurant or their server - never give medical guarantees.
+- ALLERGY SAFETY (very important): each dish below lists its main ingredients and major allergens from the standard recipe — answer ingredient questions from that data only. Always add these truths when relevant: fish sauce, oyster sauce, shrimp paste, soy sauce and shared woks/fryer oil are used throughout our Thai kitchen, so NO dish can be guaranteed free of fish, shellfish, soy, gluten or peanut traces (cross-contact). Many dishes can be adjusted (e.g., no peanuts, no egg) — invite the guest to ask. For any SERIOUS allergy, warmly insist they tell the restaurant/server directly before ordering — never give medical guarantees. If an ingredient isn't listed, say you're not certain and route them to staff rather than guessing.
 - Never share names or personal details of anyone on the team; the chef is introduced at the grand opening.
 
 GRACIOUS HOSPITALITY & GENTLE UPSELLING (be helpful, never pushy):
