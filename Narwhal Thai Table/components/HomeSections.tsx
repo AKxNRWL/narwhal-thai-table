@@ -301,7 +301,7 @@ export function ContactSection() {
           <div className="contact-visit-info">
             <span className="label">Find us</span>
             <h3>Visit the table</h3>
-            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Now in beta test &middot; come be part of it</p>
+            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM<br/>Now in beta test &middot; come be part of it</p>
           </div>
           <MapEmbed />
         </FadeUp>
