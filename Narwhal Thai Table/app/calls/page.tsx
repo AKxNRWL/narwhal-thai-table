@@ -17,6 +17,13 @@ import { useEffect, useRef, useState } from 'react';
 type CallRecord = { id: string; table: string; reason?: string; ts: string; status: 'waiting' | 'acked' };
 
 const NAVY = '#0B1F33', CREAM = '#F5F0E6', GOLD = '#B08D3C', LINE = 'rgba(245,240,230,0.16)';
+
+// Patio QR cards carry P1-P5, indoor tables carry 1-13. Show the zone as the
+// small caption so a server reads "พาทิโอ / 3" instead of a cryptic "P3".
+const PATIO = /^p-?(\d+)$/i;
+const zoneOf = (t: string) => (PATIO.test(t) ? 'พาทิโอ' : 'โต๊ะ');
+const seatOf = (t: string) => t.replace(PATIO, '$1');
+
 const btn: React.CSSProperties = { padding: '10px 18px', borderRadius: 999, border: `1px solid ${LINE}`, cursor: 'pointer', fontSize: 14, fontWeight: 600 };
 
 export default function CallsPage() {
@@ -125,8 +132,8 @@ export default function CallsPage() {
                         borderRadius: 18, padding: '26px 18px', cursor: 'pointer', color: CREAM,
                         textAlign: 'center', transition: 'transform 0.1s',
                       }}>
-                      <div style={{ fontSize: 13, letterSpacing: '0.18em', opacity: 0.65 }}>โต๊ะ</div>
-                      <div style={{ fontSize: 64, fontWeight: 800, lineHeight: 1.1, color: urgent ? '#ffb49e' : '#e7c987' }}>{c.table}</div>
+                      <div style={{ fontSize: 13, letterSpacing: '0.18em', opacity: 0.65 }}>{zoneOf(c.table)}</div>
+                      <div style={{ fontSize: 64, fontWeight: 800, lineHeight: 1.1, color: urgent ? '#ffb49e' : '#e7c987' }}>{seatOf(c.table)}</div>
                       {c.reason && <div style={{ fontSize: 14, margin: '6px 0 2px', opacity: 0.85 }}>{c.reason}</div>}
                       <div style={{ fontSize: 14, opacity: 0.7, marginTop: 6 }}>รอมา {waitedLabel(c.ts)}</div>
                       <div style={{ marginTop: 14, fontSize: 13, background: urgent ? '#e2694f' : GOLD, color: NAVY, borderRadius: 999, padding: '8px 0', fontWeight: 700 }}>
@@ -144,7 +151,7 @@ export default function CallsPage() {
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {recent.map((c) => (
                     <span key={c.id} style={{ fontSize: 13, opacity: 0.5, border: `1px solid ${LINE}`, borderRadius: 999, padding: '6px 14px' }}>
-                      โต๊ะ {c.table} ✓
+                      {zoneOf(c.table)} {seatOf(c.table)} ✓
                     </span>
                   ))}
                 </div>

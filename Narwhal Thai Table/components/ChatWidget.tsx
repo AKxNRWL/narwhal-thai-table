@@ -17,6 +17,23 @@ function pickGreeting(): string {
   return GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
 }
 
+// A guest who scanned a table QR is already seated. Turn the raw ?t= value into
+// something we can say out loud: "7" -> table 7, "P3" -> patio table 3,
+// anything else (spare cards) -> a neutral "your table".
+function seatLabel(t: string): string {
+  if (/^\d+$/.test(t)) return `table ${t}`;
+  const patio = t.match(/^p-?(\d+)$/i);
+  if (patio) return `patio table ${patio[1]}`;
+  return 'your table';
+}
+
+// Dine-in flow (since Jul 21 2026): Aileen guides the menu but does NOT take
+// dine-in orders in chat — servers take every order at the table on the Toast
+// handheld, so the greeting steers to the call_server tool instead.
+function tableGreeting(t: string): string {
+  return `Sawasdee ka — welcome to ${seatLabel(t)}! 🐳 I'm Aileen, your host. Browse the menu just up there and I'll help you pick. When you're ready to order — or need anything at all — just tell me and I'll send a server right over. What are you in the mood for?`;
+}
+
 // Little narwhal mark (monochrome, inherits currentColor).
 function NarwhalIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
@@ -67,8 +84,8 @@ export default function ChatWidget() {
             content:
               table && /^togo$/i.test(table)
                 ? "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!"
-                : table && /^\d+$/.test(table)
-                ? `Sawasdee ka, table ${table}! 🐳 I'm Aileen — browse the menu up there and order right here in the chat. What are you in the mood for?`
+                : table
+                ? tableGreeting(table)
                 : pickGreeting(),
           }]
         : m,

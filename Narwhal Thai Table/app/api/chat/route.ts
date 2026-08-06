@@ -131,6 +131,14 @@ const CALL_SERVER_TOOL = {
   },
 } as const;
 
+// The ?t= value from the QR card, in words. Indoor cards carry 1-13, patio
+// cards carry P1-P5, spare cards anything else. Phrasing only — the raw value
+// is what reaches the staff screens.
+function seatLabel(t: string): string {
+  const patio = t.match(/^p-?(\d+)$/i);
+  return patio ? `PATIO TABLE ${patio[1]}` : `TABLE ${t}`;
+}
+
 async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null) {
   return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -149,7 +157,7 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
               type: 'text',
               text: /^togo$/i.test(table)
                 ? `GUEST CONTEXT: This guest scanned the TO-GO QR at the counter inside the restaurant. Take their TAKEOUT order in this chat (see TO-GO ORDERING). You MUST collect the guest's name for the order. They pay at the counter after ordering — the kitchen starts only after payment is confirmed.`
-                : `GUEST CONTEXT: This guest scanned the QR code at TABLE ${table} inside the restaurant. They are seated now. You do NOT take dine-in orders in chat (see DINE-IN below) — help them explore the menu in any language, and when they're ready to order or need anything, use the call_server tool to send a server to table ${table}. Never ask for their table number.`,
+                : `GUEST CONTEXT: This guest scanned the QR code at ${seatLabel(table)}${/^p-?\d+$/i.test(table) ? ' on the outdoor patio' : ' inside the restaurant'}. They are seated now. You do NOT take dine-in orders in chat (see DINE-IN below) — help them explore the menu in any language, and when they're ready to order or need anything, use the call_server tool to send a server to their table. Never ask for their table number.`,
             }]
           : []),
       ],
