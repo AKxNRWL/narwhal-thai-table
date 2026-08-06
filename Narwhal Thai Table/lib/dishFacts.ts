@@ -30,7 +30,7 @@ export const DISH_FACTS: Record<string, DishFacts> = {
   'vegetable-spring-rolls': { key: 'cabbage, carrot, glass noodles, wheat wrapper, fried', allergens: ['gluten (wrapper)', 'soy'] },
   'calamari': { key: 'squid rings, seasoned batter, fried', allergens: ['shellfish (squid)', 'gluten (batter)'] },
   'shrimp-tempura': { key: 'shrimp, light tempura batter, fried', allergens: ['shellfish (shrimp)', 'gluten (batter)', 'egg'] },
-  'fresh-spring-rolls': { key: 'rice paper, glass noodles, ground chicken & tofu, lettuce, cucumber, carrot, basil', allergens: ['soy (tofu)', 'peanut (dipping sauce - ask staff)'] },
+  'fresh-spring-rolls': { key: 'rice paper, crisp lettuce, cucumber, mint, carrot - vegetables only; served with peanut dipping sauce', allergens: ['peanut (dipping sauce)'] },
   'house-salad': { key: 'mixed greens, cucumber, tomato, dried cranberries, Thai dressing', allergens: ['fish (dressing)'] },
   'rib-eye-salad': { key: 'grilled rib-eye, mixed greens, radish, green onion, mint, Thai herb dressing', allergens: ['fish (dressing)'] },
 

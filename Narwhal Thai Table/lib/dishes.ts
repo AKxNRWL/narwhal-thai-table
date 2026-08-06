@@ -101,7 +101,7 @@ export const DISHES: Dish[] = [
       history: "Tempura began with Portuguese traders and missionaries in 16th-century Nagasaki, who fried seafood during the fasting days they called quattuor tempora. Japanese cooks refined the technique into lace — ice-cold batter, barely mixed, flash-fried so it shatters rather than crunches. Thai kitchens, forever in love with a good fryer, adopted it long ago. Sweet, snappy shrimp; batter like frost.",
     }  },
   { slug: 'fresh-spring-rolls', name: 'Fresh Spring Rolls', thai: 'ปอเปี๊ยะสด', category: 'appetizers',
-    description: "Cool rice-paper rolls — glass noodles, ground chicken & tofu, crisp lettuce, cucumber, carrot & basil.", price: '$12',
+    description: "Cool rice-paper rolls of crisp lettuce, cucumber, mint & carrot — creamy peanut sauce for dipping.", price: '$12',
     story: {
       lede: "The cool customer — no fryer, no crunch, just a fresh bundle eaten like a secret.",
       history: "Fresh rolls are Southeast Asia's answer to a salad you can hold: rice paper stretched around glass noodles, herbs and cool vegetables. They flow from the same popiah tradition that produced the fried roll — the fresh version simply refuses the oil. Ours bundles ground chicken and tofu with crisp lettuce, cucumber, carrot and basil: the calm, cold counterpoint to a spicy table.",
