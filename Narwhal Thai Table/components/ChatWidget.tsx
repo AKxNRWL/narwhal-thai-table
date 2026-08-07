@@ -47,6 +47,10 @@ function NarwhalIcon({ className, style }: { className?: string; style?: React.C
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
+  // Mobile only: minimized = half-height bottom sheet so the menu shows behind.
+  // Opens full height; the — button in the header shrinks it, focusing the
+  // input (typing) expands it back.
+  const [mini, setMini] = useState(false);
   const [table, setTable] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: GREETINGS[0] }]);
   const [input, setInput] = useState('');
@@ -75,6 +79,7 @@ export default function ChatWidget() {
 
   useEffect(() => {
     if (!open) return;
+    setMini(false); // always reopen at full height
     inputRef.current?.focus();
     // Fresh greeting each time the panel opens (only before any conversation).
     setMsgs((m) =>
@@ -174,7 +179,7 @@ export default function ChatWidget() {
       </button>
 
       <div
-        className={`nara-panel${open ? ' is-open' : ''}`}
+        className={`nara-panel${open ? ' is-open' : ''}${mini ? ' is-mini' : ''}`}
         role="dialog"
         aria-label="Chat with Narwhal Thai Table"
         aria-hidden={!open}
@@ -185,6 +190,19 @@ export default function ChatWidget() {
             <div className="nara-head-name">Aileen</div>
             <div className="nara-head-sub">Narwhal Thai Table &middot; host</div>
           </div>
+          <button
+            className="nara-mini"
+            type="button"
+            aria-label={mini ? 'Expand chat to full screen' : 'Minimize chat to browse the menu'}
+            onClick={() => {
+              if (!mini) inputRef.current?.blur(); // drop the keyboard so the sheet really shrinks
+              setMini(!mini);
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {mini ? <path d="M6 14l6-6 6 6" /> : <path d="M5 17h14" />}
+            </svg>
+          </button>
           <button className="nara-close" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
             <span aria-hidden="true">&times;</span>
           </button>
@@ -208,6 +226,7 @@ export default function ChatWidget() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
+            onFocus={() => setMini(false)}
             placeholder="Ask about the menu, hours, booking&hellip;"
             maxLength={1500}
             aria-label="Type your message"
