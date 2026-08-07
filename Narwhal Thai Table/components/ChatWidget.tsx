@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { serviceWindowNow } from '@/lib/serviceHours';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -27,22 +28,10 @@ function seatLabel(t: string): string {
   return 'your table';
 }
 
-// Best-effort mirror of the server-side stale-link gate (route.ts): a table QR
-// opened outside service hours is a replay from an old visit, so don't greet
-// them as seated. Gate 11:00–23:00 PT (official hours Aug 1 2026: Mon–Fri
-// 11:30–22:00, Sat–Sun 12:00–22:00, +margins); the server enforces the real
-// rules — this only picks the right greeting.
-function serviceOpenNow(): boolean {
-  try {
-    const h = Number(
-      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', hourCycle: 'h23' })
-        .format(new Date()),
-    );
-    return h >= 11 && h < 23;
-  } catch {
-    return true;
-  }
-}
+// Outside service hours a table QR is a saved link from an old visit, so
+// don't greet them as seated. The schedule lives in lib/serviceHours.ts
+// (shared with the server gate in route.ts — the server enforces the real
+// rules, this only picks the right greeting).
 
 const CLOSED_GREETING =
   "Sawasdee ka! 🌙 We're closed at the moment, but I'm still here — happy to help with menu questions, booking a table, or leaving a note for the team. What can I do for you?";
@@ -218,7 +207,7 @@ export default function ChatWidget() {
         ? [{
             role: 'assistant',
             content:
-              table && !serviceOpenNow()
+              table && !serviceWindowNow()
                 ? CLOSED_GREETING
                 : table && /^togo$/i.test(table)
                 ? TOGO_GREETING

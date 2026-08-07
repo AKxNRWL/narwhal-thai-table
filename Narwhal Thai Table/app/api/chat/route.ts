@@ -4,6 +4,7 @@ import { submitReservation, type ReservationInput } from '@/lib/reservation';
 import { submitMessage, type MessageInput } from '@/lib/message';
 import { submitOrder, type OrderInput, type OrderItem } from '@/lib/orders';
 import { submitCall } from '@/lib/calls';
+import { serviceWindowNow } from '@/lib/serviceHours';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -141,23 +142,8 @@ function seatLabel(t: string): string {
 
 // Printed QR links live forever in a guest's phone history — reopened from home
 // they would still claim a table. Outside service hours that is certainly a
-// replay, so the seated/to-go context is dropped server-side.
-// Official hours (Aug 1 2026, matches GBP/Yelp/Apple Maps & layout.tsx JSON-LD):
-// Mon–Fri 11:30–22:00, Sat–Sun 12:00–22:00 PT. Gate = 11:00–23:00 daily —
-// 30 min pre-open margin + 1h after-close grace. Update when hours change.
-const OPEN_H = 11; // gate opens 11 AM PT (earliest service 11:30)
-const END_H = 23; // 10 PM close + 1h grace
-function tableLinkActive(): boolean {
-  try {
-    const h = Number(
-      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', hourCycle: 'h23' })
-        .format(new Date()),
-    );
-    return h >= OPEN_H && h < END_H;
-  } catch {
-    return true; // if the clock lookup ever fails, fail open (normal behavior)
-  }
-}
+// replay, so the seated/to-go context is dropped server-side. The actual
+// schedule lives in ONE place: lib/serviceHours.ts (per-day open/close).
 
 async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null, staleClosed = false) {
   return fetch('https://api.anthropic.com/v1/messages', {
@@ -237,7 +223,7 @@ export async function POST(req: Request) {
     typeof body.table === 'string' && /^[a-zA-Z0-9-]{1,12}$/.test(body.table) ? body.table : null;
   // Stale-link guard: a table QR opened outside service hours is a replay from
   // an old visit — keep the chat, drop the seated context and table tools.
-  const staleClosed = Boolean(table) && !tableLinkActive();
+  const staleClosed = Boolean(table) && !serviceWindowNow();
 
   const incoming = Array.isArray(body.messages) ? body.messages : [];
   const userTurns = incoming.filter((m) => m.role === 'user').length;
