@@ -142,10 +142,11 @@ function seatLabel(t: string): string {
 // Printed QR links live forever in a guest's phone history — reopened from home
 // they would still claim a table. Outside service hours that is certainly a
 // replay, so the seated/to-go context is dropped server-side.
-// Beta hours 2PM–11PM PT daily, +1h grace for guests finishing a chat after
-// close. Update OPEN_H / END_H when the schedule changes.
-const OPEN_H = 14; // 2 PM PT
-const END_H = 24; // 11 PM close + 1h grace
+// Official hours (Aug 1 2026, matches GBP/Yelp/Apple Maps & layout.tsx JSON-LD):
+// Mon–Fri 11:30–22:00, Sat–Sun 12:00–22:00 PT. Gate = 11:00–23:00 daily —
+// 30 min pre-open margin + 1h after-close grace. Update when hours change.
+const OPEN_H = 11; // gate opens 11 AM PT (earliest service 11:30)
+const END_H = 23; // 10 PM close + 1h grace
 function tableLinkActive(): boolean {
   try {
     const h = Number(
@@ -175,7 +176,7 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
           ? [{
               type: 'text',
               text: staleClosed
-                ? `GUEST CONTEXT: This person opened a table/to-go QR link (${seatLabel(table)}) but the restaurant is CLOSED right now (open daily 2–11 PM) — almost certainly a saved link from an earlier visit, so they are NOT seated and there is no one to send. Never claim they are at a table and never promise a server. Warmly mention we're closed at the moment and share the hours, then help like a website visitor: menu questions, a reservation request or a message to the team right here in chat, Order Online for pickup during open hours, or phone (714) 378-6003.`
+                ? `GUEST CONTEXT: This person opened a table/to-go QR link (${seatLabel(table)}) but the restaurant is CLOSED right now — almost certainly a saved link from an earlier visit, so they are NOT seated and there is no one to send. Never claim they are at a table and never promise a server. Warmly mention we're closed at the moment (follow the HOURS rule — do not quote exact hours), then help like a website visitor: menu questions, a reservation request or a message to the team right here in chat, Order Online for pickup during open hours, or phone (714) 378-6003.`
                 : /^togo$/i.test(table)
                 ? `GUEST CONTEXT: This guest scanned the TO-GO QR at the counter inside the restaurant. Take their TAKEOUT order in this chat (see TO-GO ORDERING). You MUST collect the guest's name for the order. They pay at the counter after ordering — the kitchen starts only after payment is confirmed. If the conversation suggests they are NOT at the counter (ordering from home, or for another day), do not take the order in chat — suggest phoning (714) 378-6003 or the Order Online button instead.`
                 : `GUEST CONTEXT: This guest scanned the QR code at ${seatLabel(table)}${/^p-?\d+$/i.test(table) ? ' on the outdoor patio' : ' inside the restaurant'}. They are seated now. You do NOT take dine-in orders in chat (see DINE-IN below) — help them explore the menu in any language, and when they're ready to order or need anything, use the call_server tool to send a server to their table. Never ask for their table number. If the conversation suggests they are NO LONGER at the restaurant (talking about a past meal, asking to order from home or for later), do NOT use call_server — there is no one at that table to serve; offer phone (714) 378-6003, the Order Online button, or a reservation instead.`,

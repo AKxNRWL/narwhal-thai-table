@@ -29,22 +29,23 @@ function seatLabel(t: string): string {
 
 // Best-effort mirror of the server-side stale-link gate (route.ts): a table QR
 // opened outside service hours is a replay from an old visit, so don't greet
-// them as seated. Beta hours 2PM–11PM PT (+1h grace); the server enforces the
-// real rules — this only picks the right greeting.
+// them as seated. Gate 11:00–23:00 PT (official hours Aug 1 2026: Mon–Fri
+// 11:30–22:00, Sat–Sun 12:00–22:00, +margins); the server enforces the real
+// rules — this only picks the right greeting.
 function serviceOpenNow(): boolean {
   try {
     const h = Number(
       new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', hourCycle: 'h23' })
         .format(new Date()),
     );
-    return h >= 14;
+    return h >= 11 && h < 23;
   } catch {
     return true;
   }
 }
 
 const CLOSED_GREETING =
-  "Sawasdee ka! 🌙 We're closed at the moment — open daily 2–11 PM. I'm Aileen, and I'm still happy to help: menu questions, booking a table, or leaving a note for the team. What can I do for you?";
+  "Sawasdee ka! 🌙 We're closed at the moment, but I'm still here — happy to help with menu questions, booking a table, or leaving a note for the team. What can I do for you?";
 
 const TOGO_GREETING =
   "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!";
@@ -64,6 +65,33 @@ function todayPT(): string {
     return new Date().toDateString();
   }
 }
+// Geo guard (fail-open). If the guest ALLOWS location and the fix clearly puts
+// them away from the restaurant, the seat context is dropped — someone who
+// saved a photo of the QR card can't sit "at a table" from home. Denied
+// prompts, timeouts and vague fixes (indoor GPS, laptop IP-geo) change
+// nothing, so real guests at the table are never punished for tapping Block.
+// Coordinates are compared in memory and discarded — nothing stored or sent.
+const REST_LAT = 33.685691; // 19072 Beach Blvd — layout.tsx JSON-LD geo
+const REST_LNG = -117.988278;
+const NEAR_RADIUS_M = 400; // generous: indoor GPS drifts
+const MAX_ACCURACY_M = 1500; // fixes vaguer than this can't be judged
+function metersFromRestaurant(lat: number, lng: number): number {
+  const R = 6371000;
+  const rad = (x: number) => (x * Math.PI) / 180;
+  const dLat = rad(lat - REST_LAT);
+  const dLng = rad(lng - REST_LNG);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(REST_LAT)) * Math.cos(rad(lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+function clearlyFarFromRestaurant(lat: number, lng: number, accuracy: number): boolean {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || !Number.isFinite(accuracy)) return false;
+  if (accuracy > MAX_ACCURACY_M) return false;
+  // Even the nearest edge of the accuracy circle is outside the radius.
+  return metersFromRestaurant(lat, lng) - accuracy > NEAR_RADIUS_M;
+}
+
 function readSeat(): SeatRec | null {
   try {
     const r = JSON.parse(localStorage.getItem(SEAT_KEY) || 'null') as SeatRec | null;
@@ -131,6 +159,34 @@ export default function ChatWidget() {
       /* no-op */
     }
   }, []);
+
+  // Geo guard: one non-blocking location request while in table mode. Only a
+  // confident "far away" answer drops the seat — see clearlyFarFromRestaurant.
+  useEffect(() => {
+    if (!table) return;
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+    let alive = true;
+    try {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          if (!alive) return;
+          const { latitude, longitude, accuracy } = pos.coords;
+          if (clearlyFarFromRestaurant(latitude, longitude, accuracy)) {
+            setTable(null); // not at the restaurant — continue as web-visitor Aileen
+          }
+        },
+        () => {
+          /* denied / unavailable — fail open */
+        },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+      );
+    } catch {
+      /* fail open */
+    }
+    return () => {
+      alive = false;
+    };
+  }, [table]);
 
   // Phones bring this page back from memory hours or days later without a
   // reload (bfcache restore / tab switch). Whenever the page becomes visible
