@@ -46,6 +46,33 @@ function serviceOpenNow(): boolean {
 const CLOSED_GREETING =
   "Sawasdee ka! 🌙 We're closed at the moment — open daily 2–11 PM. I'm Aileen, and I'm still happy to help: menu questions, booking a table, or leaving a note for the team. What can I do for you?";
 
+const TOGO_GREETING =
+  "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!";
+
+// A table QR link is only trusted for a while after the scan. The stamp lives
+// in localStorage and slides forward while the guest keeps chatting, so a long
+// dinner never expires mid-meal — but the same link reopened from history /
+// a restored tab hours later falls back to plain web-visitor Aileen, with a
+// one-tap reconnect chip for guests who really are back at the table.
+const SEAT_WINDOW_MS = 2 * 60 * 60 * 1000; // 2h since last activity
+const SEAT_KEY = 'nara-seat';
+type SeatRec = { t: string; ts: number };
+function readSeat(): SeatRec | null {
+  try {
+    const r = JSON.parse(localStorage.getItem(SEAT_KEY) || 'null') as SeatRec | null;
+    return r && typeof r.t === 'string' && typeof r.ts === 'number' ? r : null;
+  } catch {
+    return null;
+  }
+}
+function stampSeat(t: string, ts: number) {
+  try {
+    localStorage.setItem(SEAT_KEY, JSON.stringify({ t, ts }));
+  } catch {
+    /* private mode etc. — worst case the link just keeps working like before */
+  }
+}
+
 // Dine-in flow (since Jul 21 2026): Aileen guides the menu but does NOT take
 // dine-in orders in chat — servers take every order at the table on the Toast
 // handheld, so the greeting steers to the call_server tool instead.
@@ -71,6 +98,9 @@ export default function ChatWidget() {
   // input (typing) expands it back.
   const [mini, setMini] = useState(false);
   const [table, setTable] = useState<string | null>(null);
+  // ?t= value whose seat window lapsed — chat runs in web-visitor mode with a
+  // reconnect chip until the guest confirms they're really at the table again.
+  const [expiredTable, setExpiredTable] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: GREETINGS[0] }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -83,11 +113,20 @@ export default function ChatWidget() {
   }, [msgs, open, loading]);
 
   // Table QR (/menu?t=5): remember the table and open the chat after a beat.
+  // First sight of a table stamps the seat window; the same link seen again
+  // after 2h idle is a history replay, not a scan.
   useEffect(() => {
     try {
       const t = new URLSearchParams(window.location.search).get('t');
       if (t && /^[a-zA-Z0-9-]{1,12}$/.test(t)) {
-        setTable(t);
+        const rec = readSeat();
+        const now = Date.now();
+        if (rec && rec.t === t && now - rec.ts > SEAT_WINDOW_MS) {
+          setExpiredTable(t);
+        } else {
+          stampSeat(t, rec && rec.t === t ? rec.ts : now);
+          setTable(t);
+        }
         const id = window.setTimeout(() => setOpen(true), 900);
         return () => window.clearTimeout(id);
       }
@@ -95,6 +134,26 @@ export default function ChatWidget() {
       /* no-op */
     }
   }, []);
+
+  // Phones bring this page back from memory days later without a reload
+  // (bfcache restore / tab switch). Re-check the seat window whenever the page
+  // becomes visible again and quietly drop to web-visitor mode if it lapsed.
+  useEffect(() => {
+    const recheck = () => {
+      if (document.visibilityState !== 'visible' || !table) return;
+      const rec = readSeat();
+      if (!rec || rec.t !== table || Date.now() - rec.ts > SEAT_WINDOW_MS) {
+        setExpiredTable(table);
+        setTable(null);
+      }
+    };
+    window.addEventListener('pageshow', recheck);
+    document.addEventListener('visibilitychange', recheck);
+    return () => {
+      window.removeEventListener('pageshow', recheck);
+      document.removeEventListener('visibilitychange', recheck);
+    };
+  }, [table]);
 
   useEffect(() => {
     if (!open) return;
@@ -109,7 +168,7 @@ export default function ChatWidget() {
               table && !serviceOpenNow()
                 ? CLOSED_GREETING
                 : table && /^togo$/i.test(table)
-                ? "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!"
+                ? TOGO_GREETING
                 : table
                 ? tableGreeting(table)
                 : pickGreeting(),
@@ -147,9 +206,23 @@ export default function ChatWidget() {
     };
   }, []);
 
+  // Guest confirms they're really back at the table — re-arm the seat window.
+  function reconnectSeat() {
+    if (!expiredTable) return;
+    stampSeat(expiredTable, Date.now());
+    setTable(expiredTable);
+    setExpiredTable(null);
+    setMsgs([{
+      role: 'assistant',
+      content: /^togo$/i.test(expiredTable) ? TOGO_GREETING : tableGreeting(expiredTable),
+    }]);
+    inputRef.current?.focus();
+  }
+
   async function send() {
     const text = input.trim();
     if (!text || loading) return;
+    if (table) stampSeat(table, Date.now()); // sliding window — an active chat never expires
     const next: Msg[] = [...msgs, { role: 'user', content: text }];
     setMsgs(next);
     setInput('');
@@ -239,6 +312,14 @@ export default function ChatWidget() {
             </div>
           )}
         </div>
+
+        {expiredTable && serviceOpenNow() && (
+          <button className="nara-rearm" type="button" onClick={reconnectSeat}>
+            {/^togo$/i.test(expiredTable)
+              ? 'At the to-go counter right now? Tap to reconnect 🥡'
+              : `Seated at ${seatLabel(expiredTable)} right now? Tap to reconnect 🪑`}
+          </button>
+        )}
 
         <div className="nara-input-row">
           <input
