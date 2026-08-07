@@ -139,7 +139,26 @@ function seatLabel(t: string): string {
   return patio ? `PATIO TABLE ${patio[1]}` : `TABLE ${t}`;
 }
 
-async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null) {
+// Printed QR links live forever in a guest's phone history — reopened from home
+// they would still claim a table. Outside service hours that is certainly a
+// replay, so the seated/to-go context is dropped server-side.
+// Beta hours 2PM–11PM PT daily, +1h grace for guests finishing a chat after
+// close. Update OPEN_H / END_H when the schedule changes.
+const OPEN_H = 14; // 2 PM PT
+const END_H = 24; // 11 PM close + 1h grace
+function tableLinkActive(): boolean {
+  try {
+    const h = Number(
+      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', hourCycle: 'h23' })
+        .format(new Date()),
+    );
+    return h >= OPEN_H && h < END_H;
+  } catch {
+    return true; // if the clock lookup ever fails, fail open (normal behavior)
+  }
+}
+
+async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null, staleClosed = false) {
   return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -155,9 +174,11 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
         ...(table
           ? [{
               type: 'text',
-              text: /^togo$/i.test(table)
-                ? `GUEST CONTEXT: This guest scanned the TO-GO QR at the counter inside the restaurant. Take their TAKEOUT order in this chat (see TO-GO ORDERING). You MUST collect the guest's name for the order. They pay at the counter after ordering — the kitchen starts only after payment is confirmed.`
-                : `GUEST CONTEXT: This guest scanned the QR code at ${seatLabel(table)}${/^p-?\d+$/i.test(table) ? ' on the outdoor patio' : ' inside the restaurant'}. They are seated now. You do NOT take dine-in orders in chat (see DINE-IN below) — help them explore the menu in any language, and when they're ready to order or need anything, use the call_server tool to send a server to their table. Never ask for their table number.`,
+              text: staleClosed
+                ? `GUEST CONTEXT: This person opened a table/to-go QR link (${seatLabel(table)}) but the restaurant is CLOSED right now (open daily 2–11 PM) — almost certainly a saved link from an earlier visit, so they are NOT seated and there is no one to send. Never claim they are at a table and never promise a server. Warmly mention we're closed at the moment and share the hours, then help like a website visitor: menu questions, a reservation request or a message to the team right here in chat, Order Online for pickup during open hours, or phone (714) 378-6003.`
+                : /^togo$/i.test(table)
+                ? `GUEST CONTEXT: This guest scanned the TO-GO QR at the counter inside the restaurant. Take their TAKEOUT order in this chat (see TO-GO ORDERING). You MUST collect the guest's name for the order. They pay at the counter after ordering — the kitchen starts only after payment is confirmed. If the conversation suggests they are NOT at the counter (ordering from home, or for another day), do not take the order in chat — suggest phoning (714) 378-6003 or the Order Online button instead.`
+                : `GUEST CONTEXT: This guest scanned the QR code at ${seatLabel(table)}${/^p-?\d+$/i.test(table) ? ' on the outdoor patio' : ' inside the restaurant'}. They are seated now. You do NOT take dine-in orders in chat (see DINE-IN below) — help them explore the menu in any language, and when they're ready to order or need anything, use the call_server tool to send a server to their table. Never ask for their table number. If the conversation suggests they are NO LONGER at the restaurant (talking about a past meal, asking to order from home or for later), do NOT use call_server — there is no one at that table to serve; offer phone (714) 378-6003, the Order Online button, or a reservation instead.`,
             }]
           : []),
       ],
@@ -165,7 +186,7 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
       //   table QR  -> call_server (servers take dine-in orders on the handheld)
       //   TO-GO QR  -> place_order_request (counter pickup flow)
       //   plain web -> reservation + message only
-      tools: table
+      tools: table && !staleClosed
         ? /^togo$/i.test(table)
           ? [RESERVATION_TOOL, MESSAGE_TOOL, ORDER_TOOL]
           : [RESERVATION_TOOL, MESSAGE_TOOL, CALL_SERVER_TOOL]
@@ -213,6 +234,9 @@ export async function POST(req: Request) {
 
   const table =
     typeof body.table === 'string' && /^[a-zA-Z0-9-]{1,12}$/.test(body.table) ? body.table : null;
+  // Stale-link guard: a table QR opened outside service hours is a replay from
+  // an old visit — keep the chat, drop the seated context and table tools.
+  const staleClosed = Boolean(table) && !tableLinkActive();
 
   const incoming = Array.isArray(body.messages) ? body.messages : [];
   const userTurns = incoming.filter((m) => m.role === 'user').length;
@@ -237,7 +261,7 @@ export async function POST(req: Request) {
   const lastUserText = typeof lastUser?.content === 'string' ? lastUser.content : '';
 
   try {
-    let r = await callAnthropic(key, apiMessages, table);
+    let r = await callAnthropic(key, apiMessages, table, staleClosed);
     if (!r.ok) {
       const detail = await r.text();
       console.error('Anthropic API error', r.status, detail);
@@ -353,7 +377,7 @@ export async function POST(req: Request) {
         content: [{ type: 'tool_result', tool_use_id: toolUse.id, content: resultText }],
       });
 
-      r = await callAnthropic(key, apiMessages, table);
+      r = await callAnthropic(key, apiMessages, table, staleClosed);
       if (!r.ok) {
         const detail = await r.text();
         console.error('Anthropic API error (post-tool)', r.status, detail);

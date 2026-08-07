@@ -27,6 +27,25 @@ function seatLabel(t: string): string {
   return 'your table';
 }
 
+// Best-effort mirror of the server-side stale-link gate (route.ts): a table QR
+// opened outside service hours is a replay from an old visit, so don't greet
+// them as seated. Beta hours 2PM–11PM PT (+1h grace); the server enforces the
+// real rules — this only picks the right greeting.
+function serviceOpenNow(): boolean {
+  try {
+    const h = Number(
+      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', hourCycle: 'h23' })
+        .format(new Date()),
+    );
+    return h >= 14;
+  } catch {
+    return true;
+  }
+}
+
+const CLOSED_GREETING =
+  "Sawasdee ka! 🌙 We're closed at the moment — open daily 2–11 PM. I'm Aileen, and I'm still happy to help: menu questions, booking a table, or leaving a note for the team. What can I do for you?";
+
 // Dine-in flow (since Jul 21 2026): Aileen guides the menu but does NOT take
 // dine-in orders in chat — servers take every order at the table on the Toast
 // handheld, so the greeting steers to the call_server tool instead.
@@ -87,7 +106,9 @@ export default function ChatWidget() {
         ? [{
             role: 'assistant',
             content:
-              table && /^togo$/i.test(table)
+              table && !serviceOpenNow()
+                ? CLOSED_GREETING
+                : table && /^togo$/i.test(table)
                 ? "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!"
                 : table
                 ? tableGreeting(table)
