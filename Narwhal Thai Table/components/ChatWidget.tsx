@@ -49,14 +49,21 @@ const CLOSED_GREETING =
 const TOGO_GREETING =
   "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!";
 
-// A table QR link is only trusted for a while after the scan. The stamp lives
-// in localStorage and slides forward while the guest keeps chatting, so a long
-// dinner never expires mid-meal — but the same link reopened from history /
-// a restored tab hours later falls back to plain web-visitor Aileen, with a
-// one-tap reconnect chip for guests who really are back at the table.
+// Every page load of ?t=N counts as a fresh scan — guests rescan the card each
+// visit and the clock simply restarts. The stamp tracks this seat's LAST
+// ACTIVITY: a lingering tab that comes back after 2h idle, or on a different
+// service day, quietly becomes plain web-visitor Aileen. No reconnect UI —
+// scanning the card again is the way back to table mode.
 const SEAT_WINDOW_MS = 2 * 60 * 60 * 1000; // 2h since last activity
 const SEAT_KEY = 'nara-seat';
-type SeatRec = { t: string; ts: number };
+type SeatRec = { t: string; ts: number; d: string };
+function todayPT(): string {
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(new Date());
+  } catch {
+    return new Date().toDateString();
+  }
+}
 function readSeat(): SeatRec | null {
   try {
     const r = JSON.parse(localStorage.getItem(SEAT_KEY) || 'null') as SeatRec | null;
@@ -65,9 +72,9 @@ function readSeat(): SeatRec | null {
     return null;
   }
 }
-function stampSeat(t: string, ts: number) {
+function stampSeat(t: string) {
   try {
-    localStorage.setItem(SEAT_KEY, JSON.stringify({ t, ts }));
+    localStorage.setItem(SEAT_KEY, JSON.stringify({ t, ts: Date.now(), d: todayPT() }));
   } catch {
     /* private mode etc. — worst case the link just keeps working like before */
   }
@@ -98,9 +105,6 @@ export default function ChatWidget() {
   // input (typing) expands it back.
   const [mini, setMini] = useState(false);
   const [table, setTable] = useState<string | null>(null);
-  // ?t= value whose seat window lapsed — chat runs in web-visitor mode with a
-  // reconnect chip until the guest confirms they're really at the table again.
-  const [expiredTable, setExpiredTable] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: GREETINGS[0] }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -113,20 +117,13 @@ export default function ChatWidget() {
   }, [msgs, open, loading]);
 
   // Table QR (/menu?t=5): remember the table and open the chat after a beat.
-  // First sight of a table stamps the seat window; the same link seen again
-  // after 2h idle is a history replay, not a scan.
+  // Every load restarts the seat clock — rescanning the card always works.
   useEffect(() => {
     try {
       const t = new URLSearchParams(window.location.search).get('t');
       if (t && /^[a-zA-Z0-9-]{1,12}$/.test(t)) {
-        const rec = readSeat();
-        const now = Date.now();
-        if (rec && rec.t === t && now - rec.ts > SEAT_WINDOW_MS) {
-          setExpiredTable(t);
-        } else {
-          stampSeat(t, rec && rec.t === t ? rec.ts : now);
-          setTable(t);
-        }
+        stampSeat(t);
+        setTable(t);
         const id = window.setTimeout(() => setOpen(true), 900);
         return () => window.clearTimeout(id);
       }
@@ -135,15 +132,15 @@ export default function ChatWidget() {
     }
   }, []);
 
-  // Phones bring this page back from memory days later without a reload
-  // (bfcache restore / tab switch). Re-check the seat window whenever the page
-  // becomes visible again and quietly drop to web-visitor mode if it lapsed.
+  // Phones bring this page back from memory hours or days later without a
+  // reload (bfcache restore / tab switch). Whenever the page becomes visible
+  // again, drop the seat context if it idled past the window OR the service
+  // day changed — the lingering tab quietly continues as web-visitor Aileen.
   useEffect(() => {
     const recheck = () => {
       if (document.visibilityState !== 'visible' || !table) return;
       const rec = readSeat();
-      if (!rec || rec.t !== table || Date.now() - rec.ts > SEAT_WINDOW_MS) {
-        setExpiredTable(table);
+      if (!rec || rec.t !== table || Date.now() - rec.ts > SEAT_WINDOW_MS || rec.d !== todayPT()) {
         setTable(null);
       }
     };
@@ -206,23 +203,10 @@ export default function ChatWidget() {
     };
   }, []);
 
-  // Guest confirms they're really back at the table — re-arm the seat window.
-  function reconnectSeat() {
-    if (!expiredTable) return;
-    stampSeat(expiredTable, Date.now());
-    setTable(expiredTable);
-    setExpiredTable(null);
-    setMsgs([{
-      role: 'assistant',
-      content: /^togo$/i.test(expiredTable) ? TOGO_GREETING : tableGreeting(expiredTable),
-    }]);
-    inputRef.current?.focus();
-  }
-
   async function send() {
     const text = input.trim();
     if (!text || loading) return;
-    if (table) stampSeat(table, Date.now()); // sliding window — an active chat never expires
+    if (table) stampSeat(table); // sliding window — an active chat never expires
     const next: Msg[] = [...msgs, { role: 'user', content: text }];
     setMsgs(next);
     setInput('');
@@ -312,14 +296,6 @@ export default function ChatWidget() {
             </div>
           )}
         </div>
-
-        {expiredTable && serviceOpenNow() && (
-          <button className="nara-rearm" type="button" onClick={reconnectSeat}>
-            {/^togo$/i.test(expiredTable)
-              ? 'At the to-go counter right now? Tap to reconnect 🥡'
-              : `Seated at ${seatLabel(expiredTable)} right now? Tap to reconnect 🪑`}
-          </button>
-        )}
 
         <div className="nara-input-row">
           <input

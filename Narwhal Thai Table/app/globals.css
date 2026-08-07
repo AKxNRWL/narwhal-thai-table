@@ -1381,12 +1381,6 @@ section{padding-block:clamp(52px,8vw,112px);padding-inline:48px;}
 .nara-send:disabled{ opacity:.45; cursor:default; }
 .nara-send svg{ width:18px; height:18px; }
 .nara-foot{ padding:0 14px 12px; font-size:10.5px; color:rgba(245,240,230,0.42); text-align:center; }
-/* Reconnect chip — shown when a table-QR seat window has lapsed (stale link). */
-.nara-rearm{ margin:0 12px 4px; padding:10px 14px; border-radius:999px;
-  background:rgba(200,162,78,0.13); border:1px dashed rgba(200,162,78,0.5);
-  color:var(--brass-light); font-size:13.5px; font-family:inherit; cursor:pointer;
-  transition:background .25s ease; }
-.nara-rearm:hover{ background:rgba(200,162,78,0.22); }
 
 @media (max-width:760px){
   /* Bottom sheet on phones. Opens FULL height (easier to type & read); the —
