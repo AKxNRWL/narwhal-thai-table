@@ -16,3 +16,9 @@
   from = "/os"
   to = "/os.html"
   status = 200
+
+# Allow brand/marketing images to be fetched cross-origin (e.g. for posting tools)
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
