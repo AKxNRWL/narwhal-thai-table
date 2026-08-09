@@ -349,16 +349,50 @@ nav.site-nav.scrolled{padding:14px 48px;background:rgba(245,240,230,0.96);}
 }
 .hero-text .label{color:var(--brass-light);margin-bottom:32px;display:inline-flex;align-items:center;gap:14px;}
 .hero-text .label::before{content:'';width:36px;height:1px;background:var(--brass);}
-/* Coming Soon — slightly hotter brass + pulsing dot before the line */
-.hero-text .label.hero-coming-soon{color:var(--brass-light);}
+/* Soft Opening — gold neon-sign glow: warm lit core + layered brass halos,
+   breathing slowly like a tube sign in a beach-town window. */
+.hero-text .label.hero-coming-soon{
+  color:#FFF0CC;
+  text-shadow:
+    0 0 3px rgba(255,240,204,0.95),
+    0 0 9px rgba(227,197,129,0.85),
+    0 0 20px rgba(200,162,78,0.6),
+    0 0 38px rgba(200,162,78,0.35);
+  animation:neonBreathe 3.4s ease-in-out infinite;
+}
+.hero-text .label.hero-coming-soon::before{
+  background:var(--brass-light);
+  box-shadow:0 0 6px rgba(227,197,129,0.9),0 0 14px rgba(200,162,78,0.5);
+}
 .hero-text .label.hero-coming-soon::after{
   content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--brass-light);
+  background:#FFF0CC;
+  box-shadow:0 0 8px rgba(255,240,204,0.9),0 0 16px rgba(200,162,78,0.7);
   animation:comingSoonPulse 2.4s ease-in-out infinite;
+}
+@keyframes neonBreathe{
+  0%,100%{
+    text-shadow:
+      0 0 3px rgba(255,240,204,0.85),
+      0 0 8px rgba(227,197,129,0.7),
+      0 0 16px rgba(200,162,78,0.45),
+      0 0 30px rgba(200,162,78,0.22);
+  }
+  50%{
+    text-shadow:
+      0 0 4px rgba(255,240,204,1),
+      0 0 11px rgba(227,197,129,0.95),
+      0 0 24px rgba(200,162,78,0.7),
+      0 0 46px rgba(200,162,78,0.42);
+  }
 }
 @keyframes comingSoonPulse{
   0%,100%{opacity:0.4;transform:scale(0.85);}
-  50%{opacity:1;transform:scale(1.15);box-shadow:0 0 12px var(--brass);}
+  50%{opacity:1;transform:scale(1.15);box-shadow:0 0 12px var(--brass),0 0 24px rgba(200,162,78,0.6);}
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-text .label.hero-coming-soon{animation:none;}
+  .hero-text .label.hero-coming-soon::after{animation:none;}
 }
 .hero-text h1{
   font-family:var(--font-display);
