@@ -248,8 +248,8 @@ export function ReserveSection() {
             <h2>We saved a seat <em>for you</em>.</h2>
             <p>It&apos;s a cozy room, and we like it that way. Send a note or fill out the form — your table will be ready before you are. Birthdays, anniversaries, the big family night out: tell us what the evening means, and we&apos;ll treat it that way.</p>
             <div className="hours-block">
-              <h4>Now in Beta Test</h4>
-              <div className="hours-row"><span className="day">Refining every dish &amp; every detail of service — before our Soft Opening and Grand Opening. Come taste, and grow with us, Huntington Beach.</span></div>
+              <h4>Soft Opening — Sunday, August 9</h4>
+              <div className="hours-row"><span className="day">Thank you for waiting, Huntington Beach — we&apos;re ready to serve you. Doors open Sunday at 12:00 PM. Come hungry, come as a neighbor.</span></div>
             </div>
           </FadeUp>
           <FadeUp className="reserve-form-wrap">
@@ -301,7 +301,7 @@ export function ContactSection() {
           <div className="contact-visit-info">
             <span className="label">Find us</span>
             <h3>Visit the table</h3>
-            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM<br/>Now in beta test &middot; come be part of it</p>
+            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM<br/>Soft Opening Sunday, August 9 &middot; thank you for waiting</p>
           </div>
           <MapEmbed />
         </FadeUp>

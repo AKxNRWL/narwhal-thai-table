@@ -18,19 +18,19 @@
  * stopping the scroll and showing the first phrase only.
  */
 const LANGUAGES = [
-  'Now in Beta Testing — soft opening very soon · Huntington Beach',
-  'ช่วง Beta Test ทดลองระบบ — soft opening เร็วๆ นี้ · ฮันติงตันบีช',
-  'En prueba beta — soft opening muy pronto',
-  'Đang thử nghiệm beta — soft opening rất sớm',
-  '试营业测试中 · 即将正式迎客 / 試營業測試中 · 即將正式迎客',
-  '베타 테스트 중 — 소프트 오픈 곧 시작',
-  'Beta testing — soft opening sa lalong madaling panahon',
-  'ベータテスト中 · ソフトオープンまもなく',
+  'Soft Opening — Sunday, August 9 · Thank you for waiting, Huntington Beach',
+  'Soft Opening อาทิตย์ 9 ส.ค.นี้ — ขอบคุณที่รอกันนะคะ · ฮันติงตันบีช',
+  'Soft Opening — domingo 9 de agosto · Gracias por esperar',
+  'Soft Opening — Chủ nhật 9/8 · Cảm ơn bạn đã chờ đợi',
+  '8月9日（周日）正式迎客 · 感谢等待 / 8月9日（週日）正式迎客 · 感謝等待',
+  '8월 9일 일요일 소프트 오픈 — 기다려 주셔서 감사합니다',
+  'Soft Opening — Linggo, Agosto 9 · Salamat sa paghihintay',
+  '8月9日（日）ソフトオープン · お待たせいたしました',
 ];
 
 export default function ComingSoonTicker() {
   return (
-    <div className="cs-ticker" role="status" aria-label="Now in beta testing — soft opening very soon in Huntington Beach">
+    <div className="cs-ticker" role="status" aria-label="Soft opening Sunday, August 9 — thank you for waiting, Huntington Beach">
       <div className="cs-ticker-track">
         {LANGUAGES.map((phrase, i) => (
           <span key={`a-${i}`} className="cs-ticker-item">{phrase}</span>
