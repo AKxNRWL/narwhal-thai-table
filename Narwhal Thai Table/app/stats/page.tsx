@@ -80,6 +80,7 @@ const big: React.CSSProperties = {
 };
 
 const str = (r: Rec, k: string): string => (typeof r[k] === 'string' ? (r[k] as string) : '');
+const bool = (r: Rec, k: string): boolean => r[k] === true;
 function fmtDate(iso: string) {
   try {
     return new Date(iso).toLocaleString();
@@ -99,6 +100,10 @@ export default function StatsPage() {
   const [copied, setCopied] = useState('');
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemMsg, setRedeemMsg] = useState('');
+  // Reservation confirm state
+  const [resvBusy, setResvBusy] = useState('');
+  const [resvMsg, setResvMsg] = useState<Record<string, string>>({});
+  const [resvNote, setResvNote] = useState<Record<string, string>>({});
 
   const loadData = useCallback(async (): Promise<boolean> => {
     const r = await fetch('/api/owner/data', { credentials: 'same-origin', cache: 'no-store' });
@@ -153,6 +158,36 @@ export default function StatsPage() {
       /* ignore */
     }
     setData(null);
+  }
+
+  /* ── การจอง: กดยืนยัน แล้วลูกค้าได้เมล "โต๊ะยืนยันแล้ว" ───────────────── */
+  async function resvAction(id: string, action: 'confirm' | 'unconfirm', resend = false) {
+    setResvBusy(id);
+    setResvMsg((m) => ({ ...m, [id]: '' }));
+    try {
+      const r = await fetch('/api/owner/reservations', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ action, id, resend, note: (resvNote[id] || '').trim() }),
+      });
+      const j = (await r.json()) as { ok: boolean; emailed?: boolean; mailError?: string; error?: string };
+      if (!j.ok) {
+        setResvMsg((m) => ({ ...m, [id]: '❌ ' + (j.error || 'ไม่สำเร็จ') }));
+      } else if (action === 'unconfirm') {
+        setResvMsg((m) => ({ ...m, [id]: 'ย้อนกลับเป็นรอยืนยันแล้ว' }));
+      } else if (j.emailed) {
+        setResvMsg((m) => ({ ...m, [id]: '✅ ยืนยันแล้ว — ส่งเมลหาลูกค้าเรียบร้อย' }));
+      } else {
+        setResvMsg((m) => ({ ...m, [id]: '⚠️ ยืนยันแล้ว แต่เมลไม่ออก — ' + (j.mailError || 'ลองส่งซ้ำ') }));
+      }
+      setResvNote((n) => ({ ...n, [id]: '' }));
+      await loadData();
+    } catch {
+      setResvMsg((m) => ({ ...m, [id]: '❌ เชื่อมต่อไม่ได้ ลองใหม่' }));
+    } finally {
+      setResvBusy('');
+    }
   }
 
   /* ── Retention: customer book + comeback coupons ────────────────────── */
@@ -217,6 +252,7 @@ Hi ${name}! Thank you for visiting Narwhal Thai Table 🐋 Show code ${ac.code} 
     }
   }
 
+  const pendingResv = data ? data.reservations.filter((r) => str(r, 'status') !== 'confirmed').length : 0;
   const days = data ? Object.entries(data.stats.byDay).sort((a, b) => (a[0] < b[0] ? -1 : 1)) : [];
   const maxDay = days.length ? Math.max(1, ...days.map((d) => d[1])) : 1;
   const maxDish = data ? Math.max(1, ...data.stats.topRecommendedDishes.map((d) => d.count)) : 1;
@@ -266,6 +302,7 @@ Hi ${name}! Thank you for visiting Narwhal Thai Table 🐋 Show code ${ac.code} 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(170px,1fr))', gap: 14, marginBottom: 26 }}>
               <div style={card}><div style={label}>บทสนทนาทั้งหมด</div><div style={big}>{data.stats.total}</div></div>
               <div style={card}><div style={label}>การจองโต๊ะ</div><div style={big}>{data.reservations.length}</div></div>
+              <div style={{ ...card, borderColor: pendingResv > 0 ? 'rgba(200,162,78,0.5)' : LINE }}><div style={label}>รอยืนยัน</div><div style={{ ...big, color: pendingResv > 0 ? BRASSL : OFF }}>{pendingResv}</div></div>
               <div style={card}><div style={label}>ข้อความจากลูกค้า</div><div style={big}>{data.messages.length}</div></div>
               <div style={card}><div style={label}>ไทย / อังกฤษ</div><div style={big}>{data.stats.languages.th} / {data.stats.languages.en}</div></div>
               <div style={{ ...card, borderColor: data.stats.flaggedCount > 0 ? '#b5513a' : LINE }}><div style={label}>คำติชมที่ตั้งธง</div><div style={{ ...big, color: data.stats.flaggedCount > 0 ? '#e0907a' : OFF }}>{data.stats.flaggedCount}</div></div>
@@ -277,16 +314,95 @@ Hi ${name}! Thank you for visiting Narwhal Thai Table 🐋 Show code ${ac.code} 
                 <div style={{ color: 'rgba(245,240,230,0.5)', fontSize: 14 }}>ยังไม่มีการจอง</div>
               ) : (
                 data.reservations.slice(0, 20).map((r, i, arr) => {
+                  const id = str(r, 'id');
                   const name = [str(r, 'first_name'), str(r, 'last_name')].filter(Boolean).join(' ');
-                  const contact = '☎ ' + (str(r, 'phone') || '—') + (str(r, 'email') ? ' · ' + str(r, 'email') : '');
+                  const email = str(r, 'email');
+                  const contact = '☎ ' + (str(r, 'phone') || '—') + (email ? ' · ' + email : '');
                   const meta = (str(r, 'source') || 'web') + ' · ' + fmtDate(str(r, 'ts'));
+                  const confirmed = str(r, 'status') === 'confirmed';
+                  const busy = resvBusy === id;
+                  // อีเมลแจ้ง "ได้รับคำขอแล้ว" ที่ส่งหาลูกค้าตอนจองเข้ามา
+                  const ack = !email
+                    ? '✉️ ไม่มีอีเมล — ต้องโทรหาลูกค้า'
+                    : bool(r, 'guestEmailed')
+                      ? '✉️ ส่งเมล “ได้รับคำขอแล้ว” หาลูกค้าแล้ว'
+                      : '✉️ เมลแจ้งรับคำขอไม่ออก — ยืนยันทางโทรศัพท์ด้วย';
                   return (
-                    <div key={str(r, 'id') || i} style={{ padding: '10px 0', borderBottom: i < arr.length - 1 ? '1px solid ' + LINE : 'none' }}>
-                      <div style={{ color: OFF, fontSize: 14, fontWeight: 600 }}>{(name || 'ไม่ระบุชื่อ') + ' · ' + (str(r, 'party_size') || '?') + ' ท่าน'}</div>
-                      <div style={{ color: BRASSL, fontSize: 13, marginTop: 2 }}>{str(r, 'date') + ' ' + str(r, 'time')}</div>
-                      <div style={{ color: 'rgba(245,240,230,0.6)', fontSize: 12.5, marginTop: 2 }}>{contact}</div>
-                      {str(r, 'notes') && <div style={{ color: 'rgba(245,240,230,0.55)', fontSize: 12.5, marginTop: 2 }}>{'📝 ' + str(r, 'notes')}</div>}
-                      <div style={{ color: 'rgba(245,240,230,0.4)', fontSize: 11.5, marginTop: 3 }}>{meta}</div>
+                    <div key={id || i} style={{ padding: '12px 0', borderBottom: i < arr.length - 1 ? '1px solid ' + LINE : 'none' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
+                        <div style={{ minWidth: 200, flex: 1 }}>
+                          <div style={{ color: OFF, fontSize: 14, fontWeight: 600 }}>
+                            {(name || 'ไม่ระบุชื่อ') + ' · ' + (str(r, 'party_size') || '?') + ' ท่าน'}
+                            <span
+                              style={{
+                                marginLeft: 8,
+                                fontSize: 11,
+                                fontWeight: 600,
+                                padding: '2px 9px',
+                                borderRadius: 999,
+                                color: confirmed ? '#8fd6a8' : BRASSL,
+                                background: confirmed ? 'rgba(80,170,110,0.14)' : 'rgba(200,162,78,0.12)',
+                                border: '1px solid ' + (confirmed ? 'rgba(80,170,110,0.35)' : LINE),
+                              }}
+                            >
+                              {confirmed ? 'ยืนยันแล้ว' : 'รอยืนยัน'}
+                            </span>
+                          </div>
+                          <div style={{ color: BRASSL, fontSize: 13, marginTop: 3 }}>{str(r, 'date') + ' ' + str(r, 'time')}</div>
+                          <div style={{ color: 'rgba(245,240,230,0.6)', fontSize: 12.5, marginTop: 2 }}>{contact}</div>
+                          {str(r, 'notes') && <div style={{ color: 'rgba(245,240,230,0.55)', fontSize: 12.5, marginTop: 2 }}>{'📝 ' + str(r, 'notes')}</div>}
+                          <div style={{ color: 'rgba(245,240,230,0.4)', fontSize: 11.5, marginTop: 3 }}>{meta + ' · ' + ack}</div>
+                          {confirmed && str(r, 'confirmedAt') && (
+                            <div style={{ color: 'rgba(143,214,168,0.75)', fontSize: 11.5, marginTop: 2 }}>
+                              {'✓ ยืนยันเมื่อ ' + fmtDate(str(r, 'confirmedAt')) + (bool(r, 'confirmEmailed') ? ' · ส่งเมลยืนยันหาลูกค้าแล้ว' : ' · ยังไม่ได้ส่งเมลยืนยัน')}
+                            </div>
+                          )}
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 7, alignItems: 'flex-end' }}>
+                          {!confirmed ? (
+                            <>
+                              <input
+                                value={resvNote[id] || ''}
+                                onChange={(ev) => setResvNote((n) => ({ ...n, [id]: ev.target.value }))}
+                                placeholder="ข้อความถึงลูกค้า (ไม่ใส่ก็ได้)"
+                                style={{ padding: '7px 12px', borderRadius: 999, background: 'rgba(255,255,255,0.06)', border: '1px solid ' + LINE, color: OFF, fontSize: 12.5, outline: 'none', width: 215 }}
+                              />
+                              <button
+                                onClick={() => resvAction(id, 'confirm')}
+                                disabled={busy || !id}
+                                style={{ padding: '8px 15px', borderRadius: 999, background: BRASS, color: NAVY, border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: 12.5, opacity: busy ? 0.6 : 1 }}
+                              >
+                                {busy ? 'กำลังส่ง…' : email ? '✅ ยืนยัน + ส่งเมลหาลูกค้า' : '✅ ยืนยัน (ไม่มีอีเมล)'}
+                              </button>
+                            </>
+                          ) : (
+                            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                              {email && (
+                                <button
+                                  onClick={() => resvAction(id, 'confirm', true)}
+                                  disabled={busy}
+                                  style={{ padding: '7px 13px', borderRadius: 999, background: 'rgba(255,255,255,0.06)', border: '1px solid ' + LINE, color: OFF, cursor: 'pointer', fontSize: 12.5, opacity: busy ? 0.6 : 1 }}
+                                >
+                                  {busy ? '…' : '✉️ ส่งเมลยืนยันซ้ำ'}
+                                </button>
+                              )}
+                              <button
+                                onClick={() => resvAction(id, 'unconfirm')}
+                                disabled={busy}
+                                style={{ padding: '7px 13px', borderRadius: 999, background: 'transparent', border: '1px solid ' + LINE, color: 'rgba(245,240,230,0.55)', cursor: 'pointer', fontSize: 12.5 }}
+                              >
+                                ↩ ยกเลิกการยืนยัน
+                              </button>
+                            </div>
+                          )}
+                          {resvMsg[id] && (
+                            <div style={{ fontSize: 12, color: resvMsg[id].startsWith('✅') ? '#8fd6a8' : resvMsg[id].startsWith('❌') ? '#e0907a' : BRASSL, maxWidth: 240, textAlign: 'right' }}>
+                              {resvMsg[id]}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   );
                 })

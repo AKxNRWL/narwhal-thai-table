@@ -8,12 +8,17 @@
  *      — exactly the same path the website's ReserveForm uses.
  *   2) Appends a record to a Netlify Blobs store (aileen-reservations) so every
  *      chat booking is also saved for the dashboard / as a backup.
+ *   3) Emails the GUEST a "we've got your request" acknowledgement — only when
+ *      they gave us an email address. The *confirmation* email is a separate,
+ *      later step the team fires from the Control Room. See lib/guestMail.ts.
  *
- * It returns ok=true if EITHER channel succeeded. This is a reservation
+ * It returns ok=true if EITHER channel (1) or (2) succeeded — the guest email
+ * is best-effort and never decides the outcome. This is a reservation
  * REQUEST — the team still confirms by phone/email; no payment is taken.
  */
 import { getStore } from '@netlify/blobs';
 import { upsertCustomer } from './customers';
+import { looksLikeEmail, sendReservationReceived } from './guestMail';
 
 export const RESV_STORE = 'aileen-reservations';
 export const RESV_KEY = 'list';
@@ -32,7 +37,15 @@ export type ReservationInput = {
   source?: 'chat' | 'phone';
 };
 
-export type ReservationResult = { ok: boolean; id: string; emailed: boolean; stored: boolean };
+export type ReservationResult = {
+  ok: boolean;
+  id: string;
+  /** The restaurant was notified (Netlify form email to reservations@). */
+  emailed: boolean;
+  stored: boolean;
+  /** The guest got the "we've got your request" acknowledgement. */
+  guestEmailed: boolean;
+};
 
 // Netlify sets URL to the main site address at runtime; fall back to the domain.
 const SITE = process.env.URL || process.env.DEPLOY_PRIME_URL || 'https://narwhalthaihb.com';
@@ -81,20 +94,39 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
     emailed = false;
   }
 
-  // 2) Save a record to Netlify Blobs (backup + future dashboard).
+  // 2) Acknowledge to the GUEST right away, when we have an address to write to.
+  //    Best-effort: a mail failure must never cost us the booking.
+  let guestEmailed = false;
+  if (looksLikeEmail(rec.email)) {
+    const r = await sendReservationReceived({
+      first_name: rec.first_name,
+      last_name: rec.last_name,
+      email: rec.email,
+      phone: rec.phone,
+      date: rec.date,
+      time: rec.time,
+      party_size: rec.party_size,
+      notes: rec.notes,
+    });
+    guestEmailed = r.sent;
+    if (!r.sent) console.warn('[reservation] guest ack email not sent:', r.error);
+  }
+
+  // 3) Save a record to Netlify Blobs (backup + Control Room list).
+  //    status: 'new' until the team confirms it in /stats.
   let stored = false;
   try {
     const store = getStore({ name: RESV_STORE, consistency: 'strong' });
     const existing = (await store.get(RESV_KEY, { type: 'json' })) as unknown;
     const list = Array.isArray(existing) ? (existing as unknown[]) : [];
-    list.push({ ...rec, emailed });
+    list.push({ ...rec, emailed, guestEmailed, status: 'new' });
     await store.setJSON(RESV_KEY, list.slice(-MAX));
     stored = true;
   } catch {
     stored = false;
   }
 
-  // 3) Retention: remember the guest in the customer book (best-effort —
+  // 4) Retention: remember the guest in the customer book (best-effort —
   //    upsertCustomer never throws, and must never block a reservation).
   await upsertCustomer({
     name: [rec.first_name, rec.last_name].filter(Boolean).join(' '),
@@ -103,5 +135,5 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
     source: 'reservation',
   });
 
-  return { ok: emailed || stored, id, emailed, stored };
+  return { ok: emailed || stored, id, emailed, stored, guestEmailed };
 }
