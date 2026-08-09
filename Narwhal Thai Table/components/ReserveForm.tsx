@@ -18,11 +18,15 @@ const TIME_SLOTS: string[] = (() => {
 })();
 
 /**
- * Reservation form. Currently shows an inline confirmation message on submit
- * and does NOT POST anywhere. When ready to wire up a backend:
- *   - Replace the `setTimeout` block in handleSubmit with a `fetch()` to your
- *     endpoint (Formspree, Resend, /api route, etc.)
- *   - The honeypot ("company") field should be checked server-side as well.
+ * Reservation form.
+ *
+ * Posts to /api/reservation, which runs the same pipeline as an Aileen booking:
+ * the Netlify form notification to reservations@, a record in the Control Room
+ * list, and a "we've got your request" email to the guest.
+ *
+ * If that route is down for any reason we fall back to posting /__forms.html
+ * directly — the old behaviour. The guest then gets no email, but the booking
+ * still reaches the restaurant, which is the part that must never fail.
  */
 export default function ReserveForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -45,12 +49,30 @@ export default function ReserveForm() {
     setSending(true);
     setError(null);
 
-    submitNetlifyForm(form)
-      .then(() => { setSending(false); setSubmitted(true); })
-      .catch(() => {
+    const payload: Record<string, string> = {};
+    new FormData(form).forEach((value, key) => {
+      if (typeof value === 'string') payload[key] = value;
+    });
+
+    fetch('/api/reservation', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
         setSending(false);
-        setError('Something went wrong — please call us or email welcome@narwhalthaihb.com.');
-      });
+        setSubmitted(true);
+      })
+      .catch(() =>
+        // Fallback: the plain Netlify form post, so the restaurant still gets it.
+        submitNetlifyForm(form)
+          .then(() => { setSending(false); setSubmitted(true); })
+          .catch(() => {
+            setSending(false);
+            setError('Something went wrong — please call us or email welcome@narwhalthaihb.com.');
+          }),
+      );
   }
 
   return (

@@ -33,8 +33,8 @@ export type ReservationInput = {
   time: string;
   party_size: string;
   notes?: string;
-  /** Where the booking came from — 'chat' (website) or 'phone' (Aileen call line). */
-  source?: 'chat' | 'phone';
+  /** Where the booking came from — the website form, Aileen chat, or the call line. */
+  source?: 'chat' | 'phone' | 'web';
 };
 
 export type ReservationResult = {
@@ -55,11 +55,12 @@ const clip = (s: string | undefined, n = 200): string =>
 
 export async function submitReservation(input: ReservationInput): Promise<ReservationResult> {
   const id = 'r_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  const via = input.source === 'phone' ? 'Aileen phone line' : 'Aileen chat';
+  const via =
+    input.source === 'phone' ? 'Aileen phone line' : input.source === 'web' ? 'the website form' : 'Aileen chat';
   const rec = {
     id,
     ts: new Date().toISOString(),
-    source: input.source === 'phone' ? 'aileen-phone' : 'aileen-chat',
+    source: input.source === 'phone' ? 'aileen-phone' : input.source === 'web' ? 'web' : 'aileen-chat',
     first_name: clip(input.first_name, 80),
     last_name: clip(input.last_name, 80),
     phone: clip(input.phone, 40),
