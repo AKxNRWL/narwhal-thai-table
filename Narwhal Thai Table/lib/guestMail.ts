@@ -29,11 +29,13 @@ const PHONE = '(714) 378-6003';
 const PHONE_HREF = '+17143786003';
 const ADDRESS = '19072 Beach Blvd, Huntington Beach, CA 92648';
 /**
- * NOTE — no "=" in any URL or attribute value below, on purpose.
+ * NOTE — no "=" in any URL or attribute VALUE below, on purpose.
  * Gmail ships this HTML as quoted-printable, and a bare `=` followed by two
  * hex-ish characters gets eaten as a QP escape: `?q=19072` arrived as `?q\x19072`
- * and `width=device-width` as `width\xDEvice-width`. Path-style map URL and the
- * `&#61;` entity in the viewport tag sidestep it. Keep it that way.
+ * and `width=device-width` as `width\xDEvice-width`. Hence the path-style map
+ * URL (no `?q=`) and no viewport meta tag at all — writing it as `&#61;` does
+ * not help, Gmail decodes the entity back to `=` before re-encoding. The layout
+ * is fluid (max-width + width:100%), so it needs no viewport tag. Keep it that way.
  */
 const MAP_URL = 'https://www.google.com/maps/place/19072+Beach+Blvd+Huntington+Beach+CA+92648';
 const SITE = 'https://narwhalthaihb.com';
@@ -138,7 +140,7 @@ function shell(o: { preheader: string; eyebrow: string; headline: string; intro:
     .join('');
 
   return `<!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width&#61;device-width,initial-scale&#61;1"><title>${esc(o.headline)}</title></head>
+<html><head><meta charset="utf-8"><title>${esc(o.headline)}</title></head>
 <body style="margin:0;padding:0;background:#EFEAE0;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(o.preheader)}</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EFEAE0;padding:24px 12px;">
