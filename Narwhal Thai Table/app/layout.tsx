@@ -5,6 +5,7 @@ import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
+import AdsConversions from '@/components/AdsConversions';
 import { RESTAURANT, SITE_URL, socialUrls } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <Footer />
         <ChatWidget />
+        <AdsConversions />
         {/* Google Analytics 4 — property "narwhalthaihb.com", stream "Narwhal Thai Table Website" (welcome@ account)
             + Google Ads conversion tag AW-18329609126 — one shared gtag loader, two configs. */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-XJF37GZ4NB" strategy="afterInteractive" />
