@@ -1483,3 +1483,18 @@ section{padding-block:clamp(52px,8vw,112px);padding-inline:48px;}
 @media (max-width:980px){
   .nav-ctas{display:none;}
 }
+
+
+/* ===== THE ROOM (real photography) =====
+   Home-page gallery of the actual dining room, storefront and a family
+   spread. The main photo stretches to match the two stacked side photos,
+   so the grid always closes into a clean rectangle. */
+.room{background:var(--paper-light);}
+.room-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:stretch;}
+.room-grid .room-main{height:100%;aspect-ratio:auto;min-height:420px;}
+.room-side{display:grid;gap:28px;align-content:stretch;}
+@media (max-width:900px){
+  .room-grid{grid-template-columns:1fr;gap:20px;}
+  .room-grid .room-main{aspect-ratio:4/3;height:auto;min-height:0;}
+  .room-side{gap:20px;}
+}

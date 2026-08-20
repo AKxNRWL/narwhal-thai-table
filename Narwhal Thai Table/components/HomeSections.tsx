@@ -125,7 +125,12 @@ export function ChefSection() {
    with a CTA pointing to the full /menu page.
    ============================================================ */
 export function MenuPreviewSection() {
-  const signatures = DISHES.filter(d => d.signature).slice(0, 6);
+  // Prefer signature dishes we actually have photography for, so the preview
+  // grid is all real plates (never a wall of placeholders). Falls back to the
+  // plain signature list if fewer than six have photos yet.
+  const allSignatures = DISHES.filter(d => d.signature);
+  const photographed = allSignatures.filter(d => d.image?.src ?? getDishImage(d.slug));
+  const signatures = (photographed.length >= 6 ? photographed : allSignatures).slice(0, 6);
   return (
     <section className="menu-section" id="menu">
       <div className="container">
@@ -248,14 +253,55 @@ export function ReserveSection() {
             <h2>We saved a seat <em>for you</em>.</h2>
             <p>It&apos;s a cozy room, and we like it that way. Send a note or fill out the form — your table will be ready before you are. Birthdays, anniversaries, the big family night out: tell us what the evening means, and we&apos;ll treat it that way.</p>
             <div className="hours-block">
-              <h4>Soft Opening — Sunday, August 9</h4>
-              <div className="hours-row"><span className="day">Thank you for waiting, Huntington Beach — we&apos;re ready to serve you. Doors open Sunday at 12:00 PM. Come hungry, come as a neighbor.</span></div>
+              <h4>Open Every Day</h4>
+              <div className="hours-row"><span className="day">Monday &ndash; Friday</span><span className="time">11:30 AM &ndash; 10:00 PM</span></div>
+              <div className="hours-row"><span className="day">Saturday &ndash; Sunday</span><span className="time">12:00 PM &ndash; 10:00 PM</span></div>
             </div>
           </FadeUp>
           <FadeUp className="reserve-form-wrap">
             <ReserveForm />
           </FadeUp>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   THE ROOM — real photography from the dining room & patio
+   ============================================================ */
+export function RoomSection() {
+  return (
+    <section className="room" id="room">
+      <div className="container">
+        <FadeUp className="section-head">
+          <span className="label">The Room</span>
+          <h2>A little room with <em>a lot of heart</em>.</h2>
+          <p>String lights over the patio, orchids at the counter, a dining room that fills up like a family party — this is what an evening at Narwhal looks like.</p>
+        </FadeUp>
+        <FadeUp className="room-grid">
+          <MediaFrame
+            className="room-main"
+            ratio="4/3"
+            src="/images/room/dining-room.jpg"
+            alt="Inside Narwhal Thai Table — the dining room full of guests on opening night"
+            sizes="(max-width: 900px) 100vw, 60vw"
+          />
+          <div className="room-side">
+            <MediaFrame
+              ratio="16/10"
+              src="/images/room/storefront.jpg"
+              alt="The Narwhal Thai Table storefront at dusk, string lights glowing over the patio"
+              sizes="(max-width: 900px) 100vw, 40vw"
+            />
+            <MediaFrame
+              ratio="16/10"
+              src="/images/room/family-spread.jpg"
+              alt="A family-style spread — wonton soup, crying tiger, orange chicken and morning glory"
+              sizes="(max-width: 900px) 100vw, 40vw"
+            />
+          </div>
+        </FadeUp>
       </div>
     </section>
   );
@@ -301,7 +347,7 @@ export function ContactSection() {
           <div className="contact-visit-info">
             <span className="label">Find us</span>
             <h3>Visit the table</h3>
-            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/>Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM<br/>Soft Opening Sunday, August 9 &middot; thank you for waiting</p>
+            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" style={{ color: 'inherit' }}>(714) 378-6003</a><br/>Open every day &middot; Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM</p>
           </div>
           <MapEmbed />
         </FadeUp>

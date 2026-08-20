@@ -80,12 +80,12 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
 
       <div className="hero-inner">
         <div className="hero-text">
-          <span className="label hero-coming-soon">Soft Opening · Sunday, August 9</span>
+          <span className="label hero-coming-soon">Now Open · Every Day</span>
           <h1 id="hero-title">
             From Siam&apos;s royal court<br/><em>to Huntington Beach</em>.
           </h1>
           <p>
-            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>Thank you for waiting, Huntington Beach — we&apos;re ready for you.</strong> Every dish and every detail has been polished through our beta test, and the table is set. Join us for our Soft Opening this Sunday, August 9.
+            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>The table is set, Huntington Beach.</strong> Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
           </p>
           <div className="hero-cta">
             {ORDER_ONLINE_URL && (
@@ -95,11 +95,11 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
               </a>
             )}
             <Link href="/menu" className={ORDER_ONLINE_URL ? 'btn-secondary' : 'btn-primary'}>
-              Peek at the Menu
+              Explore the Menu
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </Link>
-            <Link href="/play" className="btn-secondary">
-              Play While You Wait
+            <Link href="/contact/reservation" className="btn-secondary">
+              Save a Seat
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </Link>
           </div>

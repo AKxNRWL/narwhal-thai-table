@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     default: 'Narwhal Thai Table · Thai Restaurant in Huntington Beach, CA',
     template: '%s · Narwhal Thai Table',
   },
-  description: "Family-run Thai restaurant in Huntington Beach — three siblings, thirty years of restaurant life, one table on Beach Boulevard. Royal-court Thai recipes cooked fresh for every plate. Soft Opening Sunday, August 9 — thank you for waiting.",
+  description: "Family-run Thai restaurant in Huntington Beach — three siblings, thirty years of restaurant life, one table on Beach Boulevard. Royal-court Thai recipes cooked fresh for every plate. Open every day: Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM.",
   formatDetection: { telephone: false },
   openGraph: {
     type: 'website',

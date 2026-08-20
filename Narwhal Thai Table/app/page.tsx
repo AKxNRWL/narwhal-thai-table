@@ -6,6 +6,7 @@ import {
   ChefSection,
   MenuPreviewSection,
   ExperienceSection,
+  RoomSection,
   ContactSection,
 } from '@/components/HomeSections';
 
@@ -18,6 +19,7 @@ export default function HomePage() {
       {SHOW_CHEF && <ChefSection />}
       <MenuPreviewSection />
       <ExperienceSection />
+      <RoomSection />
       <ContactSection />
     </>
   );

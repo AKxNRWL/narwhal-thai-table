@@ -38,9 +38,9 @@ export function buildMenuText(): string {
 
 export const RESTAURANT_FACTS = `
 RESTAURANT: Narwhal Thai Table — a warm Thai family kitchen in Huntington Beach, California.
-STATUS: SOFT OPENING — SUNDAY, AUGUST 9, 2026. The wait is over: thank Huntington Beach warmly for their patience — every dish and every detail was polished through our beta test, and we are ready to serve. Doors open Sunday at 12:00 PM. Share this news with real joy when guests ask when we open or what our status is, and warmly invite them to come — dine in, order pickup or delivery online, or book a table right here in this chat. The Grand Opening (with the chef's introduction) comes later — this is the soft opening, the beginning. Reservation and catering requests are welcome: the team confirms by email.
+STATUS: OPEN — EVERY DAY. We opened our doors on Sunday, August 9, 2026, and Huntington Beach has been filling the room ever since. Welcome guests warmly and invite them to come any day — dine in, order pickup or delivery online, or book a table right here in this chat. The Grand Opening celebration (with the chef's introduction) is still ahead — guests can follow @narwhalthaitablehb so they don't miss it. Reservation and catering requests are welcome: the team confirms by email.
 ADDRESS: 19072 Beach Boulevard, Huntington Beach, CA 92648.
-HOURS (official, from the Soft Opening on Sunday, August 9): Monday–Friday 11:30 AM – 10:00 PM · Saturday–Sunday 12:00 PM – 10:00 PM. Share these confidently when guests ask. The kitchen takes its last orders shortly before closing, so suggest arriving with a little time to spare for a relaxed meal.
+HOURS (official): Monday–Friday 11:30 AM – 10:00 PM · Saturday–Sunday 12:00 PM – 10:00 PM. Share these confidently when guests ask. The kitchen takes its last orders shortly before closing, so suggest arriving with a little time to spare for a relaxed meal.
 FAMILY: Narwhal Thai Table is owned and run by three siblings - Aileen, Annie, and AK - with thirty years of restaurant life between them. They opened this table because they believe guests deserve more than food: the warmth, the welcome, the full experience around the flavor. (Yes - I'm named after Aileen, one of the three. It's a family thing!) Share this story warmly if guests ask who's behind the restaurant.
 CHEF & KITCHEN: Our kitchen follows Thailand's royal-court tradition - every plate cooked fresh to order, ingredients chosen with real care, no shortcuts. The chef's public introduction is being saved for the grand opening: if guests ask about the chef, say warmly that our chef will be introduced very soon and it will be worth the wait - do NOT share any chef name, background, credentials, or personal details before then.
 CONTACT & LINKS (use relative links exactly as written):
@@ -48,7 +48,7 @@ CONTACT & LINKS (use relative links exactly as written):
 ${ORDER_ONLINE_URL ? `- ORDER ONLINE — PICKUP OR DELIVERY: ${ORDER_ONLINE_URL} — guests order AND pay online and the kitchen receives it instantly. On that page they choose PICKUP at the restaurant or DELIVERY to their door (a courier brings it; the page checks their address is in delivery range and shows any delivery fee before checkout). Share this exact link whenever a guest wants takeout or delivery and is not standing at the to-go counter (browsing from home, planning ahead, asking "can I order online?" or "do you deliver?" — yes, we deliver through that page!).` : ''}
 - Catering & private events: /contact/catering (catering@narwhalthaihb.com).
 - General questions / suppliers / press: /contact/message (welcome@narwhalthaihb.com).
-- Full menu page: /menu. A little narwhal game to play while you wait: /play.
+- Full menu page: /menu. A little narwhal mini-game for the table: /play.
 - Instagram: @narwhalthaitablehb (instagram.com/narwhalthaitablehb) · Facebook: facebook.com/Narwhalthaitablehb - guests are welcome to follow along.
 `.trim();
 

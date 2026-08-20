@@ -1,13 +1,10 @@
 /**
- * Multi-language "Coming Soon" ticker pinned to the very top of every page.
+ * Multi-language "Now Open" ticker pinned to the very top of every page.
  *
- * Why a ticker: the giant Hero watermark looked rough on mobile (font scaled
- * down too aggressively and competed with the H1 for attention). A slim
- * top bar that runs through 8 languages serves the same "we are opening
- * soon" message but is immediately visible on first paint at any screen
- * size — which matters because Huntington Beach has a multilingual
- * customer base (Thai, Spanish, Vietnamese, Chinese, Korean, Filipino,
- * Japanese, English).
+ * Born as the pre-opening "Coming Soon" bar; since Sunday, August 9, 2026
+ * the restaurant is open, so the same slim bar now announces the daily
+ * hours in the 8 languages Huntington Beach actually speaks (English,
+ * Thai, Spanish, Vietnamese, Chinese, Korean, Filipino, Japanese).
  *
  * The languages are repeated twice in the track so the CSS keyframe can
  * translate the inner element by exactly -50% and loop seamlessly. Only
@@ -18,19 +15,19 @@
  * stopping the scroll and showing the first phrase only.
  */
 const LANGUAGES = [
-  'Soft Opening — Sunday, August 9 · Thank you for waiting, Huntington Beach',
-  'Soft Opening อาทิตย์ 9 ส.ค.นี้ — ขอบคุณที่รอกันนะคะ · ฮันติงตันบีช',
-  'Soft Opening — domingo 9 de agosto · Gracias por esperar',
-  'Soft Opening — Chủ nhật 9/8 · Cảm ơn bạn đã chờ đợi',
-  '8月9日（周日）正式迎客 · 感谢等待 / 8月9日（週日）正式迎客 · 感謝等待',
-  '8월 9일 일요일 소프트 오픈 — 기다려 주셔서 감사합니다',
-  'Soft Opening — Linggo, Agosto 9 · Salamat sa paghihintay',
-  '8月9日（日）ソフトオープン · お待たせいたしました',
+  'Now Open Every Day — Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM',
+  'เปิดให้บริการแล้วทุกวันค่ะ — จ–ศ 11:30–22:00 · ส–อา 12:00–22:00',
+  'Abierto todos los días — lun–vie 11:30 AM–10 PM · sáb–dom 12–10 PM',
+  'Mở cửa mỗi ngày — T2–T6 11:30–22:00 · T7–CN 12:00–22:00',
+  '每天营业 · 周一至五 11:30–22:00 · 周末 12:00–22:00 / 每天營業 · 週一至五 11:30–22:00 · 週末 12:00–22:00',
+  '매일 영업합니다 — 월–금 11:30–22:00 · 토·일 12:00–22:00',
+  'Bukas araw-araw — Lun–Biy 11:30 AM–10 PM · Sab–Lin 12–10 PM',
+  '毎日営業中 — 月〜金 11:30–22:00 · 土日 12:00–22:00',
 ];
 
 export default function ComingSoonTicker() {
   return (
-    <div className="cs-ticker" role="status" aria-label="Soft opening Sunday, August 9 — thank you for waiting, Huntington Beach">
+    <div className="cs-ticker" role="status" aria-label="Now open every day — Monday to Friday 11:30 AM to 10 PM, Saturday and Sunday 12 to 10 PM">
       <div className="cs-ticker-track">
         {LANGUAGES.map((phrase, i) => (
           <span key={`a-${i}`} className="cs-ticker-item">{phrase}</span>
