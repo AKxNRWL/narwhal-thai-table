@@ -1,15 +1,23 @@
 /**
  * Prominent embedded Google Map for the "Find us" blocks (home + /contact).
  *
- * Uses the keyless Google Maps embed endpoint (`output=embed`) with the
- * BUSINESS NAME in the query — not just the street address — so the pin
- * renders with the "Narwhal Thai Table" listing card (photo, rating,
- * directions button) instead of an anonymous address marker. No API key,
- * no quota, loads lazily so it never blocks the page.
+ * Locked to the restaurant's actual Google Business listing via its CID —
+ * the stable numeric id of the "Narwhal Thai Table" listing (decoded from
+ * the official g.page review link). With the CID the embed renders the real
+ * listing card (name, rating, reviews, its own directions button) instead
+ * of an anonymous address pin, and can never snap to a lookalike search
+ * result. Keyless endpoint — no API key, no quota; loads lazily.
+ *
+ * The caption link below opens Google Maps DIRECTIONS mode directly
+ * (maps/dir + destination) — not a search page. On phones it hands straight
+ * into the Google Maps app, ready to navigate to the restaurant.
  */
 const PLACE = 'Narwhal Thai Table, 19072 Beach Blvd, Huntington Beach, CA 92648';
-const EMBED_SRC = `https://www.google.com/maps?q=${encodeURIComponent(PLACE)}&z=15&output=embed`;
-const MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(PLACE)}`;
+/** Stable id (CID) of the restaurant's own Google Business listing. */
+const CID = '6790489916821266867';
+/** Official embed endpoint, locked to the listing (pb: !4s<CID> !6i<zoom>). */
+const EMBED_SRC = `https://www.google.com/maps/embed?pb=!1m4!3m2!1m1!4s${CID}!6i16`;
+const DIRECTIONS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(PLACE)}`;
 
 export default function MapEmbed() {
   return (
@@ -21,8 +29,8 @@ export default function MapEmbed() {
         allowFullScreen
         referrerPolicy="no-referrer-when-downgrade"
       />
-      <a className="map-embed-link" href={MAPS_LINK} target="_blank" rel="noopener">
-        Get directions on Google Maps <span aria-hidden="true">&rarr;</span>
+      <a className="map-embed-link" href={DIRECTIONS_LINK} target="_blank" rel="noopener">
+        Get directions <span aria-hidden="true">&rarr;</span>
       </a>
     </div>
   );
