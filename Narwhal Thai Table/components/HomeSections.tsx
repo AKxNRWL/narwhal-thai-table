@@ -280,13 +280,24 @@ export function RoomSection() {
           <p>String lights over the patio, orchids at the counter, a dining room that fills up like a family party — this is what an evening at Narwhal looks like.</p>
         </FadeUp>
         <FadeUp className="room-grid">
-          <MediaFrame
-            className="room-main"
-            ratio="4/3"
-            src="/images/room/dining-room.jpg"
-            alt="Inside Narwhal Thai Table — the dining room full of guests on opening night"
-            sizes="(max-width: 900px) 100vw, 60vw"
-          />
+          {/* Live loop of the dining room on opening night — muted, inline.
+              Poster = the clip's own first frame, so the swap-in is seamless. */}
+          <figure
+            className="media-frame room-main"
+            aria-label="Inside Narwhal Thai Table — the dining room on opening night"
+          >
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster="/images/room/room-poster.jpg"
+              aria-hidden="true"
+            >
+              <source src="/media/room.mp4" type="video/mp4" />
+            </video>
+          </figure>
           <div className="room-side">
             <MediaFrame
               ratio="16/10"
