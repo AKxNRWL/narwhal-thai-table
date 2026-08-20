@@ -1505,3 +1505,20 @@ section{padding-block:clamp(52px,8vw,112px);padding-inline:48px;}
   .room-grid .room-main{aspect-ratio:4/3;height:auto;min-height:0;}
   .room-side{gap:20px;}
 }
+
+/* ===== MENU LIST THUMBNAILS =====
+   Real dish photos on the /menu cards. Cards without a photo keep the
+   plain text layout — no empty placeholder boxes. */
+a.dish.has-photo{display:flex;gap:20px;align-items:flex-start;}
+.dish-thumb{
+  position:relative;flex:0 0 104px;width:104px;height:104px;
+  border-radius:var(--radius-md);overflow:hidden;
+  background:var(--navy);border:1px solid var(--line);
+}
+.dish-thumb img{object-fit:cover;transition:transform 0.5s ease;}
+a.dish:hover .dish-thumb img{transform:scale(1.06);}
+.dish-body{flex:1;min-width:0;}
+@media (max-width:640px){
+  a.dish.has-photo{gap:14px;}
+  .dish-thumb{flex-basis:84px;width:84px;height:84px;}
+}

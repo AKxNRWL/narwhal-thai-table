@@ -19,8 +19,11 @@ git fetch origin >> "%LOG%" 2>&1
 git push --force-with-lease origin main >> "%LOG%" 2>&1
 echo PUSH_ERRORLEVEL=%errorlevel% >> "%LOG%"
 git log --oneline -3 >> "%LOG%" 2>&1
+echo === TRIGGER NETLIFY DEPLOY (build hook: claude-deploy) === >> "%LOG%"
+curl -s -X POST -d "{}" https://api.netlify.com/build_hooks/6a77f34abb09f72d3955c755 >> "%LOG%" 2>&1
 echo.
-echo DONE. Now open Netlify and click Trigger deploy ^> Deploy project.
+echo DONE. Netlify deploy triggered automatically -- no manual click needed.
+echo Watch progress at https://app.netlify.com/projects/nrwlhb/deploys
 echo (If errors, send deploy-log.txt to Claude.)
 pause
 exit /b 0

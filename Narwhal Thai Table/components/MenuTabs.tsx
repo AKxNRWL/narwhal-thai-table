@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { CATEGORIES, type CategoryId } from '@/lib/categories';
 import { DISHES } from '@/lib/dishes';
@@ -10,7 +11,14 @@ import { DISHES } from '@/lib/dishes';
  * Tab state is local — the page is fully static apart from the active tab.
  * Each dish card links to /menu/[slug] for the detail page.
  */
-export default function MenuTabs({ initial = 'appetizers' as CategoryId }: { initial?: CategoryId }) {
+export default function MenuTabs({
+  initial = 'appetizers' as CategoryId,
+  photos = {},
+}: {
+  initial?: CategoryId;
+  /** slug → public image URL, built server-side in app/menu/page.tsx */
+  photos?: Record<string, string>;
+}) {
   const [active, setActive] = useState<CategoryId>(initial);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -70,26 +78,36 @@ export default function MenuTabs({ initial = 'appetizers' as CategoryId }: { ini
           >
             {isSides ? <SidesPanel /> : (
               <div className="cat-grid">
-                {dishes.map(d => (
-                  <Link key={d.slug} href={`/menu/${d.slug}`} className={`dish${d.signature ? ' sig' : ''}`}>
-                    <div className="dish-head">
-                      <div className="dish-name">
-                        {d.name}{d.thai && <span className="thai">{d.thai}</span>}
+                {dishes.map(d => {
+                  const photo = d.image?.src ?? photos[d.slug];
+                  return (
+                    <Link key={d.slug} href={`/menu/${d.slug}`} className={`dish${d.signature ? ' sig' : ''}${photo ? ' has-photo' : ''}`}>
+                      {photo && (
+                        <span className="dish-thumb" aria-hidden="true">
+                          <Image src={photo} alt="" fill sizes="(max-width: 640px) 84px, 104px" />
+                        </span>
+                      )}
+                      <div className="dish-body">
+                        <div className="dish-head">
+                          <div className="dish-name">
+                            {d.name}{d.thai && <span className="thai">{d.thai}</span>}
+                          </div>
+                          {d.price && <div className="dish-price">{d.price}</div>}
+                        </div>
+                        <p className="dish-desc">{d.description}</p>
+                        {d.variants && (
+                          <p className="dish-variants">{d.variants.join(' · ')}</p>
+                        )}
+                        <div className="dish-tags">
+                          {d.signature && <span className="tag">Signature</span>}
+                          {d.spicy && <span className="tag spicy">Spicy</span>}
+                          {d.protein && <span className="tag">Choice of Protein</span>}
+                        </div>
+                        {d.story && <span className="dish-read">Read the story</span>}
                       </div>
-                      {d.price && <div className="dish-price">{d.price}</div>}
-                    </div>
-                    <p className="dish-desc">{d.description}</p>
-                    {d.variants && (
-                      <p className="dish-variants">{d.variants.join(' · ')}</p>
-                    )}
-                    <div className="dish-tags">
-                      {d.signature && <span className="tag">Signature</span>}
-                      {d.spicy && <span className="tag spicy">Spicy</span>}
-                      {d.protein && <span className="tag">Choice of Protein</span>}
-                    </div>
-                    {d.story && <span className="dish-read">Read the story</span>}
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
