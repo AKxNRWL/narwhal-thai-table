@@ -277,7 +277,7 @@ export function RoomSection() {
         <FadeUp className="section-head">
           <span className="label">The Room</span>
           <h2>A little room with <em>a lot of heart</em>.</h2>
-          <p>String lights over the patio, orchids at the counter, a dining room that fills up like a family party — this is what an evening at Narwhal looks like.</p>
+          <p>String lights over the patio, orchids at the counter, the kitchen humming behind it all. Come as you are — there&apos;s a warm seat and a fresh coconut waiting for you.</p>
         </FadeUp>
         <FadeUp className="room-grid">
           {/* Live loop of the dining room on opening night — muted, inline.
