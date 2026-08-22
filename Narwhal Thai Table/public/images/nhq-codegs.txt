@@ -1,0 +1,974 @@
+// ============================================================
+// NARWHAL HQ — mini-API + Sales Sync (Apps Script)
+// แทนที่ Code.gs เดิมทั้งไฟล์ได้เลย (sales sync เดิมยังทำงานเหมือนเดิมเป๊ะ)
+// ติดตั้ง: เปิด costing Sheet > Extensions > Apps Script > วางทับ > Deploy > Manage deployments > Edit > New version
+//   (ถ้า deploy ใหม่ครั้งแรก: Type: Web app · Execute as: Me · Who has access: Anyone)
+// URL เดิมใช้ต่อได้ ไม่ต้องแก้ GitHub secret
+// ============================================================
+
+const SS_ID = '1C9n3z_FgsgbZ0UlC1F5eupGHP-y4rWuwxH5z9Y8kf58'; // Narwhal-Costing-System-Final
+const SYNC_TOKEN = '__SYNC_TOKEN__'; // ของ worker เดิม (GitHub secret: SYNC_TOKEN)
+const GAME_TOKEN = '__GAME_TOKEN__'; // ของแอพ Narwhal HQ (ใส่ในหน้า Office ของแอพ)
+
+const TZ = 'America/Los_Angeles';
+const T = {
+  SALES: 'ยอดขายจริง Sales',
+  LIB:   'คลังสูตร Recipe Library',
+  INV:   'เช็คสต็อก Inventory',
+  ING:   'วัตถุดิบ Ingredients',
+  CH:    'ช่องทางขาย Channels',
+  DASH:  'แดชบอร์ด Dashboard',
+  REC:   'สูตรต่อเมนู Recipes',
+  STAFF: 'พนักงาน Staff',
+  SHIFT: 'กะงาน Shifts',
+  SCHED: 'ตารางกะ Schedule',
+  CKI: 'รายการเช็ค Checklist Items',
+  CKL: 'เช็คลิสต์ Checklists',
+  RCV: 'รับของ Receiving',
+  COUP: 'คูปอง Coupons',
+};
+
+// ---------- GET: mini-API อ่านข้อมูล ----------
+// ?token=GAME_TOKEN&action=all|summary|cards|stock|ingredients|channels|recipe&sku=NWT-001
+function doGet(e) {
+  try {
+    const p = (e && e.parameter) || {};
+    if (!p.action) return out({ ok: true, service: 'narwhal-hq-api' }); // health check เดิม
+    if (p.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+    const ss = SpreadsheetApp.openById(SS_ID);
+    switch (p.action) {
+      case 'summary':     return out(getSummary(ss));
+      case 'cards':       return out({ cards: getCards(ss) });
+      case 'stock':       return out({ stock: getStock(ss) });
+      case 'ingredients': return out({ ingredients: getIngredients(ss) });
+      case 'channels':    return out({ channels: getChannels(ss) });
+      case 'recipe':      return out(getRecipe(ss, p.sku));
+      case 'staff':       return out({ staff: getStaff(ss) });
+      case 'setup_labor': return out(setupLabor(ss));
+      case 'timeclock':   return out(getTimeclock(ss, p.date));
+      case 'schedule':    return out(getSchedule(ss, p.week));
+      case 'labor_summary': return out(laborSummary(ss, p.from, p.to));
+      case 'checklists':  return out(getChecklists(ss, p.date));
+      case 'setup_ops':   return out(setupOps(ss));
+      case 'coupon_check':  return out(couponCheck(ss, p.code));
+      case 'setup_coupons': return out(setupCoupons(ss));
+      case 'all':         return out({
+        summary: getSummary(ss),
+        cards: getCards(ss),
+        stock: getStock(ss),
+        ingredients: getIngredients(ss),
+        channels: getChannels(ss),
+        staff: getStaff(ss),
+        generated_at: stamp(),
+      });
+      default: return out({ error: 'unknown action' });
+    }
+  } catch (err) { return out({ error: String(err) }); }
+}
+
+// ---------- POST: save_recipe + sales sync เดิม ----------
+function doPost(e) {
+  try {
+    const b = JSON.parse(e.postData.contents);
+    if (b.action === 'save_recipe') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(saveRecipe(b));
+    }
+    if (b.action === 'log_shift') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(logShift(b));
+    }
+    if (b.action === 'clock_in' || b.action === 'clock_out') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(b.action === 'clock_in' ? clockIn(b) : clockOut(b));
+    }
+    if (b.action === 'save_schedule') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(saveSchedule(b));
+    }
+    if (b.action === 'check_item') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(checkItem(b));
+    }
+    if (b.action === 'update_stock') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(updateStock(b));
+    }
+    if (b.action === 'receive_invoice') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(receiveInvoice(b));
+    }
+    if (b.action === 'coupon_redeem') {
+      if (b.token !== GAME_TOKEN) return out({ error: 'unauthorized' });
+      return out(couponRedeem(b));
+    }
+    // ---- legacy: sales sync จาก worker (เหมือนเดิมทุกบรรทัด) ----
+    if (b.token !== SYNC_TOKEN) return out({ error: 'unauthorized' });
+    const ss = SpreadsheetApp.openById(SS_ID);
+    let sh = ss.getSheetByName(T.SALES);
+    if (!sh) {
+      sh = ss.insertSheet(T.SALES);
+      sh.appendRow(['วันที่', 'SKU', 'เมนู (Toast)', 'ช่องทาง', 'จำนวน', 'ยอดสุทธิ $', 'sync เมื่อ']);
+      sh.setFrozenRows(1);
+    }
+    const dates = b.rows.map(function (r) { return String(r[0]); });
+    const uniq = dates.filter(function (v, i) { return dates.indexOf(v) === i; });
+    const data = sh.getDataRange().getValues();
+    const keep = data.filter(function (r, i) {
+      if (i === 0) return true;
+      const d = (r[0] instanceof Date) ? Utilities.formatDate(r[0], TZ, 'yyyy-MM-dd') : String(r[0]);
+      return uniq.indexOf(d) === -1;
+    });
+    sh.clearContents();
+    sh.getRange(1, 1, keep.length, keep[0].length).setValues(keep);
+    const now = stamp();
+    const rows = b.rows.map(function (r) { return [String(r[0]), r[1], r[2], r[3], r[4], r[5], now]; });
+    sh.getRange(keep.length + 1, 1, rows.length, 7).setValues(rows);
+    return out({ ok: true, written: rows.length });
+  } catch (err) { return out({ error: String(err) }); }
+}
+
+// ============================================================
+// Readers
+// ============================================================
+
+// คลังสูตร: header แถว 3, ข้อมูลเริ่มแถว 4
+// C=SKU D=ชื่อ E=หมวด F=ครัว H=ต้นทุนจากสูตร I=ราคาหน้าร้าน J=Cost% K=กำไร$ O=ราคาUber
+// AA=ราคาแนะนำ AC=สถานะ AD=นาทีแรงงาน AG=ต้นทุนเต็ม AH=กำไรสุทธิ$หน้าร้าน AI=กำไรสุทธิ$Uber AJ=rank AK=ต้นทุนใช้จริง AL=ที่มา
+function getCards(ss) {
+  const sh = ss.getSheetByName(T.LIB);
+  const last = sh.getLastRow();
+  if (last < 4) return [];
+  const v = sh.getRange(4, 1, last - 3, 38).getValues();
+  const cards = [];
+  v.forEach(function (r) {
+    if (!r[2]) return; // ไม่มี SKU = ข้าม
+    cards.push({
+      sku: str(r[2]), name: str(r[3]), category: str(r[4]), kitchen: str(r[5]),
+      cost_recipe: num(r[7]),        // H ต้นทุนจากสูตร (>0 = ปลุกแล้ว)
+      price: num(r[8]),              // I ราคาหน้าร้าน
+      food_pct: num(r[9]),           // J
+      profit_gross: num(r[10]),      // K กำไร$ หน้าร้าน
+      price_uber: num(r[14]),        // O
+      price_suggest: num(r[26]),     // AA
+      status: str(r[28]),            // AC
+      labor_min: num(r[29]),         // AD
+      sku_key: str(r[31]),           // AF "NWT-001 — ชื่อ" ใช้อ้างบล็อกสูตร
+      cost_full: num(r[32]),         // AG
+      profit_net: num(r[33]),        // AH กำไรสุทธิ$ หน้าร้าน
+      profit_net_uber: num(r[34]),   // AI
+      rank: str(r[35]),              // AJ ดาว/ม้า/ปริศนา/หมา
+      cost_actual: num(r[36]),       // AK
+      cost_source: str(r[37]),       // AL พิมพ์เอง/จากสูตร
+    });
+  });
+  return cards;
+}
+
+// เช็คสต็อก: header แถว 3 · C=ชื่อ D=หน่วย E=คงเหลือ F=ขั้นต่ำ G=เป้า H=สถานะ I=ควรสั่ง J=ต้นทุน/หน่วย K=มูลค่า L=คิวPO
+function getStock(ss) {
+  const sh = ss.getSheetByName(T.INV);
+  const last = sh.getLastRow();
+  if (last < 4) return [];
+  const v = sh.getRange(4, 1, last - 3, 12).getValues();
+  const items = [];
+  v.forEach(function (r) {
+    if (!r[2]) return;
+    items.push({
+      name: str(r[2]), unit: str(r[3]), qty: num(r[4]), min: num(r[5]), target: num(r[6]),
+      status: str(r[7]), order_qty: num(r[8]), value: num(r[10]), po_queue: str(r[11]),
+    });
+  });
+  return items;
+}
+
+// วัตถุดิบ: header แถว 3 · B=รหัส C=ชื่อ D=หน่วย E=ราคา/แพ็ค F=ปริมาณ/แพ็ค H=ต้นทุน/หน่วย(รวมYield) I=ผู้ขาย N=หมวด
+function getIngredients(ss) {
+  const sh = ss.getSheetByName(T.ING);
+  const last = sh.getLastRow();
+  if (last < 4) return [];
+  const v = sh.getRange(4, 1, last - 3, 14).getValues();
+  const items = [];
+  v.forEach(function (r) {
+    if (!r[2]) return;
+    items.push({
+      code: str(r[1]), name: str(r[2]), unit: str(r[3]), cost_per_unit: num(r[7]), category: str(r[13]),
+      pack_price: num(r[4]), pack_qty: num(r[5]), supplier: str(r[8]),
+    });
+  });
+  return items;
+}
+
+// ช่องทางขาย: header แถว 3 · C=ชื่อ D=ใช้งาน E=GP% F=บัตร% G=บัตร/รายการ H=ภาษี% L=Food cost เป้า
+function getChannels(ss) {
+  const sh = ss.getSheetByName(T.CH);
+  const last = sh.getLastRow();
+  if (last < 4) return [];
+  const v = sh.getRange(4, 1, last - 3, 12).getValues();
+  const items = [];
+  v.forEach(function (r) {
+    if (!r[2]) return;
+    items.push({
+      name: str(r[2]), active: str(r[3]) === 'Y', gp_pct: num(r[4]), card_pct: num(r[5]),
+      card_fee: num(r[6]), tax_pct: num(r[7]), food_target: num(r[11]),
+    });
+  });
+  return items;
+}
+
+// แดชบอร์ด: อ่าน cell ตำแหน่งคงที่ (ถ้าย้ายแถวในแท็บแดชบอร์ด ต้องแก้ที่นี่)
+function getDashboard(ss) {
+  const sh = ss.getSheetByName(T.DASH);
+  const g = function (a1) { const x = sh.getRange(a1).getValue(); return (x === '' || x === null) ? null : (typeof x === 'number' ? x : str(x)); };
+  const top5 = [], bottom5 = [];
+  const tv = sh.getRange('B13:H17').getValues();
+  tv.forEach(function (r) {
+    if (r[0]) top5.push({ name: str(r[0]), profit: num(r[1]), food_pct: num(r[2]) });
+    if (r[4]) bottom5.push({ name: str(r[4]), profit: num(r[5]), food_pct: num(r[6]) });
+  });
+  return {
+    menu_total: g('D5'), priced: g('H5'),
+    avg_cost_actual: g('D6'), avg_cost_full: g('H6'),
+    avg_price: g('D7'), avg_food_pct: g('H7'),
+    green: g('D8'), yellow_red: g('H8'),
+    wages_fixed: g('D22'), open_days: g('D21'),
+    bep_month: g('D26'), bep_day: g('D27'), bep_sales_month: g('D28'),
+    target_month: g('H26'), profit_goal: g('D31'), goal_need_day: g('H31'),
+    top5: top5, bottom5: bottom5,
+  };
+}
+
+// สรุปยอดขาย: วันนี้ / เมื่อวาน / เดือนนี้ / 14 วันล่าสุด + ประเมินกำไรสุทธิจากคลังสูตร
+function getSummary(ss) {
+  const dash = getDashboard(ss);
+  const lib = {};
+  getCards(ss).forEach(function (c) { lib[c.sku] = c; });
+
+  const res = {
+    dashboard: dash,
+    today: { date: dstr(new Date()), dishes: 0, sales: 0, profit_est: 0, cost_est: 0, food_pct: null, labor_cost: 0, labor_pct: null },
+    yesterday: { dishes: 0, sales: 0, top: null },
+    month: { dishes: 0, sales: 0, profit_est: 0 },
+    recent: [], has_sales: false, generated_at: stamp(),
+  };
+
+  const sh = ss.getSheetByName(T.SALES);
+  if (sh && sh.getLastRow() >= 2) {
+    const v = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues();
+    res.has_sales = v.length > 0;
+
+    const today = res.today.date;
+    const yday = dstr(new Date(Date.now() - 864e5));
+    const month = today.slice(0, 7);
+    const byDay = {}, ytop = {};
+
+    v.forEach(function (r) {
+      const d = (r[0] instanceof Date) ? dstr(r[0]) : String(r[0]);
+      const sku = str(r[1]), ch = str(r[3]), qty = num(r[4]) || 0, amt = num(r[5]) || 0;
+      const c = lib[sku];
+      const delivery = /uber|doordash|grubhub|delivery/i.test(ch);
+      const perDish = c ? (delivery ? c.profit_net_uber : c.profit_net) : null;
+
+      byDay[d] = byDay[d] || { date: d, dishes: 0, sales: 0 };
+      byDay[d].dishes += qty; byDay[d].sales += amt;
+
+      if (d.slice(0, 7) === month) {
+        res.month.dishes += qty; res.month.sales += amt;
+        if (perDish !== null) res.month.profit_est += qty * perDish;
+      }
+      if (d === today) {
+        res.today.dishes += qty; res.today.sales += amt;
+        if (perDish !== null) res.today.profit_est += qty * perDish;
+        if (c && c.cost_actual !== null) res.today.cost_est += qty * c.cost_actual;
+      }
+      if (d === yday) {
+        res.yesterday.dishes += qty; res.yesterday.sales += amt;
+        ytop[sku] = ytop[sku] || { sku: sku, name: c ? c.name : str(r[2]), qty: 0, food_pct: c ? c.food_pct : null };
+        ytop[sku].qty += qty;
+      }
+    });
+
+    if (res.today.sales > 0) res.today.food_pct = res.today.cost_est / res.today.sales;
+    let best = null;
+    Object.keys(ytop).forEach(function (k) { if (!best || ytop[k].qty > best.qty) best = ytop[k]; });
+    res.yesterday.top = best;
+    res.recent = Object.keys(byDay).sort().slice(-14).map(function (k) { return byDay[k]; });
+    res.today.profit_est = round2(res.today.profit_est);
+    res.month.profit_est = round2(res.month.profit_est);
+  }
+
+  // ค่าแรงวันนี้จากนาฬิกาตอกบัตรจริง (เฉพาะกะที่จบแล้ว) + ใครทำงานอยู่ตอนนี้
+  res.working_now = [];
+  const shf = ss.getSheetByName(T.SHIFT);
+  if (shf && shf.getLastRow() >= 4) {
+    readShifts(shf).forEach(function (r) {
+      if (r.date !== res.today.date) return;
+      if (r.status.indexOf('จบกะ') === 0) res.today.labor_cost += r.pay;
+      if (r.status.indexOf('ทำงาน') === 0) res.working_now.push({ name: r.name, tin: r.tin });
+    });
+    res.today.labor_cost = round2(res.today.labor_cost);
+    if (res.today.sales > 0 && res.today.labor_cost > 0)
+      res.today.labor_pct = res.today.labor_cost / res.today.sales;
+  }
+  return res;
+}
+
+// อ่านสูตรของ SKU (เอาไว้ prefill ฟอร์ม)
+function getRecipe(ss, sku) {
+  const loc = findBlock(ss, sku);
+  if (!loc) return { sku: sku, rows: [] };
+  const v = loc.sh.getRange(loc.row, 3, loc.len, 5).getValues(); // C..G
+  const rows = [];
+  v.forEach(function (r) {
+    if (r[0]) rows.push({ name: str(r[0]), qty: num(r[1]), unit: str(r[2]), cost: num(r[4]) });
+  });
+  return { sku: sku, rows: rows };
+}
+
+// เขียนสูตรลงบล็อกของ SKU — เขียนเฉพาะ C(วัตถุดิบ) D(ปริมาณ) E(หน่วย)
+// F,G เป็นสูตร VLOOKUP อยู่แล้ว ห้ามแตะ
+function saveRecipe(b) {
+  if (!b.sku) return { error: 'missing sku' };
+  const rows = (b.rows || []).filter(function (r) { return r && r.name; });
+  if (!rows.length) return { error: 'empty recipe' };
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const loc = findBlock(ss, b.sku);
+  if (!loc) return { error: 'block not found for ' + b.sku };
+  if (rows.length > loc.len) return { error: 'too many rows (max ' + loc.len + ')' };
+  const cde = [];
+  for (let i = 0; i < loc.len; i++) {
+    const r = rows[i];
+    cde.push(r ? [r.name, r.qty !== null && r.qty !== undefined ? r.qty : '', r.unit || ''] : ['', '', '']);
+  }
+  loc.sh.getRange(loc.row, 3, loc.len, 3).setValues(cde);
+  SpreadsheetApp.flush();
+  // อ่านต้นทุนรวมกลับ (ให้แอพโชว์ผลจริงหลังสูตรคำนวณ)
+  const back = getRecipe(ss, b.sku);
+  let total = 0;
+  back.rows.forEach(function (r) { if (r.cost) total += r.cost; });
+  return { ok: true, sku: b.sku, written: rows.length, cost_total: round2(total) };
+}
+
+// หาบล็อกของ SKU ในแท็บสูตรต่อเมนู: คอลัมน์ B มี "NWT-001 — ชื่อ" ที่แถวแรกของบล็อก
+function findBlock(ss, sku) {
+  const sh = ss.getSheetByName(T.REC);
+  const last = sh.getLastRow();
+  const v = sh.getRange(1, 2, last, 1).getValues(); // col B
+  let start = -1;
+  const starts = [];
+  for (let i = 0; i < v.length; i++) {
+    const s = str(v[i][0]);
+    if (s && s.indexOf('NWT-') === 0) {
+      starts.push(i + 1);
+      if (s === sku || s.indexOf(sku + ' ') === 0) start = i + 1; // "NWT-001" หรือ "NWT-001 — ชื่อ"
+    }
+  }
+  if (start === -1) return null;
+  const next = starts.filter(function (r) { return r > start; })[0] || (last + 1);
+  return { sh: sh, row: start, len: Math.min(next - start, 20) };
+}
+
+// ============================================================
+// Labor v2 — Time Clock + ตารางกะ + OT แคลิฟอร์เนีย + Payroll
+// กะงาน Shifts: B=วันที่ C=ชื่อ D=ตำแหน่ง E=เข้า F=ออก G=พัก(นาที)
+//               H=ชม.สุทธิ I=ปกติ J=OT1.5 K=OT2 L=ค่าแรง$ M=สถานะ N=บันทึกเมื่อ
+// พนักงาน Staff: B=ชื่อ C=ตำแหน่ง D=ประเภท E=เรต F=สถานะ G=PIN H=วันหยุด
+// ============================================================
+
+const SHIFT_HDR = ['วันที่', 'ชื่อ', 'ตำแหน่ง', 'เข้า', 'ออก', 'พัก(นาที)', 'ชม.สุทธิ', 'ปกติ', 'OT1.5', 'OT2', 'ค่าแรง $', 'สถานะ', 'บันทึกเมื่อ'];
+
+function setupLabor(ss) {
+  const created = [];
+  let st = ss.getSheetByName(T.STAFF);
+  if (!st) {
+    st = ss.insertSheet(T.STAFF);
+    st.getRange('B1').setValue('พนักงาน / Staff — ทะเบียนทีมงาน');
+    st.setFrozenRows(3);
+    created.push(T.STAFF);
+  }
+  st.getRange('B2').setValue('ประเภท: รายชั่วโมง ($/ชม. มี OT) หรือ รายเดือน ($/เดือน หาร 26 ต่อวัน ไม่มี OT) · PIN 4 หลักใช้ตอกบัตร · วันหยุด เช่น จ,อ');
+  st.getRange('B3:H3').setValues([['ชื่อ', 'ตำแหน่ง', 'ประเภท', 'เรต $', 'สถานะ', 'PIN', 'วันหยุด']]);
+  st.getRange('B3:H3').setFontWeight('bold');
+
+  let sh = ss.getSheetByName(T.SHIFT);
+  if (!sh) { sh = ss.insertSheet(T.SHIFT); sh.setFrozenRows(3); created.push(T.SHIFT); }
+  sh.getRange('B1').setValue('กะงาน / Shifts — นาฬิกาตอกบัตรจากแอพ Narwhal HQ · OT ตามกฎแคลิฟอร์เนียโดยประมาณ (>8ชม./วัน = 1.5x, >12 = 2x, >40ชม./สัปดาห์ปรับในสรุปจ่าย)');
+  sh.getRange('B3:N3').setValues([SHIFT_HDR]);
+  sh.getRange('B3:N3').setFontWeight('bold');
+
+  let sc = ss.getSheetByName(T.SCHED);
+  if (!sc) {
+    sc = ss.insertSheet(T.SCHED);
+    sc.getRange('B1').setValue('ตารางกะ / Schedule — วางแผนกะล่วงหน้าจากแอพ (แท็บนี้แอพเขียนให้ ไม่ต้องพิมพ์เอง)');
+    sc.getRange('B3:H3').setValues([['สัปดาห์', 'วันที่', 'ชื่อ', 'ตำแหน่ง', 'เริ่ม', 'เลิก', 'โน้ต']]);
+    sc.getRange('B3:H3').setFontWeight('bold');
+    sc.setFrozenRows(3);
+    created.push(T.SCHED);
+  }
+  return { ok: true, created: created, version: 2 };
+}
+
+// พนักงาน (PIN ไม่ส่งออกไป client — เช็คฝั่งเซิร์ฟเวอร์เท่านั้น)
+function getStaff(ss) {
+  const sh = ss.getSheetByName(T.STAFF);
+  if (!sh || sh.getLastRow() < 4) return [];
+  const v = sh.getRange(4, 2, sh.getLastRow() - 3, 7).getValues();
+  const items = [];
+  v.forEach(function (r) {
+    if (!r[0]) return;
+    items.push({
+      name: str(r[0]), role: str(r[1]), type: str(r[2]), rate: num(r[3]),
+      active: str(r[4]) !== 'พัก', has_pin: str(r[5]) !== '', days_off: str(r[6]),
+    });
+  });
+  return items;
+}
+
+function findStaff(ss, name, pin) {
+  const sh = ss.getSheetByName(T.STAFF);
+  if (!sh || sh.getLastRow() < 4) return { error: 'ยังไม่มีพนักงานในระบบ' };
+  const v = sh.getRange(4, 2, sh.getLastRow() - 3, 7).getValues();
+  for (let i = 0; i < v.length; i++) {
+    if (str(v[i][0]) === str(name)) {
+      const realPin = str(v[i][5]);
+      if (realPin && realPin !== str(pin)) return { error: 'PIN ไม่ถูกต้อง' };
+      return { name: str(v[i][0]), role: str(v[i][1]), type: str(v[i][2]), rate: num(v[i][3]) || 0 };
+    }
+  }
+  return { error: 'ไม่พบพนักงาน: ' + name };
+}
+
+// ---- OT แคลิฟอร์เนีย (โดยประมาณ): >8 ชม./วัน = 1.5x · >12 = 2x ----
+function splitOT(hours) {
+  const reg = Math.min(8, hours);
+  const ot15 = Math.max(0, Math.min(12, hours) - 8);
+  const ot2 = Math.max(0, hours - 12);
+  return { reg: round2(reg), ot15: round2(ot15), ot2: round2(ot2) };
+}
+function shiftPay(staff, hours) {
+  if ((staff.type || '').indexOf('เดือน') !== -1) return { pay: round2((staff.rate || 0) / 26), reg: round2(hours), ot15: 0, ot2: 0 };
+  const s = splitOT(hours);
+  return { pay: round2(staff.rate * (s.reg + s.ot15 * 1.5 + s.ot2 * 2)), reg: s.reg, ot15: s.ot15, ot2: s.ot2 };
+}
+
+// ---- ตอกบัตรเข้า ----
+function clockIn(b) {
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const staff = findStaff(ss, b.name, b.pin);
+  if (staff.error) return staff;
+  let sh = ss.getSheetByName(T.SHIFT);
+  if (!sh) { setupLabor(ss); sh = ss.getSheetByName(T.SHIFT); }
+  const rows = readShifts(sh);
+  const open = rows.find(function (r) { return r.name === staff.name && r.status.indexOf('ทำงาน') === 0; });
+  if (open) return { error: staff.name + ' ตอกเข้าไว้แล้วตั้งแต่ ' + open.tin + ' (' + open.date + ')' };
+  const now = Utilities.formatDate(new Date(), TZ, 'HH:mm');
+  sh.appendRow(['', dstr(new Date()), staff.name, staff.role, now, '', 0, '', '', '', '', '', 'ทำงานอยู่', stamp()]);
+  return { ok: true, name: staff.name, tin: now, status: 'in' };
+}
+
+// ---- ตอกบัตรออก + คำนวณ OT/ค่าแรง + เช็คพักเบรก (CA: >5 ชม.ต้องพัก ≥30 นาที) ----
+function clockOut(b) {
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const staff = findStaff(ss, b.name, b.pin);
+  if (staff.error) return staff;
+  const sh = ss.getSheetByName(T.SHIFT);
+  if (!sh) return { error: 'ยังไม่มีแท็บกะงาน' };
+  const rows = readShifts(sh);
+  const open = rows.slice().reverse().find(function (r) { return r.name === staff.name && r.status.indexOf('ทำงาน') === 0; });
+  if (!open) return { error: staff.name + ' ยังไม่ได้ตอกเข้า' };
+  const breakMin = Math.max(0, Number(b.breakMin) || 0);
+  const now = new Date();
+  const tout = Utilities.formatDate(now, TZ, 'HH:mm');
+  let hours = (now.getTime() - parseDT(open.date, open.tin)) / 3600000 - breakMin / 60;
+  if (hours < 0) hours = 0;
+  hours = round2(hours);
+  const pr = shiftPay(staff, hours);
+  const needBreak = hours > 5 && breakMin < 30;
+  const status = needBreak ? 'จบกะ ⚠พัก<30น.' : 'จบกะ';
+  sh.getRange(open.rowN, 2, 1, 13).setValues([[open.date, staff.name, staff.role, open.tin, tout, breakMin, hours, pr.reg, pr.ot15, pr.ot2, pr.pay, status, stamp()]]);
+  return { ok: true, name: staff.name, tin: open.tin, tout: tout, hours: hours, pay: pr.pay, ot15: pr.ot15, ot2: pr.ot2, break_warning: needBreak, status: 'out' };
+}
+
+// ---- ลงกะย้อนหลัง/แก้มือ (ลืมตอกบัตร) ----
+function logShift(b) {
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const staff = findStaff(ss, b.name, b.pin);
+  if (staff.error) return staff;
+  if (!b.tin || !b.tout) return { error: 'ต้องมีเวลาเข้า-ออก เช่น 11:00 และ 20:30' };
+  const date = b.date || dstr(new Date());
+  const breakMin = Math.max(0, Number(b.breakMin) || 0);
+  let hours = (parseDT(date, b.tout) - parseDT(date, b.tin)) / 3600000 - breakMin / 60;
+  if (!(hours > 0 && hours <= 16)) return { error: 'ช่วงเวลาไม่ถูกต้อง' };
+  hours = round2(hours);
+  const pr = shiftPay(staff, hours);
+  const needBreak = hours > 5 && breakMin < 30;
+  let sh = ss.getSheetByName(T.SHIFT);
+  if (!sh) { setupLabor(ss); sh = ss.getSheetByName(T.SHIFT); }
+  sh.appendRow(['', date, staff.name, staff.role, b.tin, b.tout, breakMin, hours, pr.reg, pr.ot15, pr.ot2, pr.pay, needBreak ? 'จบกะ ⚠พัก<30น. (มือ)' : 'จบกะ (มือ)', stamp()]);
+  return { ok: true, name: staff.name, hours: hours, pay: pr.pay, break_warning: needBreak, date: date };
+}
+
+// ---- อ่านกะทั้งหมด ----
+function readShifts(sh) {
+  if (!sh || sh.getLastRow() < 4) return [];
+  const v = sh.getRange(4, 2, sh.getLastRow() - 3, 13).getValues();
+  const rows = [];
+  v.forEach(function (r, i) {
+    if (!r[0] && !r[1]) return;
+    rows.push({
+      rowN: i + 4,
+      date: (r[0] instanceof Date) ? dstr(r[0]) : str(r[0]),
+      name: str(r[1]), role: str(r[2]),
+      tin: fmtT(r[3]), tout: fmtT(r[4]),
+      breakMin: num(r[5]) || 0, hours: num(r[6]) || 0,
+      reg: num(r[7]) || 0, ot15: num(r[8]) || 0, ot2: num(r[9]) || 0,
+      pay: num(r[10]) || 0, status: str(r[11]),
+    });
+  });
+  return rows;
+}
+
+// ---- สถานะตอกบัตรของวัน ----
+function getTimeclock(ss, dateStr) {
+  const sh = ss.getSheetByName(T.SHIFT);
+  const date = dateStr || dstr(new Date());
+  const rows = readShifts(sh).filter(function (r) { return r.date === date; });
+  return {
+    date: date, shifts: rows,
+    working: rows.filter(function (r) { return r.status.indexOf('ทำงาน') === 0; })
+      .map(function (r) { return { name: r.name, tin: r.tin }; }),
+  };
+}
+
+// ---- ตารางกะ ----
+function getSchedule(ss, week) {
+  const sh = ss.getSheetByName(T.SCHED);
+  if (!sh || sh.getLastRow() < 4) return { week: week, rows: [] };
+  const v = sh.getRange(4, 2, sh.getLastRow() - 3, 7).getValues();
+  const rows = [];
+  v.forEach(function (r) {
+    if (!r[0]) return;
+    const wk = (r[0] instanceof Date) ? dstr(r[0]) : str(r[0]);
+    if (week && wk !== week) return;
+    rows.push({
+      week: wk,
+      date: (r[1] instanceof Date) ? dstr(r[1]) : str(r[1]),
+      name: str(r[2]), role: str(r[3]), start: fmtT(r[4]), end: fmtT(r[5]), note: str(r[6]),
+    });
+  });
+  return { week: week, rows: rows };
+}
+
+function saveSchedule(b) {
+  if (!b.week || !Array.isArray(b.rows)) return { error: 'missing week/rows' };
+  const ss = SpreadsheetApp.openById(SS_ID);
+  let sh = ss.getSheetByName(T.SCHED);
+  if (!sh) { setupLabor(ss); sh = ss.getSheetByName(T.SCHED); }
+  if (sh.getLastRow() >= 4) {
+    const v = sh.getRange(4, 2, sh.getLastRow() - 3, 1).getValues();
+    for (let i = v.length - 1; i >= 0; i--) {
+      const wk = (v[i][0] instanceof Date) ? dstr(v[i][0]) : str(v[i][0]);
+      if (wk === b.week) sh.deleteRow(i + 4);
+    }
+  }
+  const rows = [];
+  b.rows.forEach(function (r) {
+    if (!r.name || !r.date || !r.start || !r.end) return;
+    rows.push(['', b.week, r.date, r.name, r.role || '', r.start, r.end, r.note || '']);
+  });
+  if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, 8).setValues(rows);
+  return { ok: true, week: b.week, written: rows.length };
+}
+
+// ---- สรุปเงินเดือนช่วงวันที่ (+weekly OT: ชม.ปกติเกิน 40/สัปดาห์ ปรับเป็น 1.5x) ----
+function laborSummary(ss, from, to) {
+  const sh = ss.getSheetByName(T.SHIFT);
+  const staffMap = {};
+  getStaff(ss).forEach(function (s) { staffMap[s.name] = s; });
+  const rows = readShifts(sh).filter(function (r) {
+    return r.status.indexOf('จบกะ') === 0 && (!from || r.date >= from) && (!to || r.date <= to);
+  });
+  const per = {};
+  rows.forEach(function (r) {
+    per[r.name] = per[r.name] || { days: {}, weeks: {}, hours: 0, reg: 0, ot15: 0, ot2: 0, pay: 0, warns: 0 };
+    const p = per[r.name];
+    p.days[r.date] = 1;
+    p.hours += r.hours; p.reg += r.reg; p.ot15 += r.ot15; p.ot2 += r.ot2; p.pay += r.pay;
+    if (r.status.indexOf('⚠') !== -1) p.warns++;
+    const wk = weekStart(r.date);
+    p.weeks[wk] = (p.weeks[wk] || 0) + r.reg;
+  });
+  const list = [];
+  const totals = { hours: 0, reg: 0, ot15: 0, ot2: 0, weekly_ot_adj: 0, pay: 0 };
+  Object.keys(per).forEach(function (k) {
+    const p = per[k];
+    const st = staffMap[k] || { type: '', rate: 0, role: '' };
+    let adj = 0;
+    if ((st.type || '').indexOf('เดือน') === -1) {
+      Object.keys(p.weeks).forEach(function (w) {
+        adj += Math.max(0, p.weeks[w] - 40) * (st.rate || 0) * 0.5;
+      });
+    }
+    adj = round2(adj);
+    const item = {
+      name: k, role: st.role || '', type: st.type || '',
+      days: Object.keys(p.days).length, hours: round2(p.hours),
+      reg: round2(p.reg), ot15: round2(p.ot15), ot2: round2(p.ot2),
+      weekly_ot_adj: adj, pay: round2(p.pay + adj), break_warns: p.warns,
+    };
+    list.push(item);
+    totals.hours += item.hours; totals.reg += item.reg; totals.ot15 += item.ot15;
+    totals.ot2 += item.ot2; totals.weekly_ot_adj += adj; totals.pay += item.pay;
+  });
+  Object.keys(totals).forEach(function (k) { totals[k] = round2(totals[k]); });
+  return { from: from, to: to, staff: list.sort(function (a, b2) { return b2.pay - a.pay; }), totals: totals };
+}
+
+// ============================================================
+// Ops: เช็คลิสต์เปิด-ปิดร้าน + อัปเดตสต็อกจากแอพ
+// รายการเช็ค (แก้ได้ในชีท): B=กะ(เปิด/ปิด) C=รายการ D=ประเภท(check/number)
+// เช็คลิสต์ log: B=วันที่ C=กะ D=รายการ E=ค่า F=โดย G=เวลา
+// ============================================================
+
+function setupOps(ss) {
+  const created = [];
+  let it = ss.getSheetByName(T.CKI);
+  if (!it) {
+    it = ss.insertSheet(T.CKI);
+    it.getRange('B1').setValue('รายการเช็ค / Checklist Items — แก้/เพิ่ม/ลบรายการได้ที่นี่ แอพจะอัปเดตตาม');
+    it.getRange('B3:D3').setValues([['กะ', 'รายการ', 'ประเภท']]);
+    it.getRange('B3:D3').setFontWeight('bold');
+    it.setFrozenRows(3);
+    const items = [
+      ['เปิด', 'เปิดไฟ/แอร์/ป้ายหน้าร้าน', 'check'],
+      ['เปิด', 'อุณหภูมิตู้เย็น walk-in (°F)', 'number'],
+      ['เปิด', 'อุณหภูมิตู้แช่แข็ง (°F)', 'number'],
+      ['เปิด', 'เปิดแก๊ส + จุดเตา + เช็ค hood', 'check'],
+      ['เปิด', 'นับเงินลิ้นชักเริ่มวัน ($)', 'number'],
+      ['เปิด', 'ของสด/prep พร้อมตามแผน', 'check'],
+      ['เปิด', 'เปิดเครื่อง Toast + ทดสอบ 1 บิล', 'check'],
+      ['เปิด', 'โต๊ะ/หน้าร้านสะอาดพร้อมรับลูกค้า', 'check'],
+      ['ปิด', 'ปิดแก๊สทุกหัว + เตาเย็น', 'check'],
+      ['ปิด', 'แรปของสดเก็บเข้าตู้ ติดวันที่', 'check'],
+      ['ปิด', 'อุณหภูมิตู้เย็นก่อนกลับ (°F)', 'number'],
+      ['ปิด', 'ล้างซิงค์/เขียง/พื้นครัว', 'check'],
+      ['ปิด', 'ทิ้งขยะ + ล็อคประตูหลัง', 'check'],
+      ['ปิด', 'นับเงินปิดยอด เก็บเข้าเซฟ ($)', 'number'],
+      ['ปิด', 'ปิดแอร์/ไฟ/ป้าย', 'check'],
+      ['ปิด', 'ตั้งกันขโมย + ล็อคประตูหน้า', 'check'],
+    ];
+    it.getRange(4, 2, items.length, 3).setValues(items);
+    created.push(T.CKI);
+  }
+  let lg = ss.getSheetByName(T.CKL);
+  if (!lg) {
+    lg = ss.insertSheet(T.CKL);
+    lg.getRange('B1').setValue('เช็คลิสต์ / Checklists log — แอพเขียนให้อัตโนมัติตอนทีมติ๊กรายการ');
+    lg.getRange('B3:G3').setValues([['วันที่', 'กะ', 'รายการ', 'ค่า', 'โดย', 'เวลา']]);
+    lg.getRange('B3:G3').setFontWeight('bold');
+    lg.setFrozenRows(3);
+    created.push(T.CKL);
+  }
+  let rc = ss.getSheetByName(T.RCV);
+  if (!rc) {
+    rc = ss.insertSheet(T.RCV);
+    rc.getRange('B1').setValue('รับของ / Receiving log — บันทึกจากการสแกนใบส่งของในแอพ · ประวัติราคาวัตถุดิบอยู่ที่นี่');
+    rc.getRange('B3:K3').setValues([['วันที่', 'ผู้ขาย', 'รายการ (ใบเสร็จ)', 'รหัส', 'จำนวนแพ็ค', 'ราคา/แพ็ค', 'รวม', 'ราคาเดิม', 'โดย', 'เมื่อ']]);
+    rc.getRange('B3:K3').setFontWeight('bold');
+    rc.setFrozenRows(3);
+    created.push(T.RCV);
+  }
+  return { ok: true, created: created };
+}
+
+// ============================================================
+// รับของจากใบส่งของ (สแกนในแอพ) — ต่อบรรทัดที่ user ยืนยันแล้ว:
+// อัปเดตวัตถุดิบ: E ราคา/แพ็ค (H ต้นทุน/หน่วยเป็นสูตร คำนวณใหม่เอง) + I ผู้ขาย + J วันที่
+// บวกสต็อก: แพ็ค × ปริมาณ/แพ็ค (F) เข้าเช็คสต็อก col E (เฉพาะชื่อที่ตรงกัน)
+// log ทุกบรรทัดเข้าแท็บรับของ (= ประวัติราคา)
+// b: {lines:[{code, invoice_name, packs, pack_price, add_stock}], supplier, by, date, dry_run}
+// ============================================================
+function receiveInvoice(b) {
+  if (!b.lines || !b.lines.length) return { error: 'no lines' };
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const ing = ss.getSheetByName(T.ING);
+  let rcv = ss.getSheetByName(T.RCV);
+  if (!rcv) { setupOps(ss); rcv = ss.getSheetByName(T.RCV); }
+  const last = ing.getLastRow();
+  const codes = ing.getRange(4, 2, last - 3, 1).getValues().map(function (r) { return str(r[0]); });
+  const date = b.date || dstr(new Date());
+  const by = str(b.by) || 'ทีม';
+  // กันรับใบซ้ำ: เลขที่ใบนี้จากผู้ขายรายนี้เคยรับแล้ว → เตือน ไม่บวกซ้ำ (เว้นแต่ force)
+  if (b.invoice_no && !b.force) {
+    const dup = invoiceAlreadyReceived(rcv, b.supplier, b.invoice_no);
+    if (dup) return { ok: false, duplicate: true, invoice_no: str(b.invoice_no), prev_date: dup.date };
+  }
+  const results = [];
+  b.lines.forEach(function (ln) {
+    const res = {
+      code: str(ln.code), invoice_name: str(ln.invoice_name),
+      packs: num(ln.packs) || 0, pack_price: num(ln.pack_price),
+      price_updated: false, stock_added: 0, stock_ok: false,
+    };
+    const idx = codes.indexOf(res.code);
+    if (idx === -1) { res.error = 'ไม่พบรหัสวัตถุดิบ: ' + res.code; results.push(res); return; }
+    const rowN = idx + 4;
+    const old_price = num(ing.getRange(rowN, 5).getValue());
+    const pack_qty = num(ing.getRange(rowN, 6).getValue()) || 0;
+    const ing_name = str(ing.getRange(rowN, 3).getValue());
+    const ing_unit = str(ing.getRange(rowN, 4).getValue());
+    res.name = ing_name;
+    res.old_price = old_price;
+    const willUpdatePrice = res.pack_price !== null && res.pack_price > 0 && res.pack_price !== old_price;
+    const addUnits = (ln.add_stock !== false && res.packs > 0 && pack_qty > 0) ? res.packs * pack_qty : 0;
+    if (b.dry_run) {
+      res.price_updated = willUpdatePrice;
+      res.stock_added = addUnits;
+      results.push(res);
+      return;
+    }
+    if (willUpdatePrice) {
+      ing.getRange(rowN, 5).setValue(res.pack_price);
+      res.price_updated = true;
+    }
+    if (b.supplier) ing.getRange(rowN, 9).setValue(str(b.supplier));
+    ing.getRange(rowN, 10).setValue(date);
+    if (addUnits > 0) {
+      const st = addStockByName(ss, ing_name, addUnits, ing_unit);
+      res.stock_ok = st.ok;
+      res.stock_added = st.ok ? addUnits : 0;
+    }
+    rcv.appendRow(['', date, str(b.supplier), res.invoice_name || ing_name, res.code, res.packs,
+      res.pack_price, Math.round((res.packs * (res.pack_price || 0)) * 100) / 100,
+      res.price_updated ? old_price : '', by, stamp(), str(b.invoice_no || '')]);
+    results.push(res);
+  });
+  return { ok: true, dry_run: !!b.dry_run, date: date, supplier: str(b.supplier), invoice_no: str(b.invoice_no || ''), results: results };
+}
+
+// กันรับซ้ำ: หาแถวใน Receiving ที่เลขที่ใบ (col L) + ผู้ขาย (col C) ตรงกัน — เจอคืน {date}
+function invoiceAlreadyReceived(rcv, supplier, invoiceNo) {
+  if (!invoiceNo || !rcv || rcv.getLastRow() < 2) return null;
+  const v = rcv.getRange(2, 2, rcv.getLastRow() - 1, 11).getValues(); // B..L
+  const no = String(invoiceNo).trim().toLowerCase();
+  const sup = String(supplier || '').trim().toLowerCase();
+  for (let i = 0; i < v.length; i++) {
+    const rowNo = String(v[i][10] || '').trim().toLowerCase(); // L = เลขที่ใบ
+    if (!rowNo || rowNo !== no) continue;
+    const rowSup = String(v[i][1] || '').trim().toLowerCase(); // C = ผู้ขาย
+    if (sup && rowSup && rowSup !== sup) continue;
+    const d = v[i][0]; // B = วันที่
+    return { date: (d instanceof Date) ? dstr(d) : String(d) };
+  }
+  return null;
+}
+
+// หาแถวในเช็คสต็อกตามชื่อ (ไม่สนตัวพิมพ์/ช่องว่างหน้าหลัง) — ไม่เจอคืน 0
+function findStockRow(sh, name) {
+  const last = sh.getLastRow();
+  if (last < 4) return 0;
+  const v = sh.getRange(4, 3, last - 3, 1).getValues();
+  const nm = String(name).trim().toLowerCase();
+  for (let i = 0; i < v.length; i++) {
+    if (String(v[i][0]).trim().toLowerCase() === nm) return i + 4;
+  }
+  return 0;
+}
+
+// บวกจำนวนเข้าเช็คสต็อก (col E คงเหลือนับ) — ไม่เจอชื่อ = สร้างแถวใหม่ต่อท้าย (upsert)
+function addStockByName(ss, name, add, unit) {
+  const sh = ss.getSheetByName(T.INV);
+  if (!sh) return { ok: false };
+  const row = findStockRow(sh, name);
+  if (!row) {
+    sh.appendRow(['', '', String(name), String(unit || ''), Number(add)]);
+    return { ok: true, created: true };
+  }
+  const cur = num(sh.getRange(row, 5).getValue()) || 0;
+  sh.getRange(row, 5).setValue(cur + add);
+  return { ok: true };
+}
+
+function getChecklists(ss, dateStr) {
+  const date = dateStr || dstr(new Date());
+  let it = ss.getSheetByName(T.CKI);
+  if (!it) { setupOps(ss); it = ss.getSheetByName(T.CKI); }
+  const items = [];
+  if (it.getLastRow() >= 4) {
+    it.getRange(4, 2, it.getLastRow() - 3, 3).getValues().forEach(function (r) {
+      if (r[1]) items.push({ shift: str(r[0]), label: str(r[1]), type: str(r[2]) === 'number' ? 'number' : 'check' });
+    });
+  }
+  const done = [];
+  const lg = ss.getSheetByName(T.CKL);
+  if (lg && lg.getLastRow() >= 4) {
+    lg.getRange(4, 2, lg.getLastRow() - 3, 6).getValues().forEach(function (r) {
+      const d = (r[0] instanceof Date) ? dstr(r[0]) : str(r[0]);
+      if (d === date) done.push({ shift: str(r[1]), label: str(r[2]), value: str(r[3]), by: str(r[4]), time: fmtT(r[5]) });
+    });
+  }
+  return { date: date, items: items, done: done };
+}
+
+// ติ๊กรายการ (ซ้ำรายการเดิมของวันเดียวกัน = อัปเดตแถวเดิม)
+function checkItem(b) {
+  if (!b.shift || !b.label) return { error: 'missing shift/label' };
+  const ss = SpreadsheetApp.openById(SS_ID);
+  let lg = ss.getSheetByName(T.CKL);
+  if (!lg) { setupOps(ss); lg = ss.getSheetByName(T.CKL); }
+  const date = b.date || dstr(new Date());
+  const val = (b.value === undefined || b.value === null || b.value === '') ? '✓' : String(b.value);
+  const by = str(b.by) || 'ทีม';
+  const now = Utilities.formatDate(new Date(), TZ, 'HH:mm');
+  if (lg.getLastRow() >= 4) {
+    const v = lg.getRange(4, 2, lg.getLastRow() - 3, 6).getValues();
+    for (let i = 0; i < v.length; i++) {
+      const d = (v[i][0] instanceof Date) ? dstr(v[i][0]) : str(v[i][0]);
+      if (d === date && str(v[i][1]) === str(b.shift) && str(v[i][2]) === str(b.label)) {
+        lg.getRange(i + 4, 5, 1, 3).setValues([[val, by, now]]);
+        return { ok: true, updated: true, label: b.label, value: val };
+      }
+    }
+  }
+  lg.appendRow(['', date, b.shift, b.label, val, by, now]);
+  return { ok: true, updated: false, label: b.label, value: val };
+}
+
+// นับสต็อกจากแอพ — เขียนเฉพาะช่อง "คงเหลือ(นับ)" (E) สถานะ/มูลค่าเป็นสูตรเดิมของชีท
+function updateStock(b) {
+  if (!b.name || b.qty === undefined) return { error: 'missing name/qty' };
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const sh = ss.getSheetByName(T.INV);
+  if (!sh) return { error: 'ไม่มีแท็บเช็คสต็อก' };
+  const row = findStockRow(sh, b.name);
+  if (!row) {
+    sh.appendRow(['', '', String(b.name), String(b.unit || ''), Number(b.qty)]); // C ชื่อ D หน่วย E คงเหลือ
+    return { ok: true, name: b.name, qty: Number(b.qty), created: true };
+  }
+  sh.getRange(row, 5).setValue(Number(b.qty)); // col E คงเหลือ(นับ)
+  return { ok: true, name: b.name, qty: Number(b.qty), created: false };
+}
+
+// ---- labor helpers ----
+function parseDT(dateStr, hhmm) {
+  const dt = new Date(String(dateStr) + ' ' + String(hhmm || '00:00'));
+  return isNaN(dt.getTime()) ? new Date(String(dateStr) + 'T00:00:00').getTime() : dt.getTime();
+}
+function fmtT(x) {
+  if (x instanceof Date) return Utilities.formatDate(x, TZ, 'HH:mm');
+  return str(x);
+}
+function weekStart(dateStr) { // จันทร์ = วันเริ่มสัปดาห์
+  const d = new Date(String(dateStr) + 'T12:00:00');
+  const day = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - day);
+  return Utilities.formatDate(d, TZ, 'yyyy-MM-dd');
+}
+
+// ---------- utils ----------
+const COUPON_EXP = '2026-09-30';
+const COUPON_CODES = [
+  'NW10-MUEJG','NW10-ZTQ3W','NW10-EN5ZN','NW10-GGJPM','NW10-FC6A4','NW10-JCZQ7','NW10-AAJMB','NW10-SN3SX',
+  'NW10-T4N5M','NW10-RYFTF','NW10-Y39SP','NW10-USWA5','NW10-BQTK2','NW10-WUBRJ','NW10-CMQMS','NW10-NZ4RB',
+  'NW10-5QV7J','NW10-28JD8','NW10-XPHG9','NW10-AXUKD','NW10-8XFPX','NW10-CWUJR','NW10-XGQV4','NW10-PDVTQ',
+  'NW10-EM2E8','NW10-KSMA5','NW10-262RJ','NW10-MK6S8','NW10-PEZC5','NW10-QU35F','NW10-H8UTP','NW10-94FUT',
+  'NW10-Y97EW','NW10-Q3G9T','NW10-QGV9K','NW10-JUY5H','NW10-QJGVC','NW10-KW4ER','NW10-XX5BM','NW10-RTH3Y',
+  'NW10-S97NB','NW10-7GZ2H','NW10-63H55','NW10-KKAW2','NW10-2AAEE','NW10-TABH7','NW10-HGBXF','NW10-H9WTT',
+  'NW10-VUFXS','NW10-N4ZEW','NW10-J5FS2','NW10-AQSYR','NW10-6BCMG','NW10-WWFDX','NW10-8J48N','NW10-KQH24',
+  'NW10-V6K9P','NW10-662KG','NW10-S3N6H','NW10-FSUTC','NW10-TQS3W','NW10-3JW3U','NW10-ANZGE','NW10-CZ86U',
+  'NW10-A84RS','NW10-W572F','NW10-3BQ8Y','NW10-UPJU7','NW10-9KGXX','NW10-577WJ','NW10-XU6MM','NW10-3BEUE',
+  'NW10-9SR9A','NW10-ZBZ5Y','NW10-G55Z8','NW10-UWX3K','NW10-6SMV5','NW10-UZNWY','NW10-5MUEJ','NW10-53EXY',
+  'NW10-BUD6Z','NW10-933EB','NW10-SJHTQ','NW10-NVMW2','NW10-BQYY8','NW10-K2EFV','NW10-YB36H','NW10-Y7DN3',
+  'NW10-9VS4W','NW10-WUYX6','NW10-X6EZU','NW10-U4WJ7','NW10-C9M7F','NW10-AAZ84','NW10-C5HTA','NW10-ZGT4A',
+  'NW10-EWQZ7','NW10-AT5HD','NW10-WZ8VU','NW10-WA7QP','NW10-526ES','NW10-MWCJX','NW10-VEJQT','NW10-XBU5C',
+  'NW10-JTU4T','NW10-ZSKNY','NW10-8ZCPF','NW10-3QWJ3','NW10-JQDME','NW10-8MXSF','NW10-6V6GS','NW10-GDDNU',
+  'NW10-J3CTK','NW10-ZGSMT','NW10-JMGC7','NW10-HGCMP','NW10-P7GE4','NW10-88SZF','NW10-FVAHH','NW10-A4JQE',
+  'NW10-XGJBW','NW10-K5FWE','NW10-4SHMY','NW10-SPBQB','NW10-6UNB5','NW10-EGQA6','NW10-RE3PD','NW10-XBH2R',
+  'NW10-B5FB2','NW10-VDFNQ','NW10-TC38H','NW10-EVTTQ','NW10-266TW','NW10-A844Q','NW10-JYJ4P','NW10-NXPJV',
+  'NW10-VGVT7','NW10-G5N27','NW10-4P9FK','NW10-TX78M','NW10-R9H7N','NW10-T72BZ','NW10-F6GAE','NW10-TX82A',
+  'NW10-DB7YJ','NW10-UVX9M','NW10-X9HYW','NW10-3KBNF','NW10-M9JZV','NW10-2T8W3','NW10-2BQ9N','NW10-JVT95',
+  'NW10-6FUM3','NW10-MFWUE','NW10-NEE47','NW10-ETGUS','NW10-XRFM4','NW10-9FVP5','NW10-KUYQW','NW10-3FVNT',
+  'NW10-YRFSE','NW10-9E4TB','NW10-DCJPV','NW10-WVA89','NW10-3CRCS','NW10-GNCF5','NW10-WB35M','NW10-DB4XU',
+  'NW10-4P4BD','NW10-766MZ','NW10-Y68WG','NW10-3UC2N','NW10-845GC','NW10-UJME7','NW10-MMTC3','NW10-KEEN6',
+  'NW10-8SE8E','NW10-PWRTH','NW10-SXRPF','NW10-WXC9M','NW10-3BYRM','NW10-MKN58','NW10-DSE5W','NW10-HWC9F',
+  'NW10-H3JVN','NW10-A2WVV','NW10-TB35P','NW10-XYT9D','NW10-NJTFV','NW10-DPPRD','NW10-P453Z','NW10-4G3RM',
+  'NW10-HJ6VW','NW10-JBMRQ','NW10-6X7E5','NW10-G6858','NW10-H2RS4','NW10-NEAPH','NW10-AAVNH','NW10-568UG',
+  'NW10-TEST1',
+];
+
+// ---------- Coupons: ตรวจ + redeem คูปอง $10 (โค้ด NW10-XXXXX) ----------
+function setupCoupons(ss) {
+  let sh = ss.getSheetByName(T.COUP);
+  if (sh && sh.getLastRow() > 1) return { ok: true, already: true, rows: sh.getLastRow() - 1 };
+  if (!sh) sh = ss.insertSheet(T.COUP);
+  sh.clear();
+  sh.appendRow(['Code', 'Expires', 'RedeemedAt', 'RedeemedBy', 'Note']);
+  sh.setFrozenRows(1);
+  const rows = COUPON_CODES.map(function (cd) { return [cd, COUPON_EXP, '', '', '']; });
+  sh.getRange(2, 1, rows.length, 5).setValues(rows);
+  sh.getRange(2, 1, rows.length, 2).setNumberFormat('@'); // เก็บเป็น text กัน auto-date
+  return { ok: true, seeded: rows.length };
+}
+
+function couponNorm(code) {
+  return String(code || '').toUpperCase().replace(/[^A-Z0-9-]/g, '');
+}
+
+function couponInfo(row) {
+  const expRaw = row[1];
+  const exp = (expRaw instanceof Date)
+    ? Utilities.formatDate(expRaw, TZ, 'yyyy-MM-dd') : String(expRaw || COUPON_EXP);
+  const redeemedAt = row[2] ? ((row[2] instanceof Date)
+    ? Utilities.formatDate(row[2], TZ, 'yyyy-MM-dd HH:mm') : String(row[2])) : '';
+  const today = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+  let status = 'valid';
+  if (redeemedAt) status = 'used';
+  else if (today > exp) status = 'expired';
+  return { status: status, expires: exp, redeemedAt: redeemedAt, redeemedBy: String(row[3] || ''), note: String(row[4] || '') };
+}
+
+function couponFind(ss, code) {
+  const sh = ss.getSheetByName(T.COUP);
+  if (!sh) return { sh: null, rowIdx: -1, code: couponNorm(code) };
+  const cd = couponNorm(code);
+  const data = sh.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (couponNorm(data[i][0]) === cd) return { sh: sh, rowIdx: i + 1, row: data[i], code: cd };
+  }
+  return { sh: sh, rowIdx: -1, code: cd };
+}
+
+function couponCheck(ss, code) {
+  if (!couponNorm(code)) return { ok: false, status: 'notfound', code: '' };
+  const f = couponFind(ss, code);
+  if (!f.sh) return { ok: false, status: 'nosheet', hint: 'เรียก setup_coupons ก่อน' };
+  if (f.rowIdx < 0) return { ok: true, code: f.code, status: 'notfound' };
+  const info = couponInfo(f.row);
+  return { ok: true, code: f.code, status: info.status, expires: info.expires,
+           redeemedAt: info.redeemedAt, redeemedBy: info.redeemedBy, note: info.note };
+}
+
+function couponRedeem(b) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(8000);
+  try {
+    const ss = SpreadsheetApp.openById(SS_ID);
+    const f = couponFind(ss, b.code);
+    if (!f.sh || f.rowIdx < 0) return { ok: false, status: 'notfound', code: f.code };
+    const info = couponInfo(f.row);
+    if (info.status === 'used')    return { ok: false, status: 'used', redeemedAt: info.redeemedAt, redeemedBy: info.redeemedBy };
+    if (info.status === 'expired') return { ok: false, status: 'expired', expires: info.expires };
+    const at = stamp();
+    f.sh.getRange(f.rowIdx, 3, 1, 3).setValues([[at, String(b.by || ''), String(b.note || '')]]);
+    return { ok: true, status: 'redeemed', code: f.code, redeemedAt: at, redeemedBy: String(b.by || '') };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function out(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function str(x) { return (x === null || x === undefined) ? '' : String(x).trim(); }
+function num(x) { return (typeof x === 'number' && isFinite(x)) ? x : (x !== '' && x !== null && !isNaN(Number(x)) ? Number(x) : null); }
+function round2(x) { return Math.round((x || 0) * 100) / 100; }
+function dstr(d) { return Utilities.formatDate(d, TZ, 'yyyy-MM-dd'); }
+function stamp() { return Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm'); }
