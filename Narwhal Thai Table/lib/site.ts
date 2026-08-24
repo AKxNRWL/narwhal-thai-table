@@ -75,6 +75,14 @@ export const SOCIAL: SocialLink[] = [
 export const GBP_CID = '6790489916821266867';
 export const GBP_MAP_URL = `https://maps.google.com/?cid=${GBP_CID}`;
 
+/* One canonical "navigate me there" link, used by the map caption and the
+   mobile action bar. /maps/dir + destination opens Google Maps in DIRECTIONS
+   mode (on phones it hands straight to the app) — not a search page. */
+export const DIRECTIONS_URL =
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    'Narwhal Thai Table, 19072 Beach Blvd, Huntington Beach, CA 92648',
+  )}`;
+
 /** Stable @id so the Restaurant node on all 74 pages is ONE entity, not 74. */
 export const RESTAURANT_ID = `${SITE_URL}/#restaurant`;
 

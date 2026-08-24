@@ -6,6 +6,7 @@ import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
+import MobileActionBar from '@/components/MobileActionBar';
 import AdsConversions from '@/components/AdsConversions';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 
@@ -161,6 +162,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Nav />
         <main id="main">{children}</main>
         <Footer />
+        <MobileActionBar />
         <ChatWidget />
         <AdsConversions />
         {/* Google Analytics 4 — property "narwhalthaihb.com", stream "Narwhal Thai Table Website" (welcome@ account)

@@ -1560,3 +1560,53 @@ a.dish:hover .dish-thumb img{transform:scale(1.06);}
 /* .dish-name is now an <h3> — strip the UA heading margin so the menu card
    layout is byte-identical to before. */
 h3.dish-name{margin:0;font-weight:500;}
+
+/* ============================================================
+   MOBILE ACTION BAR (M11) — phones only, ≤760px
+   The three things a hungry visitor actually wants, permanently in
+   thumb reach on every page (including all 67 dish pages, which had
+   no call to action above the footer). Desktop keeps the nav CTA and
+   never renders this.
+   --mab-h is the bar's real height incl. the iPhone home-indicator
+   inset; it feeds the body padding and lifts Aileen's chat button so
+   the bar can never cover content or another control.
+   z-index sits under the chat panel (1200) on purpose.
+   ============================================================ */
+:root{ --mab-h:0px; }
+.mobile-action-bar{ display:none; }
+
+@media (max-width:760px){
+  :root{ --mab-h:calc(58px + env(safe-area-inset-bottom, 0px)); }
+
+  .mobile-action-bar{
+    display:grid; grid-auto-flow:column; grid-auto-columns:1fr;
+    position:fixed; left:0; right:0; bottom:0; z-index:60;
+    background:rgba(6,18,31,0.94);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border-top:1px solid rgba(176,141,60,0.28);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  .mab-item{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:4px; min-height:58px; text-decoration:none;
+    font-family:var(--font-sans); font-size:9.5px; letter-spacing:0.18em;
+    text-transform:uppercase; font-weight:500;
+    color:rgba(245,240,230,0.82);
+    -webkit-tap-highlight-color:transparent;
+    transition:background 0.2s, color 0.2s;
+  }
+  .mab-item svg{ width:20px; height:20px; }
+  .mab-item + .mab-item{ border-left:1px solid rgba(176,141,60,0.16); }
+  .mab-item:active{ background:rgba(200,162,78,0.12); color:var(--brass-light); }
+  .mab-primary{ color:var(--brass-light); }
+  .mab-primary svg{ color:var(--brass); }
+
+  /* Reserve the bar's height so the footer is never hidden behind it. */
+  body{ padding-bottom:var(--mab-h); }
+  .nara-fab{ bottom:calc(16px + var(--mab-h)); }
+
+  /* M14 — one clear action in the hero on phones. Order Online stays the
+     solid brass button, "Explore the Menu" stays as the browse path, and
+     "Save a Seat" steps aside because the bar below carries Reserve. */
+  .hero-cta a[href="/contact/reservation"]{ display:none; }
+}
