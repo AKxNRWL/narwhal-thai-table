@@ -11,11 +11,6 @@
   [[plugins]]
     package = "@netlify/plugin-nextjs"
 
-  # Per-deploy Lighthouse audit (performance/SEO/a11y/best-practices scores in the build log).
-  # Report-only — does not fail the build.
-  [[plugins]]
-    package = "@netlify/plugin-lighthouse"
-
 # Serve the gated /os command-center (static file public/os.html) at a clean URL
 [[redirects]]
   from = "/os"
