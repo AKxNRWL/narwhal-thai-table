@@ -1,4 +1,4 @@
-import { readCookie, readSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { getToastToday } from '@/lib/toast';
 
 export const runtime = 'nodejs';
@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
    is absent so the office shows demo mode. See virtual-ai-office/TOAST-SETUP.md */
 
 export async function GET(req: Request) {
-  const sess = readSession(readCookie(req));
+  const sess = await requireSession(req);
   if (!sess) return Response.json({ ok: false }, { status: 401 });
 
   const d = await getToastToday();

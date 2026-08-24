@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import { Space_Grotesk, Fraunces, Inter } from 'next/font/google';
 import './globals.css';
 import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
@@ -7,6 +8,19 @@ import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
 import AdsConversions from '@/components/AdsConversions';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
+
+/* Self-hosted webfonts (next/font).
+   These used to load from fonts.googleapis.com via a <link> in <head>, which
+   is a render-blocking request to a third-party origin on EVERY page. next/font
+   downloads the files at build time and serves them from our own domain with a
+   1-year immutable cache, injects @font-face directly, and sets size-adjust
+   fallback metrics so the swap doesn't shift layout.
+   Each exposes a CSS variable that globals.css maps onto --font-display /
+   --font-serif / --font-sans. */
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], display: 'swap', variable: '--f-display' });
+const fraunces = Fraunces({ subsets: ['latin'], style: ['normal', 'italic'], axes: ['SOFT', 'WONK', 'opsz'], display: 'swap', variable: '--f-serif' });
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--f-sans' });
+const fontVars = `${spaceGrotesk.variable} ${fraunces.variable} ${inter.variable}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -46,11 +60,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={fontVars}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
         {/* Noto Sans family — used by the Coming Soon ticker so every
             language (Thai/Vietnamese/Chinese/Korean/Japanese/Latin) shares
             the SAME design weight + x-height. Without this the browser

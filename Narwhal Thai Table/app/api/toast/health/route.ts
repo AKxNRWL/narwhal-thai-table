@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
    real call to Toast actually succeeds. Open this right after setting the env
    vars + redeploying to verify the switch flipped. Owner-gated. */
 export async function GET(req: Request) {
-  if (!ownerOk(req)) return Response.json({ ok: false }, { status: 401 });
+  if (!(await ownerOk(req))) return Response.json({ ok: false }, { status: 401 });
 
   const env = {
     TOAST_HOSTNAME: !!process.env.TOAST_HOSTNAME,

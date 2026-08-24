@@ -88,13 +88,13 @@ async function build(reviews: Review[], force: boolean): Promise<AgentResult> {
 }
 
 export async function GET(req: Request) {
-  if (!ownerOk(req)) return Response.json({ ok: false }, { status: 401 });
+  if (!(await ownerOk(req))) return Response.json({ ok: false }, { status: 401 });
   const force = new URL(req.url).searchParams.get('force') === '1';
   return Response.json(await build(DEMO_REVIEWS, force), { headers: { 'cache-control': 'no-store' } });
 }
 
 export async function POST(req: Request) {
-  if (!ownerOk(req)) return Response.json({ ok: false }, { status: 401 });
+  if (!(await ownerOk(req))) return Response.json({ ok: false }, { status: 401 });
   let reviews: Review[] = DEMO_REVIEWS;
   try {
     const b = await req.json();

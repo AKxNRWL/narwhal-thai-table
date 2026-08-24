@@ -25,7 +25,7 @@ const PENDING = [
 ];
 
 export async function GET(req: Request) {
-  if (!ownerOk(req)) return Response.json({ ok: false }, { status: 401 });
+  if (!(await ownerOk(req))) return Response.json({ ok: false }, { status: 401 });
   const force = new URL(req.url).searchParams.get('force') === '1';
 
   const now = new Date();

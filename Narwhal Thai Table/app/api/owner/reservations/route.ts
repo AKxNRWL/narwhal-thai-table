@@ -1,5 +1,5 @@
 import { getStore } from '@netlify/blobs';
-import { readCookie, readSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { dataFor, getTenant } from '@/lib/tenants';
 import { looksLikeEmail, sendReservationConfirmed } from '@/lib/guestMail';
 
@@ -23,7 +23,7 @@ type Rec = Record<string, unknown>;
 const str = (r: Rec, k: string): string => (typeof r[k] === 'string' ? (r[k] as string) : '');
 
 export async function POST(req: Request) {
-  const sess = readSession(readCookie(req));
+  const sess = await requireSession(req);
   if (!sess) return Response.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   const tenant = await getTenant(sess.tenantId);
   if (!tenant) return Response.json({ ok: false, error: 'unauthorized' }, { status: 401 });

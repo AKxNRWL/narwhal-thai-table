@@ -5,7 +5,7 @@
    No code change is needed to "go live" — only env vars. See lib/toast.ts. */
 
 import { getStore } from '@netlify/blobs';
-import { readCookie, readSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { bizDate } from '@/lib/toast';
 
 export const MODEL = 'claude-sonnet-4-6';
@@ -34,8 +34,8 @@ export type AgentResult = {
   cached?: boolean;
 };
 
-export function ownerOk(req: Request): boolean {
-  return !!readSession(readCookie(req));
+export async function ownerOk(req: Request): Promise<boolean> {
+  return !!(await requireSession(req));
 }
 
 export function hasAI(): boolean {

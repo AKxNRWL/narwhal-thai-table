@@ -1,5 +1,5 @@
 import { getStore } from '@netlify/blobs';
-import { readCookie, readSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { getToastToday, bizDate } from '@/lib/toast';
 
 export const runtime = 'nodejs';
@@ -93,7 +93,7 @@ const DEMO = {
 };
 
 export async function GET(req: Request) {
-  const sess = readSession(readCookie(req));
+  const sess = await requireSession(req);
   if (!sess) return Response.json({ ok: false }, { status: 401 });
 
   const date = bizDate();

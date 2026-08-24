@@ -1,4 +1,4 @@
-import { readCookie, readSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { getTenant } from '@/lib/tenants';
 import {
   issueCoupon,
@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
      GET  ?format=csv                                         → export the book (backup / mail tools) */
 
 async function authed(req: Request): Promise<boolean> {
-  const sess = readSession(readCookie(req));
+  const sess = await requireSession(req);
   if (!sess) return false;
   return Boolean(await getTenant(sess.tenantId));
 }

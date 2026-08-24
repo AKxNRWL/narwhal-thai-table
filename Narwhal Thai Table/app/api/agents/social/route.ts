@@ -85,7 +85,7 @@ async function build(topic: string, force: boolean): Promise<AgentResult> {
 }
 
 export async function GET(req: Request) {
-  if (!ownerOk(req)) return Response.json({ ok: false }, { status: 401 });
+  if (!(await ownerOk(req))) return Response.json({ ok: false }, { status: 401 });
   const u = new URL(req.url);
   const force = u.searchParams.get('force') === '1';
   const topic = u.searchParams.get('topic') || 'Soft opening สัปดาห์นี้ + จานซิกเนเจอร์ Narwhal Salad & Pacific lobster';
@@ -93,7 +93,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  if (!ownerOk(req)) return Response.json({ ok: false }, { status: 401 });
+  if (!(await ownerOk(req))) return Response.json({ ok: false }, { status: 401 });
   let topic = 'Soft opening + จานซิกเนเจอร์';
   try {
     const b = await req.json();

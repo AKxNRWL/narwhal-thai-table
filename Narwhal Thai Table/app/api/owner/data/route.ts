@@ -1,5 +1,5 @@
 import { getStore } from '@netlify/blobs';
-import { readCookie, readSession } from '@/lib/session';
+import { requireSession } from '@/lib/session';
 import { dataFor, getTenant, TENANT_NARWHAL_ID } from '@/lib/tenants';
 import { listCustomers, segmentCustomers } from '@/lib/customers';
 import { aggregateChatLogs } from '@/lib/statsAggregate';
@@ -22,7 +22,7 @@ async function readArray<T>(storeName: string, key: string): Promise<T[]> {
 }
 
 export async function GET(req: Request) {
-  const sess = readSession(readCookie(req));
+  const sess = await requireSession(req);
   if (!sess) return Response.json({ ok: false }, { status: 401 });
   const tenant = await getTenant(sess.tenantId);
   if (!tenant) return Response.json({ ok: false }, { status: 401 });

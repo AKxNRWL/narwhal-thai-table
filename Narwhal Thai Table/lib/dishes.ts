@@ -70,7 +70,7 @@ export const DISHES: Dish[] = [
       lede: "Proof that a perfect wing needs no costume — just heat, salt and patience.",
       history: "Fried chicken is one of Thailand's great street romances: gai tod stands perfume every market in the country, each vendor guarding a batter mix and a fry time like a family heirloom. Ours keeps that faith — a light dredge and a hard fry, so the skin crackles while the meat stays steaming-juicy. No sauce required. That is the point.",
     }  },
-  { slug: 'thai-fish-cake', name: 'Fish Cakes (6 pc)', thai: 'ทอดมันปลา', category: 'appetizers',
+  { slug: 'thai-fish-cake', name: 'Narwhal Fish Cakes (6 pc)', thai: 'ทอดมันปลา', category: 'appetizers',
     description: "Bouncy-tender fish cakes fried deep bronze — cool cucumber-chili relish & crushed peanuts for crunch.", price: '$14',
     story: {
       lede: "A market-day classic from Thailand's river country — springy, herb-flecked, fried to deep bronze.",
@@ -175,7 +175,7 @@ export const DISHES: Dish[] = [
     },
   },
   { slug: 'tom-yum', name: 'Tom Yum', thai: 'ต้มยำ', category: 'soup', spicy: true, protein: true,
-    description: "The famous hot & sour — lemongrass, galangal & kaffir lime steaming from a chili-red broth of straw mushrooms.", price: '$13',
+    description: "The famous hot & sour — lemongrass, galangal & kaffir lime steaming from a chili-red broth of straw mushrooms.", price: '$14',
     story: {
       lede: "Thailand's most famous pot — the hot-and-sour broth that taught the world to say lemongrass and galangal.",
       history: "Tom means to boil; yam is Thailand's great family of sour-spicy tosses. The marriage happened in the riverine Central Plains, where the day's catch met the lemongrass, galangal and kaffir lime growing along every bank. Tom yum kung, the shrimp version, rose with Bangkok in the Rattanakosin era and went on to become the country's global calling card. Ours steams with straw mushrooms in a chili-bright broth — clear, fierce, restorative.",
@@ -187,7 +187,7 @@ export const DISHES: Dish[] = [
       history: "Along the Gulf of Thailand, tom yum was never a one-shrimp affair: coastal cooks tip the whole catch into the pot and let the broth make the introductions. This is that version — the same lemongrass, galangal and lime, loaded family-style. In Thailand, a steaming pot at the center of the table is the shape of a good evening. Order this and yours is underway.",
     }  },
   { slug: 'tom-kha', name: 'Tom Kha', thai: 'ต้มข่า', category: 'soup', signature: true, protein: true,
-    description: 'Silky coconut milk mellows hot & sour into something creamy, citrusy & dangerously drinkable.', price: '$14',
+    description: 'Silky coconut milk mellows hot & sour into something creamy, citrusy & dangerously drinkable.', price: '$15',
     ingredients: [
       'Fresh coconut milk and coconut cream',
       'Galangal (kha) — sliced thick, the soup is named after it',
@@ -268,7 +268,7 @@ export const DISHES: Dish[] = [
       lede: "Our house rice, our house rule: there is no such thing as too much golden garlic.",
       history: "This one is pure Narwhal. In recipe testing, our chef kept doubling the fried garlic on a beef fried rice just to see — and the plate kept coming back empty. The final version sears the beef hard, folds it through glossy egg rice, and finishes with a landslide of garlic fried to the exact second it turns gold and sweet. It never existed in Thailand. It could only have happened here — and we are a little proud of that.",
     }  },
-  { slug: 'crab-fried-rice', name: 'Crab Fried Rice', thai: 'ข้าวผัดปู', category: 'rice', signature: true,
+  { slug: 'crab-fried-rice', name: 'Super Crab Fried Rice', thai: 'ข้าวผัดปู', category: 'rice', signature: true,
     description: "Sweet crab meat folded through egg-laced rice — light, delicate, ocean-fresh.", price: '$26',
     story: {
       lede: "The dish Thai food lovers use to judge a kitchen — there is nowhere to hide.",
@@ -398,7 +398,7 @@ export const DISHES: Dish[] = [
       lede: "The banquet favorite named after a mythical forest — Thailand's most welcoming Chinese inheritance.",
       history: "In Thai, the cashew is med mamuang himmaphan — seed of the mango of Himmaphan, mythology's enchanted forest — because the nut dangles beneath its fruit like something a storyteller invented. The stir-fry descends from Chinese banquet cooking, softened to Thai taste: buttery roasted cashews, green onion and toasted dry chilies that trade burn for aroma. Sweet-savory and crowd-uniting, it is the plate that empties first at every family table.",
     }  },
-  { slug: 'fried-whole-pompano', name: 'Fried Whole Pompano', thai: 'ปลาจะละเม็ดทอดราดพริก', category: 'seafood', signature: true,
+  { slug: 'fried-whole-pompano', name: 'Fried Whole Pompano with Chili Sauce', thai: 'ปลาจะละเม็ดทอดราดพริก', category: 'seafood', signature: true,
     description: "A whole pompano fried until the skin crackles gold, lacquered in sweet chili sauce — bring friends.", price: '$35',
     story: {
       lede: "The centerpiece — a whole fish, golden and crackling, the way Thai celebrations have always insisted.",

@@ -8,12 +8,13 @@ import { createHmac, timingSafeEqual } from 'crypto';
 export const SESSION_COOKIE = 'nwh_owner';
 const TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
+/* FAIL-CLOSED. There is deliberately no hard-coded fallback key: this file
+   lives in a public repo, so any literal here would let anyone forge an owner
+   cookie. If neither env var is set we throw — every /os route then 500s,
+   which is the correct outcome (no session is better than a forgeable one). */
 function secret(): string {
   const s = process.env.AUTH_SECRET || process.env.STATS_TOKEN;
-  if (!s) {
-    console.warn('[session] AUTH_SECRET not set — using insecure fallback. Set AUTH_SECRET in env.');
-    return 'narwhal-dev-insecure-secret';
-  }
+  if (!s) throw new Error('[session] AUTH_SECRET is not set — refusing to sign or verify sessions.');
   return s;
 }
 
@@ -48,6 +49,25 @@ export function readSession(value: string | null | undefined): { tenantId: strin
   const exp = Number(payload.slice(lastDot + 1));
   if (!tenantId || !Number.isFinite(exp) || Date.now() > exp) return null;
   return { tenantId };
+}
+
+/* Full owner-auth check for API routes.
+   readSession() alone only proves the cookie carries a valid, unexpired
+   signature — it never asks whether that tenant still exists. A tenant that
+   was removed from the registry (or an id that was signed and later dropped)
+   would keep full access until its 8h TTL ran out. requireSession() closes
+   that by re-checking the registry on every request. The tenants module is
+   imported lazily so modules that only verify signatures don't pull in
+   @netlify/blobs. */
+export async function requireSession(req: Request): Promise<{ tenantId: string } | null> {
+  const sess = readSession(readCookie(req));
+  if (!sess) return null;
+  try {
+    const { getTenant } = await import('@/lib/tenants');
+    return (await getTenant(sess.tenantId)) ? sess : null;
+  } catch {
+    return null; // registry unreachable → deny, don't fall open
+  }
 }
 
 export function sessionCookie(value: string, maxAgeSec: number = Math.floor(TTL_MS / 1000)): string {
