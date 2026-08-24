@@ -220,7 +220,7 @@ export function ExperienceSection() {
               <circle cx="24" cy="26" r="3" fill="currentColor" />
             </svg>
             <h3>Chosen by Hand</h3>
-            <p>We source the slow way — seafood off California boats, produce from farms we can name, Thai aromatics flown in weekly. We&apos;re fussy about every ingredient so you never have to be.</p>
+            <p>Lemongrass, galangal, makrut lime, coriander root, bird&apos;s-eye chilies — cut fresh, never from a jar. The dry spices are toasted and ground here, in small amounts, because ground spice loses its smell in weeks. Every curry paste in this kitchen starts as whole ingredients and a mortar.</p>
           </FadeUp>
           <FadeUp className="pillar">
             <span className="pillar-num">III.</span>

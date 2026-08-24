@@ -55,13 +55,13 @@ export type SocialLink = { label: string; url: string };
  * Empty url = link hidden everywhere (footer + JSON-LD sameAs).
  *   Instagram : e.g. 'https://www.instagram.com/narwhalthaitable/'
  *   Facebook  : e.g. 'https://www.facebook.com/narwhalthaitable'
- *   Yelp      : the claimed Narwhal listing (inherits Thai Gulf reviews)
+ *   Yelp      : our own listing, separated from Thai Gulf (Aug 2026) — slug -4
  *   Google    : Google Business Profile share link (g.page/…)
  */
 export const SOCIAL: SocialLink[] = [
   { label: 'Instagram', url: 'https://www.instagram.com/narwhalthaitablehb/' },
   { label: 'Facebook', url: 'https://www.facebook.com/Narwhalthaitablehb' },
-  { label: 'Yelp', url: 'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-2' },
+  { label: 'Yelp', url: 'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-4' },
   { label: 'Google', url: 'https://maps.google.com/?cid=6790489916821266867' },
 ];
 
@@ -88,7 +88,7 @@ export const RESTAURANT_ID = `${SITE_URL}/#restaurant`;
 export const PROFILE_URLS: string[] = [
   'https://www.instagram.com/narwhalthaitablehb/',
   'https://www.facebook.com/Narwhalthaitablehb',
-  'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-2',
+  'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-4',
   GBP_MAP_URL,
   'https://www.doordash.com/store/50580864',
   ORDER_ONLINE_URL,
