@@ -5,7 +5,7 @@ import MediaFrame from '@/components/MediaFrame';
 import { DISHES, getDishBySlug, type Dish } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
 import { getCategoryLabel } from '@/lib/categories';
-import { ORDER_ONLINE_URL } from '@/lib/site';
+import { ORDER_ONLINE_URL, SITE_URL, RESTAURANT_ID } from '@/lib/site';
 
 type Params = { slug: string };
 
@@ -18,13 +18,22 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const dish = getDishBySlug(slug);
   if (!dish) return { title: 'Dish not found' };
+  const photo = dish.image?.src ?? getDishImage(dish.slug);
+  const description = dish.story?.lede ?? dish.description;
   return {
-    title: dish.name,
-    description: dish.story?.lede ?? dish.description,
+    // Geo + cuisine in the title: these 67 pages target exactly the long-tail
+    // "<dish> huntington beach" / "<dish> near me" queries. The layout template
+    // appends "· Narwhal Thai Table", so we only add the locality here.
+    title: `${dish.name} — Thai in Huntington Beach`,
+    description,
     alternates: { canonical: `/menu/${slug}` },
     openGraph: {
       title: `${dish.name} · Narwhal Thai Table`,
-      description: dish.story?.lede ?? dish.description,
+      description,
+      type: 'article',
+      ...(photo
+        ? { images: [{ url: photo, alt: `${dish.name} at Narwhal Thai Table, Huntington Beach` }] }
+        : {}),
     },
   };
 }
@@ -37,7 +46,40 @@ export default async function DishPage({ params }: { params: Promise<Params> }) 
   return <DishDetail dish={dish} />;
 }
 
+/** Parse "$12" / "$12.50" → 12 / 12.5; undefined for "MKT"/blank. */
+function priceNumber(p?: string): number | undefined {
+  if (!p) return undefined;
+  const m = p.replace(/,/g, '').match(/\d+(\.\d+)?/);
+  return m ? Number(m[0]) : undefined;
+}
+
+/** Per-dish MenuItem markup, tied back to the one Restaurant entity by @id. */
+function dishJsonLd(dish: Dish, photo?: string | null) {
+  const price = priceNumber(dish.price);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MenuItem',
+    '@id': `${SITE_URL}/menu/${dish.slug}#menuitem`,
+    name: dish.name,
+    alternateName: dish.thai || undefined,
+    description: dish.story?.lede ?? dish.description,
+    url: `${SITE_URL}/menu/${dish.slug}`,
+    ...(photo ? { image: `${SITE_URL}${photo}` } : {}),
+    ...(price !== undefined
+      ? { offers: { '@type': 'Offer', price, priceCurrency: 'USD', availability: 'https://schema.org/InStock' } }
+      : {}),
+    ...(dish.ingredients?.length ? { recipeIngredient: dish.ingredients } : {}),
+    menuAddOn: { '@type': 'MenuSection', name: 'Sides & Protein', url: `${SITE_URL}/menu` },
+    isPartOf: { '@type': 'Menu', name: 'Narwhal Thai Table Menu', url: `${SITE_URL}/menu` },
+    offeredBy: { '@id': RESTAURANT_ID },
+  };
+}
+
 function DishDetail({ dish }: { dish: Dish }) {
+  const photo = dish.image?.src ?? getDishImage(dish.slug);
+  // Sibling dishes in the same category — turns 67 orphan pages into 13
+  // interlinked topical clusters and gives guests somewhere to go next.
+  const siblings = DISHES.filter(d => d.category === dish.category && d.slug !== dish.slug).slice(0, 5);
   const placeholder = (
     <div style={{ textAlign: 'center' }}>
       <div style={{
@@ -57,6 +99,10 @@ function DishDetail({ dish }: { dish: Dish }) {
 
   return (
     <article className="dish-detail">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(dishJsonLd(dish, photo)) }}
+      />
       <div className="container" style={{ maxWidth: 1280 }}>
         <Link href="/menu" className="dish-detail-back">Back to menu</Link>
 
@@ -71,9 +117,12 @@ function DishDetail({ dish }: { dish: Dish }) {
           <MediaFrame
             ratio="4/5"
             ornament="corners"
-            src={dish.image?.src ?? getDishImage(dish.slug) ?? undefined}
-            alt={dish.image?.alt ?? dish.name}
-            placeholder={placeholder}
+            src={photo ?? undefined}
+            alt={dish.image?.alt ?? `${dish.name}${dish.thai ? ` (${dish.thai})` : ''} — ${dish.description} Served at Narwhal Thai Table, Huntington Beach.`}
+            /* Only render the "Photo coming soon" card when there really is no
+               photo — otherwise that text sits in the DOM beside the H1 and gets
+               read by crawlers and AI extractors on pages that DO have a photo. */
+            placeholder={photo ? undefined : placeholder}
             priority
           />
 
@@ -165,6 +214,23 @@ function DishDetail({ dish }: { dish: Dish }) {
                 <p style={{ color: 'var(--muted-dark)', fontStyle: 'italic' }}>
                   We&apos;re still writing the story for this plate — it&apos;ll show up here soon. In the meantime, ask your server about the dish when you visit.
                 </p>
+              </div>
+            )}
+
+            {siblings.length > 0 && (
+              <div className="dish-section dish-siblings">
+                <h2>More from <em>{getCategoryLabel(dish.category)}</em></h2>
+                <ul className="dish-sibling-list">
+                  {siblings.map(s => (
+                    <li key={s.slug}>
+                      <Link href={`/menu/${s.slug}`}>
+                        <span className="sib-name">{s.name}</span>
+                        {s.thai && <span className="sib-thai">{s.thai}</span>}
+                      </Link>
+                      {s.price && <span className="sib-price">{s.price}</span>}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 

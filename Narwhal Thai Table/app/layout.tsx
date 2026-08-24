@@ -6,7 +6,7 @@ import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
 import AdsConversions from '@/components/AdsConversions';
-import { RESTAURANT, SITE_URL, socialUrls } from '@/lib/site';
+import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,6 +64,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Restaurant',
+              // Stable id — makes this ONE entity across all 74 pages instead of
+              // 74 separate unlinked Restaurant nodes.
+              '@id': RESTAURANT_ID,
               name: 'Narwhal Thai Table',
               url: SITE_URL,
               image: `${SITE_URL}/images/og-cover.jpg`,
@@ -72,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               priceRange: '$$',
               address: {
                 '@type': 'PostalAddress',
-                streetAddress: '19072 Beach Blvd',
+                streetAddress: RESTAURANT.address.street,
                 addressLocality: 'Huntington Beach',
                 addressRegion: 'CA',
                 postalCode: '92648',
@@ -101,15 +104,41 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):
               // founder: { '@type': 'Person', name: 'Chef Rainny' },
               hasMenu: `${SITE_URL}/menu`,
+              // Points at OUR Google listing by CID — never the previous tenant's.
+              hasMap: GBP_MAP_URL,
+              areaServed: ['Huntington Beach', 'Fountain Valley', 'Westminster', 'Costa Mesa', 'Orange County'],
+              paymentAccepted: 'Cash, Credit Card, Debit Card, Apple Pay, Google Pay',
+              currenciesAccepted: 'USD',
               acceptsReservations: true,
-              potentialAction: {
-                '@type': 'ReserveAction',
-                target: `${SITE_URL}/contact/reservation`,
-                result: { '@type': 'FoodEstablishmentReservation', name: 'Table reservation' },
-              },
+              potentialAction: [
+                {
+                  '@type': 'ReserveAction',
+                  target: `${SITE_URL}/contact/reservation`,
+                  result: { '@type': 'FoodEstablishmentReservation', name: 'Table reservation' },
+                },
+                ...(ORDER_ONLINE_URL
+                  ? [{
+                      '@type': 'OrderAction',
+                      target: {
+                        '@type': 'EntryPoint',
+                        urlTemplate: ORDER_ONLINE_URL,
+                        inLanguage: 'en-US',
+                        actionPlatform: [
+                          'https://schema.org/DesktopWebPlatform',
+                          'https://schema.org/IOSPlatform',
+                          'https://schema.org/AndroidPlatform',
+                        ],
+                      },
+                      deliveryMethod: [
+                        'https://schema.org/OnSitePickup',
+                        'https://schema.org/ParcelService',
+                      ],
+                    }]
+                  : []),
+              ],
               // Filled from lib/site.ts the moment real values exist there.
               ...(RESTAURANT.phone ? { telephone: RESTAURANT.phone } : {}),
-              ...(socialUrls().length ? { sameAs: socialUrls() } : {}),
+              ...(sameAsUrls().length ? { sameAs: sameAsUrls() } : {}),
             }),
           }}
         />

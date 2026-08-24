@@ -76,6 +76,10 @@ export default function MenuTabs({
             className={`menu-category${active === cat.id ? ' active' : ''}`}
             hidden={active !== cat.id}
           >
+            {/* Category name as a real H2 — gives the menu page the machine-
+                readable topical structure it otherwise completely lacks.
+                Visually hidden because the active tab already names it. */}
+            <h2 className="visually-hidden">{cat.label}</h2>
             {isSides ? <SidesPanel /> : (
               <div className="cat-grid">
                 {dishes.map(d => {
@@ -83,15 +87,22 @@ export default function MenuTabs({
                   return (
                     <Link key={d.slug} href={`/menu/${d.slug}`} className={`dish${d.signature ? ' sig' : ''}${photo ? ' has-photo' : ''}`}>
                       {photo && (
-                        <span className="dish-thumb" aria-hidden="true">
-                          <Image src={photo} alt="" fill sizes="(max-width: 640px) 84px, 104px" />
+                        <span className="dish-thumb">
+                          {/* Real descriptive alt — image search + AI grounding.
+                              Was alt="" on all 29 photos, forfeiting both. */}
+                          <Image
+                            src={photo}
+                            alt={`${d.name}${d.thai ? ` (${d.thai})` : ''} — Thai ${cat.label.toLowerCase()} at Narwhal Thai Table, Huntington Beach`}
+                            fill
+                            sizes="(max-width: 640px) 84px, 104px"
+                          />
                         </span>
                       )}
                       <div className="dish-body">
                         <div className="dish-head">
-                          <div className="dish-name">
+                          <h3 className="dish-name">
                             {d.name}{d.thai && <span className="thai">{d.thai}</span>}
-                          </div>
+                          </h3>
                           {d.price && <div className="dish-price">{d.price}</div>}
                         </div>
                         <p className="dish-desc">{d.description}</p>

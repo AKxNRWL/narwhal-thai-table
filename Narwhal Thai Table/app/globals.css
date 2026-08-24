@@ -1522,3 +1522,35 @@ a.dish:hover .dish-thumb img{transform:scale(1.06);}
   a.dish.has-photo{gap:14px;}
   .dish-thumb{flex-basis:84px;width:84px;height:84px;}
 }
+
+/* ===== "More from <category>" — sibling dish links on dish pages =====
+   Turns 67 orphan pages into 13 interlinked topical clusters (SEO) and gives
+   a guest an obvious next plate to read about. */
+.dish-siblings .dish-sibling-list{list-style:none;padding:0;margin:8px 0 0;}
+.dish-siblings .dish-sibling-list li{
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:12px 0;border-bottom:1px dashed var(--line);
+}
+.dish-siblings .dish-sibling-list li:last-child{border-bottom:none;}
+.dish-siblings .dish-sibling-list a{
+  text-decoration:none;color:var(--navy);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  transition:color 0.3s;
+}
+.dish-siblings .dish-sibling-list a:hover{color:var(--brass-deep);}
+.dish-siblings .sib-name{font-family:var(--font-display);font-size:19px;}
+.dish-siblings .sib-thai{font-family:var(--font-serif);font-style:italic;font-size:14px;color:var(--brass-deep);}
+.dish-siblings .sib-price{font-family:var(--font-serif);font-style:italic;color:var(--muted-dark);white-space:nowrap;}
+
+/* Screen-reader-only text: available to crawlers, assistive tech and AI
+   extractors, invisible on screen. Used for the /menu category H2s, where the
+   tab UI already communicates the category visually. */
+.visually-hidden{
+  position:absolute !important;
+  width:1px;height:1px;
+  padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);
+  white-space:nowrap;border:0;
+}
+/* .dish-name is now an <h3> — strip the UA heading margin so the menu card
+   layout is byte-identical to before. */
+h3.dish-name{margin:0;font-weight:500;}

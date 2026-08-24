@@ -3,7 +3,7 @@ import MenuTabs from '@/components/MenuTabs';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
 import { CATEGORIES, getCategoryLabel } from '@/lib/categories';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, RESTAURANT_ID } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Menu',
@@ -27,11 +27,27 @@ function menuJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Menu',
+    '@id': `${SITE_URL}/menu#menu`,
     name: 'Narwhal Thai Table Menu',
     url: `${SITE_URL}/menu`,
+    inLanguage: 'en-US',
+    // Ties the menu to the single Restaurant entity declared in app/layout.tsx.
+    provider: { '@id': RESTAURANT_ID },
     hasMenuSection: CATEGORIES.map((cat) => {
       const items = DISHES.filter((d) => d.category === cat.id);
-      if (!items.length) return null;
+      // "Sides & Protein" is a rendered panel, not dish records — describe it
+      // explicitly so the markup matches all 13 visible categories.
+      if (!items.length) {
+        return cat.id === 'sides'
+          ? {
+              '@type': 'MenuSection',
+              name: getCategoryLabel(cat.id),
+              description:
+                'Choose your protein (chicken, pork, tofu, beef, shrimp, seafood) and sides — jasmine rice, brown rice, sticky rice, fried egg, omelet.',
+              url: `${SITE_URL}/menu`,
+            }
+          : null;
+      }
       return {
         '@type': 'MenuSection',
         name: getCategoryLabel(cat.id),

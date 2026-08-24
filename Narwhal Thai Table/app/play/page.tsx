@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/play' },
   title: 'Bubble Glide · While You Wait for Us to Open',
   description: 'A little narwhal game from Narwhal Thai Table while we finish getting the kitchen ready — glide through ten levels, catch the bubbles, win the Aurora crown.',
   openGraph: {

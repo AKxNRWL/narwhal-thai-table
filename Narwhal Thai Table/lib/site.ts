@@ -39,7 +39,9 @@ export const RESTAURANT: RestaurantInfo = {
   phone: '+1 (714) 378-6003',
   email: 'welcome@narwhalthaihb.com',
   address: {
-    street: '19072 Beach Blvd',
+    // EXACT match to the Google Business Profile address — NAP consistency is a
+    // ranking signal, so this string must not drift ("Boulevard", missing suite…).
+    street: '19072 Beach Blvd Ste A & B',
     city: 'Huntington Beach',
     region: 'CA',
     zip: '92648',
@@ -59,11 +61,45 @@ export type SocialLink = { label: string; url: string };
 export const SOCIAL: SocialLink[] = [
   { label: 'Instagram', url: 'https://www.instagram.com/narwhalthaitablehb/' },
   { label: 'Facebook', url: 'https://www.facebook.com/Narwhalthaitablehb' },
-  { label: 'Yelp', url: '' },
-  { label: 'Google', url: '' },
+  { label: 'Yelp', url: 'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-2' },
+  { label: 'Google', url: 'https://maps.google.com/?cid=6790489916821266867' },
 ];
 
-/** Non-empty social URLs — feeds JSON-LD `sameAs`. */
+/**
+ * ENTITY IDENTITY — the stable id of this restaurant in Google's Knowledge Graph.
+ * CID = the numeric id of our own Google Business Profile listing (decoded from
+ * the official g.page review link). Used for `hasMap` and the Maps embed so the
+ * site points at exactly ONE listing and can never be confused with the previous
+ * tenant at this address ("Thai Gulf Restaurant"), whose listings are still live.
+ */
+export const GBP_CID = '6790489916821266867';
+export const GBP_MAP_URL = `https://maps.google.com/?cid=${GBP_CID}`;
+
+/** Stable @id so the Restaurant node on all 74 pages is ONE entity, not 74. */
+export const RESTAURANT_ID = `${SITE_URL}/#restaurant`;
+
+/**
+ * Every profile that describes THIS business — feeds JSON-LD `sameAs`.
+ * This is the cheapest, strongest way to tell search engines and AI assistants
+ * "all of these are the same restaurant", which matters a great deal while the
+ * previous tenant's listings still contest the same street address.
+ * Only verified-ours URLs belong here — never the old Thai Gulf profiles.
+ */
+export const PROFILE_URLS: string[] = [
+  'https://www.instagram.com/narwhalthaitablehb/',
+  'https://www.facebook.com/Narwhalthaitablehb',
+  'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-2',
+  GBP_MAP_URL,
+  'https://www.doordash.com/store/50580864',
+  ORDER_ONLINE_URL,
+].filter(Boolean);
+
+/** Non-empty social URLs — footer links. */
 export function socialUrls(): string[] {
   return SOCIAL.map((s) => s.url).filter(Boolean);
+}
+
+/** All profile URLs for JSON-LD `sameAs` (de-duplicated). */
+export function sameAsUrls(): string[] {
+  return [...new Set(PROFILE_URLS)];
 }
