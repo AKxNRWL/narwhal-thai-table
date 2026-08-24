@@ -5,6 +5,7 @@ import MapEmbed from '@/components/MapEmbed';
 export const metadata: Metadata = {
   title: 'Contact',
   description: 'Reservations, catering and private events, and general enquiries for Narwhal Thai Table in Huntington Beach.',
+  alternates: { canonical: '/contact' },
 };
 
 export default function ContactHubPage() {

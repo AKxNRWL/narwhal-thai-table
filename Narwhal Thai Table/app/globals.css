@@ -73,13 +73,13 @@ section{padding:140px 48px;position:relative;}
 .container{max-width:1280px;margin:0 auto;}
 .section-head{margin-bottom:80px;text-align:center;}
 .section-head .label{color:var(--brass-deep);margin-bottom:20px;display:block;}
-.section-head h2{
+.section-head h1,.section-head h2{
   font-family:var(--font-display);
   font-size:clamp(42px,5.2vw,68px);
   font-weight:400;color:var(--navy);
   letter-spacing:-0.02em;line-height:1;
 }
-.section-head h2 em{
+.section-head h1 em,.section-head h2 em{
   font-family:var(--font-serif);
   font-style:italic;color:var(--brass-deep);font-weight:300;
 }

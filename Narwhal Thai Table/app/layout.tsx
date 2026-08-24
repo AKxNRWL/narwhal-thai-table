@@ -100,8 +100,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ],
               // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):
               // founder: { '@type': 'Person', name: 'Chef Rainny' },
-              menu: `${SITE_URL}/menu`,
-              acceptsReservations: `${SITE_URL}/contact/reservation`,
+              hasMenu: `${SITE_URL}/menu`,
+              acceptsReservations: true,
+              potentialAction: {
+                '@type': 'ReserveAction',
+                target: `${SITE_URL}/contact/reservation`,
+                result: { '@type': 'FoodEstablishmentReservation', name: 'Table reservation' },
+              },
               // Filled from lib/site.ts the moment real values exist there.
               ...(RESTAURANT.phone ? { telephone: RESTAURANT.phone } : {}),
               ...(socialUrls().length ? { sameAs: socialUrls() } : {}),

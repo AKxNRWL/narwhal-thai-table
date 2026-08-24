@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import { getHeroMedia } from '@/lib/media';
 import { SHOW_CHEF } from '@/lib/site';
@@ -9,6 +10,10 @@ import {
   RoomSection,
   ContactSection,
 } from '@/components/HomeSections';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
 export default function HomePage() {
   const heroMedia = getHeroMedia();

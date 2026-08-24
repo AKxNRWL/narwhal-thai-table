@@ -8,8 +8,13 @@ import { SITE_URL } from '@/lib/site';
  * (lib/dishes.ts), which is exactly the long-tail Google food searches hit
  * ("pad thai huntington beach", "khao soi near me", …).
  */
+// Stable content-update date — bump this when pages/menu meaningfully change.
+// Using a fixed date (not `new Date()`) keeps <lastmod> meaningful to Google
+// instead of resetting to "now" on every deploy.
+const LAST_CONTENT_UPDATE = new Date('2026-08-20T00:00:00Z');
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const now = LAST_CONTENT_UPDATE;
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: 'weekly', priority: 1 },

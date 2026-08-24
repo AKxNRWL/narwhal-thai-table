@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MediaFrame from '@/components/MediaFrame';
 import { DISHES, getDishBySlug, type Dish } from '@/lib/dishes';
+import { getDishImage } from '@/lib/media';
 import { getCategoryLabel } from '@/lib/categories';
 import { ORDER_ONLINE_URL } from '@/lib/site';
 
@@ -20,6 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return {
     title: dish.name,
     description: dish.story?.lede ?? dish.description,
+    alternates: { canonical: `/menu/${slug}` },
     openGraph: {
       title: `${dish.name} · Narwhal Thai Table`,
       description: dish.story?.lede ?? dish.description,
@@ -69,7 +71,7 @@ function DishDetail({ dish }: { dish: Dish }) {
           <MediaFrame
             ratio="4/5"
             ornament="corners"
-            src={dish.image?.src}
+            src={dish.image?.src ?? getDishImage(dish.slug) ?? undefined}
             alt={dish.image?.alt ?? dish.name}
             placeholder={placeholder}
             priority
