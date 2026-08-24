@@ -209,7 +209,7 @@ export function ExperienceSection() {
               <path d="M16 38c2-2 14-2 16 0" />
             </svg>
             <h3>Fresh, Every Plate</h3>
-            <p>Curry paste pounded in the stone mortar. The wok lit for your order, not before it. Herbs cut the same hour you taste them. If it isn&apos;t fresh, it doesn&apos;t leave our kitchen.</p>
+            <p>The wok isn&apos;t lit until your order reaches the kitchen. Vegetables go in raw and come out with a bite; herbs are cut the same hour you taste them. Nothing waits under a heat lamp — if it isn&apos;t fresh, it doesn&apos;t leave our kitchen.</p>
           </FadeUp>
           <FadeUp className="pillar">
             <span className="pillar-num">II.</span>
