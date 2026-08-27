@@ -89,9 +89,12 @@ export const RESTAURANT_ID = `${SITE_URL}/#restaurant`;
 /**
  * Every profile that describes THIS business — feeds JSON-LD `sameAs`.
  * This is the cheapest, strongest way to tell search engines and AI assistants
- * "all of these are the same restaurant", which matters a great deal while the
- * previous tenant's listings still contest the same street address.
- * Only verified-ours URLs belong here — never the old Thai Gulf profiles.
+ * "all of these are the same restaurant".
+ * CONTEXT (owner-confirmed Aug 2026): we BOUGHT the Thai Gulf business and
+ * renamed it — so old Thai Gulf listings (Grubhub, TripAdvisor, Apple Maps,
+ * BeyondMenu) are legitimately ours to claim and RENAME, inheriting their
+ * citation age. Add each one here only AFTER it has been renamed to Narwhal;
+ * a URL that still displays "Thai Gulf" sends the wrong entity signal.
  */
 export const PROFILE_URLS: string[] = [
   'https://www.instagram.com/narwhalthaitablehb/',

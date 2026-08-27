@@ -30,6 +30,11 @@ export function StorySection() {
             <h2>Some families build houses. <em>Ours builds tables</em>.</h2>
             <p>We are three siblings — Aileen, Annie, and AK — with thirty years of restaurant life between us: opening rooms, running kitchens, learning what makes a stranger relax into a chair. Somewhere along the way, Huntington Beach won us over — the salt air, the long gold light down PCH, the way this town waves at itself on the walk to the pier.</p>
             <p>So we did what our family has always done with the places we love: we cooked for it. Narwhal Thai Table is the promise we&apos;ve been keeping our whole working lives — Thai recipes rooted in the royal-court tradition, made fresh for every single plate, from ingredients we choose the slow, stubborn way. No shortcuts, no almost.</p>
+            {/* Succession, stated plainly. The owner bought the Thai Gulf business
+                and renamed it — saying so out loud serves the people still searching
+                the old name (27 clicks / 216 impressions last quarter) and tells
+                Google the two entities at this address are one continuous story. */}
+            <p>If this address feels familiar, it should. For years it was Thai Gulf — a neighborhood standby. Our family bought the business, hung a new name on the door, and made it our own: our recipes, our mortar, our welcome. If you got here looking for Thai Gulf — welcome back. The table is still here.</p>
             <p style={{ color: 'var(--brass-deep)', fontStyle: 'italic' }}>Because what we serve isn&apos;t just dinner. It&apos;s everything around it — the warmth, the welcome, the wanting you back.</p>
             <div className="about-stats">
               <div className="stat"><div className="num">3</div><div className="lbl">Siblings, One Table</div></div>
