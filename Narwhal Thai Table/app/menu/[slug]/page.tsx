@@ -53,6 +53,20 @@ function priceNumber(p?: string): number | undefined {
   return m ? Number(m[0]) : undefined;
 }
 
+/** Home › Menu › <Course> › <Dish> — one per dish page. */
+function breadcrumbJsonLd(dish: Dish) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Narwhal Thai Table', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Menu', item: `${SITE_URL}/menu` },
+      { '@type': 'ListItem', position: 3, name: getCategoryLabel(dish.category), item: `${SITE_URL}/menu` },
+      { '@type': 'ListItem', position: 4, name: dish.name },
+    ],
+  };
+}
+
 /** Per-dish MenuItem markup, tied back to the one Restaurant entity by @id. */
 function dishJsonLd(dish: Dish, photo?: string | null) {
   const price = priceNumber(dish.price);
@@ -102,6 +116,14 @@ function DishDetail({ dish }: { dish: Dish }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(dishJsonLd(dish, photo)) }}
+      />
+      {/* Breadcrumb trail — tells Google this page sits under /menu rather
+          than floating on its own, and renders as "narwhalthaihb.com › Menu ›
+          Curry" under the result instead of a bare URL. Mirrors the visible
+          "Back to menu" link and the category label below it. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(dish)) }}
       />
       <div className="container" style={{ maxWidth: 1280 }}>
         <Link href="/menu" className="dish-detail-back">Back to menu</Link>

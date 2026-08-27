@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import MenuTabs from '@/components/MenuTabs';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
@@ -68,6 +69,51 @@ function menuJsonLd() {
   };
 }
 
+/**
+ * Plain, always-visible index of every dish.
+ *
+ * WHY THIS EXISTS — the tab panels above are the nice way to browse, but the
+ * twelve non-active panels carry the `hidden` attribute. Crawlers reach links
+ * inside hidden containers with far less weight, and as of 24 Aug 2026 a
+ * `site:` check showed Google had indexed only ~8 of the 67 dish pages: all
+ * the per-dish titles, MenuItem schema and stories were sitting on pages
+ * Google had never fetched. This block is ordinary, always-rendered HTML —
+ * one link per dish under a real heading per course — so every dish page has
+ * a crawlable path from a page that IS indexed.
+ *
+ * It earns its place for people too: a returning guest who already knows
+ * what they want gets the whole menu in one scan instead of hunting tabs.
+ */
+function DishIndex() {
+  return (
+    <nav className="dish-index" aria-labelledby="dish-index-title">
+      <h2 id="dish-index-title">Every dish, <em>by course</em></h2>
+      <p className="dish-index-note">
+        Tap any name to read where the recipe comes from, what goes in it, and how to eat it well.
+      </p>
+      {CATEGORIES.map((cat) => {
+        const items = DISHES.filter((d) => d.category === cat.id);
+        if (!items.length) return null;
+        return (
+          <div className="dish-index-group" key={cat.id}>
+            <h3>{getCategoryLabel(cat.id)}</h3>
+            <ul>
+              {items.map((d) => (
+                <li key={d.slug}>
+                  <Link href={`/menu/${d.slug}`}>
+                    {d.name}
+                    {d.thai && <span className="dix-thai">{d.thai}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
 export default function MenuPage() {
   // Photo lookup built server-side at build time (getDishImage checks the
   // filesystem, so the client-side MenuTabs can't call it directly).
@@ -91,6 +137,7 @@ export default function MenuPage() {
           </p>
         </div>
         <MenuTabs photos={photos} />
+        <DishIndex />
       </div>
     </section>
   );
