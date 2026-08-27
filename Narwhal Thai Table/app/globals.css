@@ -1562,6 +1562,42 @@ a.dish:hover .dish-thumb img{transform:scale(1.06);}
 h3.dish-name{margin:0;font-weight:500;}
 
 /* ============================================================
+   /ORDER — ad landing page. CTAs first, zero decoration between
+   the visitor and the Toast order flow.
+   ============================================================ */
+.order-ctas{
+  display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+  margin:8px auto 0;
+}
+.order-hours{
+  text-align:center;margin:26px 0 0;
+  font-family:var(--font-serif);font-style:italic;font-size:16.5px;
+  color:var(--muted);
+}
+.order-hours a{color:var(--brass-light);text-decoration:none;border-bottom:1px solid rgba(200,162,78,0.4);}
+.order-hours a:hover,.order-hours a:focus-visible{color:var(--off-white);}
+.order-steps{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
+  max-width:1000px;margin:56px auto 0;
+}
+.order-step{
+  border:1px solid rgba(176,141,60,0.28);border-radius:var(--radius-md);
+  padding:22px 24px;background:rgba(245,240,230,0.03);
+}
+.order-step-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--brass);color:var(--brass-light);
+  font-family:var(--font-display);font-size:15px;margin-bottom:12px;
+}
+.order-step p{margin:0;font-family:var(--font-serif);font-size:16px;line-height:1.6;color:var(--muted);}
+.order-step strong{color:var(--off-white);font-weight:500;}
+@media(max-width:760px){
+  .order-steps{grid-template-columns:1fr;gap:12px;margin-top:40px;}
+  .order-ctas .btn-primary,.order-ctas .btn-secondary{width:100%;justify-content:center;}
+}
+
+/* ============================================================
    DISH INDEX — the always-visible list of all 67 dishes at the
    bottom of /menu. Deliberately quiet: the tabs above are the
    designed way to browse, this is the "I already know what I
