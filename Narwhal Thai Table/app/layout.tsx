@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
 import MobileActionBar from '@/components/MobileActionBar';
 import AdsConversions from '@/components/AdsConversions';
+import NotoTickerFonts from '@/components/NotoTickerFonts';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 
 /* Self-hosted webfonts (next/font).
@@ -70,7 +71,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             the SAME design weight + x-height. Without this the browser
             falls back to whatever system font handles each script and the
             line ends up visually uneven across phrases. */}
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&family=Noto+Sans+Thai:wght@400;500&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Noto+Sans+KR:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet" />
+        {/* Loaded async by <NotoTickerFonts/> (body) so this CSS never blocks
+            first paint; the <noscript> keeps a no-JS fallback. Keep both URLs
+            in sync with components/NotoTickerFonts.tsx. */}
+        <noscript>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&family=Noto+Sans+Thai:wght@400;500&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Noto+Sans+KR:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet" />
+        </noscript>
         {/* SEO: Restaurant structured data (Google rich results) */}
         <script
           type="application/ld+json"
@@ -159,6 +165,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ComingSoonTicker />
+        <NotoTickerFonts />
         <Nav />
         <main id="main">{children}</main>
         <Footer />

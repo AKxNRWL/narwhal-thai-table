@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Multi-language "Now Open" ticker pinned to the very top of every page.
  *
@@ -11,8 +13,12 @@
  * on a short drinks page that is over half the page's text. The duplicate
  * track is aria-hidden so the message is announced exactly once.
  *
- * Animation respects prefers-reduced-motion (set in globals.css).
+ * Motion (M16): a small pause/play button lets anyone stop the marquee
+ * (WCAG 2.2.2 "Pause, Stop, Hide"). prefers-reduced-motion users already get
+ * a static bar via globals.css, so the button hides itself for them.
  */
+import { useState } from 'react';
+
 type Phrase = { lang: string; text: string };
 
 const LANGUAGES: Phrase[] = [
@@ -27,13 +33,14 @@ const LANGUAGES: Phrase[] = [
 ];
 
 export default function ComingSoonTicker() {
+  const [paused, setPaused] = useState(false);
   return (
     <div
       className="cs-ticker"
       role="status"
       aria-label="Now open every day — Monday to Friday 11:30 AM to 10 PM, Saturday and Sunday 12 to 10 PM"
     >
-      <div className="cs-ticker-track">
+      <div className={paused ? 'cs-ticker-track is-paused' : 'cs-ticker-track'}>
         {LANGUAGES.map((p, i) => (
           <span key={`a-${i}`} className="cs-ticker-item" lang={p.lang}>{p.text}</span>
         ))}
@@ -41,6 +48,19 @@ export default function ComingSoonTicker() {
           <span key={`b-${i}`} className="cs-ticker-item" lang={p.lang} aria-hidden="true">{p.text}</span>
         ))}
       </div>
+      <button
+        type="button"
+        className="cs-ticker-toggle"
+        aria-pressed={paused}
+        aria-label={paused ? 'Resume the announcements ticker' : 'Pause the announcements ticker'}
+        onClick={() => setPaused((p) => !p)}
+      >
+        {paused ? (
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2.2 1l6.8 4-6.8 4z" fill="currentColor" /></svg>
+        ) : (
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1h2.3v8H2zM5.7 1H8v8H5.7z" fill="currentColor" /></svg>
+        )}
+      </button>
     </div>
   );
 }

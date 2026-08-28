@@ -11,7 +11,7 @@ import { SITE_URL } from '@/lib/site';
 // Stable content-update date — bump this when pages/menu meaningfully change.
 // Using a fixed date (not `new Date()`) keeps <lastmod> meaningful to Google
 // instead of resetting to "now" on every deploy.
-const LAST_CONTENT_UPDATE = new Date('2026-08-27T00:00:00Z');
+const LAST_CONTENT_UPDATE = new Date('2026-08-28T00:00:00Z');
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = LAST_CONTENT_UPDATE;
@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: 'weekly', priority: 1 },
     { url: `${SITE_URL}/menu`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${SITE_URL}/thai-food-orange-county`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/order`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE_URL}/contact/reservation`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },

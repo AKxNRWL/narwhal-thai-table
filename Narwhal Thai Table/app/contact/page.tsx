@@ -1,12 +1,101 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import MapEmbed from '@/components/MapEmbed';
+import { DIRECTIONS_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Reservations, catering and private events, and general enquiries for Narwhal Thai Table in Huntington Beach.',
+  description: 'Reservations, catering and private events, hours, directions, and answers to common questions for Narwhal Thai Table in Huntington Beach.',
   alternates: { canonical: '/contact' },
 };
+
+/* FAQ note (SEO-13): plain content only — Google retired the FAQ rich result
+   in May 2026, so there is deliberately NO FAQPage schema here. The value is
+   the words themselves: real questions guests ask, answered honestly, in the
+   language people search with. */
+const FAQS: { q: string; a: React.ReactNode }[] = [
+  {
+    q: 'Are you the same restaurant as Thai Gulf?',
+    a: (
+      <p>
+        In a way — we bought Thai Gulf, then rebuilt it as our own. Same address on Beach
+        Boulevard, new name, new habits: three siblings in the kitchen, curry pastes started in a
+        granite mortar, every plate cooked when you order it. If you got here looking for Thai
+        Gulf — welcome back. The table is still here.
+      </p>
+    ),
+  },
+  {
+    q: 'Do you take reservations?',
+    a: (
+      <p>
+        Yes — <Link href="/contact/reservation">request a table</Link> and we&apos;ll confirm within a
+        few hours, or call <a href="tel:+17143786003">(714) 378-6003</a>. Walk-ins are always
+        welcome too.
+      </p>
+    ),
+  },
+  {
+    q: 'Do you do takeout and delivery?',
+    a: (
+      <p>
+        Both. Order pickup online and it&apos;s ready hot on Beach Blvd, or get delivery through
+        DoorDash — everything is on the <Link href="/order">order page</Link>.
+      </p>
+    ),
+  },
+  {
+    q: 'What are your hours?',
+    a: <p>Open every day: Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM.</p>,
+  },
+  {
+    q: 'How spicy is the food?',
+    a: (
+      <p>
+        As spicy as you ask. Every dish is cooked to order, so you set the heat — mild, medium,
+        spicy, or Thai hot. Not sure? Start medium. We&apos;d rather you come back tomorrow than
+        sweat through tonight.
+      </p>
+    ),
+  },
+  {
+    q: 'Can you cook vegetarian? What about allergies?',
+    a: (
+      <p>
+        Many dishes can be made vegetarian — just ask. And always tell us about an allergy when
+        you order: we cook each plate fresh, but our kitchen works with peanuts, shellfish, egg,
+        soy, and wheat every day, so we can&apos;t promise zero cross-contact.
+      </p>
+    ),
+  },
+  {
+    q: 'Is the free ice cream real?',
+    a: (
+      <p>
+        Very real. Every dine-in meal ends with ice cream on the house — it&apos;s how Thai family
+        dinners end, so it&apos;s how ours end.
+      </p>
+    ),
+  },
+  {
+    q: 'Where exactly are you?',
+    a: (
+      <p>
+        19072 Beach Blvd, Suite A &amp; B, Huntington Beach — in the plaza on Beach Boulevard.{' '}
+        <a href={DIRECTIONS_URL} target="_blank" rel="noopener">Get directions</a>.
+      </p>
+    ),
+  },
+  {
+    q: 'Do you cater events?',
+    a: (
+      <p>
+        We do — off-site catering, family-style tastings, and full buyouts.{' '}
+        <Link href="/contact/catering">Tell us about your event</Link>.
+      </p>
+    ),
+  },
+];
 
 export default function ContactHubPage() {
   return (
@@ -46,6 +135,20 @@ export default function ContactHubPage() {
             <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" style={{ color: 'inherit' }}>(714) 378-6003</a><br/>Open every day &middot; Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM</p>
           </div>
           <MapEmbed />
+        </div>
+        <div className="faq-wrap" id="faq">
+          <div className="section-head">
+            <span className="label" style={{ color: 'var(--brass-light)' }}>Good to Know</span>
+            <h2 style={{ color: 'var(--off-white)' }}>Questions we hear <em style={{ color: 'var(--brass-light)' }}>a lot</em></h2>
+          </div>
+          <div className="faq-list">
+            {FAQS.map((f) => (
+              <details key={f.q} className="faq-item">
+                <summary>{f.q}</summary>
+                {f.a}
+              </details>
+            ))}
+          </div>
         </div>
       </div>
     </section>
