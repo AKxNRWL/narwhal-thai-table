@@ -1596,6 +1596,11 @@ h3.dish-name{margin:0;font-weight:500;}
   .order-steps{grid-template-columns:1fr;gap:12px;margin-top:40px;}
   .order-ctas .btn-primary,.order-ctas .btn-secondary{width:100%;justify-content:center;}
 }
+/* The dish cards borrow .sig-card, whose base state is opacity:0 waiting for
+   the homepage's FadeUp scroll-reveal to add .visible. /order has no FadeUp
+   (an ad landing page should paint instantly), so without this override the
+   whole grid stayed invisible — reported by the owner as "images not showing". */
+.order-page .sig-card{opacity:1;transform:none;transition:none;}
 
 /* ============================================================
    DISH INDEX — the always-visible list of all 67 dishes at the
