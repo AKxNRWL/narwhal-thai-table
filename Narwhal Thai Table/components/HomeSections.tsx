@@ -313,7 +313,7 @@ export function RoomSection() {
             <MediaFrame
               ratio="16/10"
               src="/images/room/family-spread.jpg"
-              alt="A family-style spread — wonton soup, crying tiger, orange chicken and morning glory"
+              alt="A family-style spread — tom yum seafood hot pot, crying tiger, orange chicken, morning glory and Thai iced tea"
               sizes="(max-width: 900px) 100vw, 40vw"
             />
           </div>

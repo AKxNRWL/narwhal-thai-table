@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: `${SITE_URL}/about`,
     type: 'article',
-    images: [{ url: '/images/room/family-spread.jpg', width: 1600, height: 1000, alt: 'A family-style spread at Narwhal Thai Table' }],
+    images: [{ url: '/images/room/family-spread.jpg', width: 1448, height: 1086, alt: 'A family-style spread at Narwhal Thai Table' }],
   },
 };
 
@@ -108,7 +108,7 @@ export default function AboutPage() {
           <MediaFrame
             ratio="16/10"
             src="/images/room/family-spread.jpg"
-            alt="A family-style spread at Narwhal Thai Table in Huntington Beach — wonton soup, crying tiger, orange chicken and morning glory"
+            alt="A family-style spread at Narwhal Thai Table in Huntington Beach — tom yum seafood hot pot, crying tiger, orange chicken, morning glory and Thai iced tea"
             sizes="(max-width: 900px) 100vw, 60vw"
           />
           {/* 16/15 next to a 16/10 frame at 1.5fr:1fr — same rendered height. */}
