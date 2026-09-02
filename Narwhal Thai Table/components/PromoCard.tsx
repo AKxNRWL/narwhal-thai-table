@@ -86,7 +86,7 @@ export function PromoCardView({
       {promo.image && (
         <div className="promo-media">
           {/* eslint-disable-next-line @next/next/no-img-element -- owner-uploaded or dish photo; plain <img> avoids remotePatterns config */}
-          <img src={promo.image} alt="" decoding="async" />
+          <img src={promo.image} alt="" decoding="sync" />
         </div>
       )}
       <div className="promo-copy">
@@ -167,13 +167,15 @@ export default function PromoCard() {
           }, force ? 300 : SHOW_DELAY_MS);
         };
         if (p.image) {
+          // decode() (not just onload) so the bitmap is ready to paint the
+          // instant the card mounts — otherwise the photo area flashes navy
+          // for a beat while the JPEG decodes.
           const im = new Image();
-          im.onload = show;
-          im.onerror = () => {
+          im.src = p.image;
+          im.decode().then(show, () => {
             p.image = ''; // broken photo → text-only card, never a grey box
             show();
-          };
-          im.src = p.image;
+          });
         } else show();
       })
       .catch(() => { /* offline / aborted — no card */ });
