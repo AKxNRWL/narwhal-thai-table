@@ -75,6 +75,9 @@ export default function OrderPage() {
             {RESTAURANT.address.street}, {RESTAURANT.address.city} →
           </a>
         </p>
+        <p className="order-hours" style={{ marginTop: 10 }}>
+          Weekday lunch? <Link href="/lunch">Lunch specials from $11.99, Mon–Fri 11:30–3 →</Link>
+        </p>
 
         <div className="order-steps" aria-label="How pickup works">
           <div className="order-step">

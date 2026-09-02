@@ -150,7 +150,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ],
               // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):
               // founder: { '@type': 'Person', name: 'Chef Rainny' },
-              hasMenu: `${SITE_URL}/menu`,
+              // Full menu + the weekday Lunch Specials menu (app/lunch/page.tsx declares
+              // the Menu node with this @id; the two documents merge on the id).
+              hasMenu: [
+                `${SITE_URL}/menu`,
+                { '@type': 'Menu', '@id': `${SITE_URL}/lunch#menu`, name: 'Lunch Specials (Mon–Fri 11:30 AM–3 PM)', url: `${SITE_URL}/lunch` },
+              ],
               // Points at OUR Google listing by CID — never the previous tenant's.
               hasMap: GBP_MAP_URL,
               areaServed: ['Huntington Beach', 'Fountain Valley', 'Westminster', 'Costa Mesa', 'Orange County'],

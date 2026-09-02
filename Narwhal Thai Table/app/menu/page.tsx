@@ -136,6 +136,13 @@ export default function MenuPage() {
             Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe&apos;s history, how to eat it well, and what belongs beside it.
           </p>
         </div>
+        {/* Weekday lunch specials (launched late Aug 2026) live on their own page —
+            this strip is the pointer for the 11:45-on-a-Tuesday visitor. */}
+        <Link href="/lunch" className="lunch-strip">
+          <span className="lunch-strip-tag">Mon–Fri · 11:30–3</span>
+          <span>Lunch specials from $11.99 — Pad Thai, curries, krapow &amp; more, with salad and a spring roll</span>
+          <span className="lunch-strip-go">See lunch →</span>
+        </Link>
         <MenuTabs photos={photos} />
         <DishIndex />
       </div>

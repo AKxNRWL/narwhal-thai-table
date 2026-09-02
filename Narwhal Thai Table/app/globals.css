@@ -1967,3 +1967,47 @@ h3.dish-name{margin:0;font-weight:500;}
   .lunch-copy > p{ font-size:17px; }
   .lunch-cta .btn-primary, .lunch-cta .btn-secondary{ flex:1 1 auto; justify-content:center; }
 }
+
+
+/* ============================================================
+   SEO/GEO batch 5 — /lunch, /about, /press, city pages + the
+   lunch strip on /menu. Same dark surfaces and brass accents
+   as the rest of the site; every block reuses existing tokens.
+   ============================================================ */
+/* /lunch borrows .sig-card (base opacity:0 waiting for FadeUp) with no
+   FadeUp on the page — same fix as .order-page. */
+.lunch-page .sig-card{opacity:1;transform:none;transition:none;}
+.lunch-tray{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:1000px;margin:48px auto 0;}
+.lunch-tray-item{border:1px solid rgba(176,141,60,0.28);border-radius:var(--radius-md);padding:22px 24px;background:rgba(245,240,230,0.03);}
+.lunch-tray-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:1px solid var(--brass);color:var(--brass-light);font-family:var(--font-display);font-size:15px;margin-bottom:12px;}
+.lunch-tray-item p{margin:0;font-family:var(--font-serif);font-size:16px;line-height:1.6;color:var(--muted);}
+.lunch-tray-item strong{color:var(--off-white);font-weight:500;}
+/* Pointer strip under the /menu header */
+.lunch-strip{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;max-width:900px;margin:-36px auto 56px;padding:14px 20px;border:1px solid rgba(200,162,78,0.45);border-radius:var(--radius-pill);background:rgba(200,162,78,0.08);color:var(--off-white);text-decoration:none;font-size:15px;line-height:1.4;text-align:center;}
+.lunch-strip:hover,.lunch-strip:focus-visible{border-color:var(--brass-light);background:rgba(200,162,78,0.14);}
+.lunch-strip-tag{font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--navy-deep);background:var(--brass);padding:6px 10px;border-radius:var(--radius-pill);font-weight:600;white-space:nowrap;}
+.lunch-strip-go{color:var(--brass-light);white-space:nowrap;}
+/* /about */
+.about-page-media{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;max-width:1100px;margin:-24px auto 56px;}
+/* Fact sheet (about + press) */
+.fact-list{max-width:900px;margin:64px auto 0;padding-top:40px;border-top:1px solid rgba(176,141,60,0.22);}
+.fact-list h2{font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--off-white);letter-spacing:-0.01em;margin-bottom:18px;}
+.fact-list h2 em{font-family:var(--font-serif);font-style:italic;color:var(--brass-light);font-weight:300;}
+.fact-list dl{margin:0;display:flex;flex-direction:column;}
+.fact-row{display:grid;grid-template-columns:160px 1fr;gap:18px;padding:12px 0;border-bottom:1px dashed rgba(176,141,60,0.22);}
+.fact-row dt{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--brass-light);padding-top:4px;font-weight:500;}
+.fact-row dd{margin:0;color:var(--muted);line-height:1.6;font-size:16px;}
+.fact-row dd a{color:var(--brass-light);}
+/* /press photo grid */
+.press-grid{list-style:none;padding:0;margin:0 auto;max-width:1100px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.press-photo{border:1px solid rgba(176,141,60,0.28);border-radius:var(--radius-md);overflow:hidden;background:rgba(245,240,230,0.03);}
+.press-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;}
+.press-photo-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;font-size:13.5px;color:var(--muted);}
+.press-photo-meta a{color:var(--brass-light);text-decoration:none;border-bottom:1px solid rgba(200,162,78,0.4);}
+@media(max-width:900px){
+  .lunch-tray{grid-template-columns:1fr;gap:12px;margin-top:36px;}
+  .lunch-strip{margin-top:-20px;}
+  .about-page-media{grid-template-columns:1fr;}
+  .press-grid{grid-template-columns:repeat(2,1fr);}
+  .fact-row{grid-template-columns:1fr;gap:4px;}
+}

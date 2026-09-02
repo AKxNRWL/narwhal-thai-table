@@ -35,7 +35,10 @@ export default function Footer() {
               {s.label}
             </a>
           ))}
+          <Link href="/lunch" aria-label="Weekday lunch specials">Lunch Specials</Link>
+          <Link href="/about" aria-label="Our story — who we are and how this table came to be">Our Story</Link>
           <Link href="/thai-food-orange-county" aria-label="Our field guide to Thai food in Orange County">Thai Food Guide</Link>
+          <Link href="/press" aria-label="Press and media kit">Press</Link>
           <Link href="/play" aria-label="Play Bubble Glide, our narwhal mini-game">Bubble Glide</Link>
         </nav>
         {/* NAP line — consistent address (+ phone once set) helps local SEO. */}

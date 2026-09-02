@@ -34,7 +34,7 @@ export function StorySection() {
                 and renamed it — saying so out loud serves the people still searching
                 the old name (27 clicks / 216 impressions last quarter) and tells
                 Google the two entities at this address are one continuous story. */}
-            <p>If this address feels familiar, it should. For years it was Thai Gulf — a neighborhood standby. Our family bought the business, hung a new name on the door, and made it our own: our recipes, our mortar, our welcome. If you got here looking for Thai Gulf — welcome back. The table is still here.</p>
+            <p>If this address feels familiar, it should. For years it was Thai Gulf — a neighborhood standby. Our family bought the business, hung a new name on the door, and made it our own: our recipes, our mortar, our welcome. If you got here looking for Thai Gulf — welcome back. The table is still here. <Link href="/about" style={{ color: 'var(--brass-light)', whiteSpace: 'nowrap' }}>Read the whole story &rarr;</Link></p>
             <p style={{ color: 'var(--brass-deep)', fontStyle: 'italic' }}>Because what we serve isn&apos;t just dinner. It&apos;s everything around it — the warmth, the welcome, the wanting you back.</p>
             <div className="about-stats">
               <div className="stat"><div className="num">3</div><div className="lbl">Siblings, One Table</div></div>
