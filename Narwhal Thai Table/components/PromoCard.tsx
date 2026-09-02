@@ -2,20 +2,20 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import PhotoCarousel from '@/components/PhotoCarousel';
 import type { PublicPromo } from '@/lib/promoShared';
 
 /**
  * Promo pop-up — the owner's current special (lunch set, seasonal dish…),
  * shown once per visit as a compact card: centred on desktop, a bottom sheet
  * on phones. Content comes from /api/promo (owner edits it in /stats).
- * With 2+ photos the photo area is a swipeable carousel (scroll-snap, so it is
- * native touch scrolling) with dots, hover arrows on desktop and ←/→ keys.
+ * With 2+ photos the photo area is a swipeable carousel (components/PhotoCarousel).
  *
  * Rules that keep it welcome rather than annoying:
  *  - never on the paid /order landing page or staff screens, never for
  *    guests who arrived from a table QR (?t=)
- *  - waits 1.4s so the page paints first; the first photo is decoded before
- *    the card mounts so it never pops in empty
+ *  - shows as soon as the page has hydrated and the first photo is decoded
+ *    (owner's call, 2 Sep: "เปิดเว็บมาเจอเลย") — it never pops in empty
  *  - once per session; "×" / "Maybe later" hides it for DISMISS_DAYS
  *  - a changed offer has a new id, so it shows again to everyone
  *  - accessible: role=dialog, Escape closes, focus moves in and back out,
@@ -25,7 +25,7 @@ import type { PublicPromo } from '@/lib/promoShared';
 const SEEN_KEY = 'nwh-promo-seen'; // sessionStorage: id shown this session
 const DISMISS_KEY = 'nwh-promo-dismiss'; // localStorage: { id, until }
 const DISMISS_DAYS = 3;
-const SHOW_DELAY_MS = 1400;
+const SHOW_DELAY_MS = 200; // just enough for the page's own first paint
 const SKIP_PATHS = ['/order', '/stats', '/orders', '/calls', '/cal', '/play'];
 
 const ss = (k: string, v?: string): string | null => {
@@ -52,87 +52,6 @@ function rememberDismiss(id: string) {
   }
 }
 const isExternal = (url: string) => /^https?:\/\//i.test(url) && !url.startsWith('https://narwhalthaihb.com');
-const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* ── photo carousel (1 photo = plain image, 2+ = swipe + dots) ──────────── */
-
-function PromoPhotos({ images }: { images: PublicPromo['images'] }) {
-  const track = useRef<HTMLDivElement>(null);
-  const [idx, setIdx] = useState(0);
-  const n = images.length;
-
-  const go = useCallback((i: number) => {
-    const el = track.current;
-    if (!el) return;
-    const next = ((i % n) + n) % n;
-    el.scrollTo({ left: next * el.clientWidth, behavior: reducedMotion() ? 'auto' : 'smooth' });
-  }, [n]);
-
-  // Active dot follows the snap position (rAF-throttled scroll listener).
-  useEffect(() => {
-    const el = track.current;
-    if (!el || n < 2) return;
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setIdx(Math.min(n - 1, Math.max(0, Math.round(el.scrollLeft / el.clientWidth)))));
-    };
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      el.removeEventListener('scroll', onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, [n]);
-
-  if (!n) return null;
-  return (
-    <div
-      className={'promo-media' + (n > 1 ? ' has-many' : '')}
-      role={n > 1 ? 'region' : undefined}
-      aria-roledescription={n > 1 ? 'carousel' : undefined}
-      aria-label={n > 1 ? 'Photos' : undefined}
-      onKeyDown={(e) => {
-        if (n < 2) return;
-        if (e.key === 'ArrowRight') { e.preventDefault(); go(idx + 1); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
-      }}
-    >
-      <div className="promo-track" ref={track}>
-        {images.map((im, i) => (
-          <div className="promo-slide" key={im.src + i} role={n > 1 ? 'group' : undefined} aria-roledescription={n > 1 ? 'slide' : undefined} aria-label={n > 1 ? `${i + 1} of ${n}` : undefined}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- owner-uploaded or site photo; plain <img> avoids remotePatterns config */}
-            <img src={im.src} alt={im.alt} decoding={i === 0 ? 'sync' : 'async'} loading={i < 2 ? 'eager' : 'lazy'} draggable={false} />
-            {im.alt && <span className="promo-cap" aria-hidden="true">{im.alt}</span>}
-          </div>
-        ))}
-      </div>
-      {n > 1 && (
-        <>
-          <button type="button" className="promo-arrow promo-prev" aria-label="Previous photo" onClick={() => go(idx - 1)}>
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M10 3L5 8l5 5" /></svg>
-          </button>
-          <button type="button" className="promo-arrow promo-next" aria-label="Next photo" onClick={() => go(idx + 1)}>
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M6 3l5 5-5 5" /></svg>
-          </button>
-          <div className="promo-dots">
-            {images.map((im, i) => (
-              <button
-                type="button"
-                key={im.src + i}
-                className={'promo-dot' + (i === idx ? ' is-on' : '')}
-                aria-label={`Photo ${i + 1} of ${n}${im.alt ? ': ' + im.alt : ''}`}
-                aria-current={i === idx ? 'true' : undefined}
-                onClick={() => go(i)}
-              >
-                <i />
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 /* ── the card itself (also used as the live preview in /stats) ─────────── */
 
@@ -166,7 +85,11 @@ export function PromoCardView({
           <path d="M3 3l10 10M13 3L3 13" />
         </svg>
       </button>
-      <PromoPhotos images={promo.images || []} />
+      {promo.images && promo.images.length > 0 && (
+        <div className="promo-media">
+          <PhotoCarousel images={promo.images} label="Promo photos" />
+        </div>
+      )}
       <div className="promo-copy">
         {promo.eyebrow && <span className="promo-eyebrow">{promo.eyebrow}</span>}
         <h2 className="promo-title" id={titleId}>{promo.title}</h2>

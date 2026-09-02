@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
+import LunchSpecials from '@/components/LunchSpecials';
 import { getHeroMedia } from '@/lib/media';
 import { SHOW_CHEF } from '@/lib/site';
 import {
@@ -20,6 +21,8 @@ export default function HomePage() {
   return (
     <>
       <Hero media={heroMedia} />
+      {/* Weekday Lunch Specials — first thing after the hero (owner, 2 Sep 2026). */}
+      <LunchSpecials />
       <StorySection />
       {SHOW_CHEF && <ChefSection />}
       <MenuPreviewSection />

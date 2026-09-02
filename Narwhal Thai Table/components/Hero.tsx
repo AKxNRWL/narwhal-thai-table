@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
 import { ORDER_ONLINE_URL } from '@/lib/site';
+import { LUNCH } from '@/lib/lunchPhotos';
 
 /**
  * Hero structure (z-stack inside the .hero section):
@@ -81,6 +82,16 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
       <div className="hero-inner">
         <div className="hero-text">
           <span className="label hero-coming-soon">Now Open · Every Day</span>
+          {/* Lunch Specials pill — owner (2 Sep 2026): the weekday deal must be on
+              screen the moment the site opens, on every device. Jumps to the
+              <LunchSpecials/> section right under the hero. */}
+          <div className="hero-pill-row">
+            <a className="hero-pill" href="#lunch-specials">
+              <span className="dot" aria-hidden="true" />
+              Weekday Lunch Specials <b>from {LUNCH.fromPrice}</b>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </a>
+          </div>
           <h1 id="hero-title">
             From Siam&apos;s royal court<br/><em>to Huntington Beach</em>.
           </h1>
