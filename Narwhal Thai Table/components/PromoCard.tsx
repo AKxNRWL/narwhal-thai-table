@@ -142,13 +142,23 @@ export default function PromoCard() {
     const force = params.get('promo') === 'show'; // owner's "ดูบนเว็บ" link from /stats
     const ctrl = new AbortController();
     let timer: number | undefined;
-    // Normal visits share the 60s cached copy; the owner's check bypasses both
-    // the browser cache and the CDN key so a fresh save shows up immediately.
-    fetch(force ? '/api/promo?fresh=' + Date.now() : '/api/promo', { signal: ctrl.signal, cache: force ? 'no-store' : 'default' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j: { promo?: PublicPromo | null } | null) => {
+    // Normal visits share the edge-cached copy (60s). The owner's check reads
+    // the uncached owner endpoint instead (same cookie as /stats) so a fresh
+    // save shows immediately — the CDN ignores query strings here
+    // (Netlify-Vary), so cache-busting the public URL would not work.
+    const load = async (): Promise<{ promo?: PublicPromo | null; status?: string } | null> => {
+      if (force) {
+        const r = await fetch('/api/owner/promo', { signal: ctrl.signal, credentials: 'same-origin', cache: 'no-store' });
+        if (r.ok) return r.json();
+      }
+      const r = await fetch('/api/promo', { signal: ctrl.signal, cache: force ? 'no-store' : 'default' });
+      return r.ok ? r.json() : null;
+    };
+    load()
+      .then((j) => {
         const p = j?.promo;
         if (!p || !p.id || !p.title) return;
+        if (force && j?.status && j.status !== 'live') return; // owner data carries status
         if (!force && (ss(SEEN_KEY) === p.id || dismissedFor(p.id))) return;
         const show = () => {
           timer = window.setTimeout(() => {
