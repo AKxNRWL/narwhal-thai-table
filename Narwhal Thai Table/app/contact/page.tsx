@@ -53,9 +53,9 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <p>
         Yes — Monday through Friday, 11:30 AM to 3 PM, <Link href="/lunch">lunch specials</Link> start
-        at $11.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic &amp; Pepper, Cashew, or a Yellow
-        or Panang curry. Every lunch comes with a fresh salad and a crispy spring roll, plus a cup of
-        soup when you dine in. Call <a href="tel:+17143786003">(714) 378-6003</a> ahead for pickup.
+        at $11.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic &amp; Pepper, Cashew, Mixed
+        Vegetables, or a Yellow or Panang curry. Every lunch comes with a fresh salad and a crispy
+        spring roll, plus a cup of soup when you dine in. Call <a href="tel:+17143786003">(714) 378-6003</a> ahead for pickup.
       </p>
     ),
   },

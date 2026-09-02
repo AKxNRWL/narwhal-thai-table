@@ -91,8 +91,8 @@ export default function ThaiFoodWestminsterPage() {
             Thai</Dish>, <Dish slug="pad-see-ew">Pad See Ew</Dish>, <Dish slug="pad-kee-mao">Pad Kee
             Mao</Dish>, <Dish slug="krapow-over-rice">Krapow</Dish>,{' '}
             <Dish slug="garlic-pepper-over-rice">Garlic &amp; Pepper</Dish>,{' '}
-            <Dish slug="cashew-nut">Cashew</Dish>, or a <Dish slug="yellow-curry">Yellow</Dish> or{' '}
-            <Dish slug="panang-curry">Panang</Dish> curry. Call <a href="tel:+17143786003">(714) 378-6003</a>{' '}
+            <Dish slug="cashew-nut">Cashew</Dish>, <Dish slug="mixed-vegetables">Mixed Vegetables</Dish>, or a{' '}
+            <Dish slug="yellow-curry">Yellow</Dish> or <Dish slug="panang-curry">Panang</Dish> curry. Call <a href="tel:+17143786003">(714) 378-6003</a>{' '}
             as you leave Westminster and it&apos;ll be waiting when you park.
           </p>
 

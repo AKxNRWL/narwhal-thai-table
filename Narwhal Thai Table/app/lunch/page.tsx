@@ -16,10 +16,12 @@ import { SITE_URL, RESTAURANT_ID, DIRECTIONS_URL, ORDER_ONLINE_URL, RESTAURANT }
  * weekday office crowd types at 11:45. This page is the landing spot for
  * those searches and for the lunch keywords in Google Ads.
  *
- * FACTS ONLY from the owner's own GBP post (verified 1 Sep 2026): the eight
- * plates, the hours, "from $11.99", salad + spring roll with every lunch,
- * cup of soup when dining in. Per-plate prices are not published here until
- * the owner sends them — never guess a price.
+ * FACTS ONLY from the owner's own GBP post (verified 1 Sep 2026) + owner
+ * confirmation 2 Sep 2026 that Mixed Vegetables is a lunch plate too (nine
+ * plates total; lib/lunchPhotos.ts LUNCH.plates is the shared list), the
+ * hours, "from $11.99", salad + spring roll with every lunch, cup of soup
+ * when dining in. Per-plate prices are not published here until the owner
+ * sends them — never guess a price.
  */
 
 const LUNCH_SLUGS = [
@@ -29,6 +31,7 @@ const LUNCH_SLUGS = [
   'krapow-over-rice',
   'garlic-pepper-over-rice',
   'cashew-nut',
+  'mixed-vegetables',
   'yellow-curry',
   'panang-curry',
 ] as const;
@@ -42,6 +45,7 @@ const LUNCH_PLATE_PHOTO: Record<string, string> = {
   'krapow-over-rice': 'krapow.jpg',
   'garlic-pepper-over-rice': 'garlic-pepper.jpg',
   'cashew-nut': 'cashew-nut.jpg',
+  'mixed-vegetables': 'mixed-veg.jpg',
   'yellow-curry': 'yellow-curry.jpg',
   'panang-curry': 'panang-curry.jpg',
 };
@@ -50,7 +54,7 @@ const lunchPhoto = (slug: string): string | undefined =>
 
 const TITLE = 'Thai Lunch Specials in Huntington Beach — Mon–Fri from $11.99 · Narwhal Thai Table';
 const DESCRIPTION =
-  'Weekday Thai lunch specials on Beach Blvd: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, or a Yellow or Panang curry from $11.99 — with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in. Monday–Friday, 11:30 AM–3:00 PM.';
+  'Weekday Thai lunch specials on Beach Blvd: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, or a Yellow or Panang curry from $11.99 — with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in. Monday–Friday, 11:30 AM–3:00 PM.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -145,7 +149,7 @@ export default function LunchPage() {
         <div className="lunch-tray" aria-label="What comes with every lunch special">
           <div className="lunch-tray-item">
             <span className="lunch-tray-num">1</span>
-            <p><strong>Your plate.</strong> Eight choices — wok noodles, a rice plate, or a curry — each one cooked when you order it, at the spice level you ask for.</p>
+            <p><strong>Your plate.</strong> Nine choices — wok noodles, a rice plate, stir-fried vegetables, or a curry — each one cooked when you order it, at the spice level you ask for.</p>
           </div>
           <div className="lunch-tray-item">
             <span className="lunch-tray-num">2</span>
