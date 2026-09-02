@@ -1,6 +1,6 @@
 import { requireOwner } from '@/lib/session';
 import { jsonCors } from '@/lib/cors';
-import { readPromo, writePromo, sanitizePromo, promoStatus } from '@/lib/promo';
+import { readPromo, writePromo, sanitizePromo, promoStatus, cleanupPromoImages } from '@/lib/promo';
 
 export { OPTIONS } from '@/lib/cors';
 
@@ -46,5 +46,6 @@ export async function POST(req: Request) {
     console.warn('[owner/promo] write failed', e);
     return jsonCors(req, { ok: false, error: 'store_failed' }, { status: 502, headers: NO_STORE });
   }
+  await cleanupPromoImages(auth.tenantId, result.promo.images); // drop uploads no longer used
   return jsonCors(req, { ok: true, promo: result.promo, status: promoStatus(result.promo) }, { headers: NO_STORE });
 }

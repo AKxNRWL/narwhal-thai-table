@@ -4,6 +4,9 @@
  * Keep this file free of Node-only imports: it ships in the client bundle.
  */
 
+/** One carousel photo. `alt` doubles as the caption chip on the photo ('' = none). */
+export type PromoImage = { src: string; alt: string };
+
 export type Promo = {
   /** Content hash. Changes whenever the offer changes, so a NEW offer shows
    *  again to visitors who closed the previous one (see DISMISS logic). */
@@ -15,8 +18,9 @@ export type Promo = {
   body: string;
   /** Free text — "$14.95", "from $12", or empty */
   price: string;
-  /** '' | site path (/images/…, /api/promo/image?v=…) | https URL */
-  image: string;
+  /** 0–LIMITS.images photos; 2+ become a swipeable carousel with dots.
+   *  src = site path (/images/…, /api/promo/image/<id>) or https URL. */
+  images: PromoImage[];
   ctaLabel: string;
   /** '' hides the button. http(s), tel:, or a site path. */
   ctaUrl: string;
@@ -29,7 +33,8 @@ export type Promo = {
 /** What the public endpoint hands to browsers. */
 export type PublicPromo = Omit<Promo, 'enabled' | 'startsAt' | 'endsAt' | 'updatedAt'>;
 
-export type PromoImageOption = { label: string; src: string };
+/** A photo the owner can pick from the site's own library (/stats editor). */
+export type PromoImageOption = { label: string; src: string; group: 'lunch' | 'dish' };
 
 export const LIMITS = {
   eyebrow: 40,
@@ -38,7 +43,11 @@ export const LIMITS = {
   price: 24,
   ctaLabel: 30,
   ctaUrl: 500,
-  image: 500,
+  /** max photos in the carousel */
+  images: 8,
+  /** per-photo src length / caption length */
+  imageSrc: 500,
+  alt: 60,
   /** decoded upload size — phone photos are downsized client-side first */
   imageBytes: 2_000_000,
 } as const;
@@ -62,5 +71,5 @@ export function promoStatus(p: Promo | null, now: Date = new Date()): PromoStatu
 export const isLive = (p: Promo | null, now: Date = new Date()): boolean => promoStatus(p, now) === 'live';
 
 export function publicPromo(p: Promo): PublicPromo {
-  return { id: p.id, eyebrow: p.eyebrow, title: p.title, body: p.body, price: p.price, image: p.image, ctaLabel: p.ctaLabel, ctaUrl: p.ctaUrl };
+  return { id: p.id, eyebrow: p.eyebrow, title: p.title, body: p.body, price: p.price, images: p.images, ctaLabel: p.ctaLabel, ctaUrl: p.ctaUrl };
 }

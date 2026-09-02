@@ -1,15 +1,16 @@
 import { requireOwner } from '@/lib/session';
 import { jsonCors } from '@/lib/cors';
-import { writePromoImage, LIMITS } from '@/lib/promo';
+import { writePromoImage, newImageId, imageUrl, LIMITS } from '@/lib/promo';
 
 export { OPTIONS } from '@/lib/cors';
 
 /**
- * Owner: upload the promo photo.
- *   POST { dataUrl: "data:image/jpeg;base64,…" } → { ok, url }
+ * Owner: upload one promo photo.
+ *   POST { dataUrl: "data:image/jpeg;base64,…" } → { ok, url, id }
  * The browser downsizes the photo to ≤1400px before sending (see
  * components/PromoEditor.tsx), so the body stays well under Netlify's limit.
- * The returned url carries a fresh ?v= so old cached copies never show.
+ * Each upload gets its own id/URL; uploads the saved promo no longer uses are
+ * deleted on the next save (lib/promo.ts cleanupPromoImages).
  */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,12 +35,12 @@ export async function POST(req: Request) {
   if (bytes.length < 64) return jsonCors(req, { ok: false, error: 'bad_image' }, { status: 400, headers: NO_STORE });
   if (bytes.length > LIMITS.imageBytes) return jsonCors(req, { ok: false, error: 'too_large' }, { status: 413, headers: NO_STORE });
 
+  const id = newImageId();
   try {
-    await writePromoImage(auth.tenantId, bytes, m[1]);
+    await writePromoImage(auth.tenantId, id, bytes, m[1]);
   } catch (e) {
     console.warn('[owner/promo/image] write failed', e);
     return jsonCors(req, { ok: false, error: 'store_failed' }, { status: 502, headers: NO_STORE });
   }
-  const url = `/api/promo/image?v=${Date.now().toString(36)}`;
-  return jsonCors(req, { ok: true, url, bytes: bytes.length }, { headers: NO_STORE });
+  return jsonCors(req, { ok: true, id, url: imageUrl(id), bytes: bytes.length }, { headers: NO_STORE });
 }
