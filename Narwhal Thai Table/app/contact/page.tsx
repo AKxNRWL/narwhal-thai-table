@@ -62,9 +62,23 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'Can you cook vegetarian? What about allergies?',
     a: (
       <p>
-        Many dishes can be made vegetarian — just ask. And always tell us about an allergy when
-        you order: we cook each plate fresh, but our kitchen works with peanuts, shellfish, egg,
-        soy, and wheat every day, so we can&apos;t promise zero cross-contact.
+        Many dishes can be made vegetarian — just ask. Eating gluten-free? Tell us when you
+        order and we&apos;ll point you to the rice-based plates that can be cooked without soy
+        sauce or wheat that day. And always tell us about an allergy when you order: we cook
+        each plate fresh, but our kitchen works with peanuts, shellfish, egg, soy, and wheat
+        every day, so we can&apos;t promise zero cross-contact.
+      </p>
+    ),
+  },
+  {
+    q: 'What should we order first?',
+    a: (
+      <p>
+        The plates people ask about most: <Link href="/menu/crab-fried-rice">Super Crab Fried Rice</Link>,{' '}
+        <Link href="/menu/narwhal-chicken-wings">Narwhal Chicken Wings</Link>,{' '}
+        <Link href="/menu/og-pad-thai">OG Pad Thai</Link>, <Link href="/menu/panang-curry">Panang Curry</Link>{' '}
+        and the <Link href="/menu/fried-whole-pompano">Fried Whole Pompano</Link> for the table. Order a
+        curry and a wok dish to share, and save room — dessert is on us.
       </p>
     ),
   },

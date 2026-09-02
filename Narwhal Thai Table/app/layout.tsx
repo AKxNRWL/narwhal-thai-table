@@ -89,8 +89,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               '@id': RESTAURANT_ID,
               name: 'Narwhal Thai Table',
               url: SITE_URL,
-              image: `${SITE_URL}/images/og-cover.jpg`,
+              image: [
+                `${SITE_URL}/images/og-cover.jpg`,
+                `${SITE_URL}/images/room/storefront.jpg`,
+                `${SITE_URL}/images/dishes/crab-fried-rice.jpg`,
+                `${SITE_URL}/images/dishes/og-pad-thai.jpg`,
+                `${SITE_URL}/images/dishes/panang-curry.jpg`,
+              ],
               logo: `${SITE_URL}/images/logo-full-thai.png`,
+              // Entity clarity for search engines + AI assistants: who we are, and how we
+              // relate to the previous tenant at this address (owner-confirmed acquisition
+              // + rename, July 2026). Plain facts only — no ratings/reviews (self-serving
+              // review markup is against Google policy).
+              description:
+                'Family-run Thai restaurant on Beach Blvd in Huntington Beach. Three siblings cook Thai the way they grew up eating it: curry pastes pounded by hand, wok noodles and fried rice made to order, fresh seafood and vegetarian options, with a dog-friendly patio and free ice cream after every dine-in meal.',
+              disambiguatingDescription:
+                'Formerly Thai Gulf Restaurant — same address (19072 Beach Blvd Ste A & B, Huntington Beach), new owners and new name since July 2026.',
+              alternateName: ['Narwhal Thai', 'Narwhal Thai Table HB'],
+              foundingDate: '2026-07',
+              parentOrganization: { '@type': 'Organization', name: 'Narwhal Hospitality LLC' },
+              knowsLanguage: ['en', 'th'],
+              amenityFeature: [
+                { '@type': 'LocationFeatureSpecification', name: 'Outdoor patio seating', value: true },
+                { '@type': 'LocationFeatureSpecification', name: 'Dog-friendly patio', value: true },
+                { '@type': 'LocationFeatureSpecification', name: 'Complimentary ice cream after dine-in meals', value: true },
+                { '@type': 'LocationFeatureSpecification', name: 'Takeout', value: true },
+                { '@type': 'LocationFeatureSpecification', name: 'Delivery', value: true },
+                { '@type': 'LocationFeatureSpecification', name: 'Wheelchair accessible', value: true },
+              ],
               servesCuisine: ['Thai', 'Royal Thai'],
               priceRange: '$$',
               address: {
