@@ -32,6 +32,6 @@ export const LUNCH = {
   /** Every plate listed on the GBP post / lunch menu (Pad See Ew has no photo yet). */
   plates: ['Pad Thai', 'Pad See Ew', 'Pad Kee Mao', 'Krapow', 'Garlic & Pepper', 'Cashew Nut', 'Mixed Vegetables', 'Yellow Curry', 'Panang Curry'],
   includes: 'a fresh salad and a crispy spring roll, plus a cup of soup when you dine in',
-  /** Where "See the lunch menu" goes. Switch to '/lunch' the moment that page is live. */
-  menuPath: '/menu',
+  /** Where "See the lunch menu" goes — the /lunch page (live since 2 Sep 2026). */
+  menuPath: '/lunch',
 } as const;
