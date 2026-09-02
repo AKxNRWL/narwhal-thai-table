@@ -6,6 +6,7 @@ import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
+import PromoCard from '@/components/PromoCard';
 import MobileActionBar from '@/components/MobileActionBar';
 import AdsConversions from '@/components/AdsConversions';
 import NotoTickerFonts from '@/components/NotoTickerFonts';
@@ -197,6 +198,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <MobileActionBar />
         <ChatWidget />
+        {/* Owner-managed promo pop-up (content from /api/promo; edited in /stats). */}
+        <PromoCard />
         <AdsConversions />
         {/* Google Analytics 4 — property "narwhalthaihb.com", stream "Narwhal Thai Table Website" (welcome@ account)
             + Google Ads conversion tag AW-18329609126 — one shared gtag loader, two configs. */}

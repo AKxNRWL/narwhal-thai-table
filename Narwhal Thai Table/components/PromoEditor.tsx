@@ -1,0 +1,307 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { PromoCardView } from '@/components/PromoCard';
+import { promoStatus, LIMITS } from '@/lib/promoShared';
+import type { Promo, PromoImageOption, PromoStatus } from '@/lib/promoShared';
+import { ORDER_ONLINE_URL, RESTAURANT } from '@/lib/site';
+
+/**
+ * "ป้ายโปรโมชั่น" panel in /stats — the owner writes the special, picks a
+ * photo (a dish photo already on the site, or an upload from the phone), sees
+ * the exact card visitors will get, and saves. Talks to /api/owner/promo with
+ * the same cookie session as the rest of the Control Room.
+ */
+
+type Draft = Omit<Promo, 'id' | 'updatedAt'>;
+type ImageMode = 'dish' | 'upload' | 'none';
+
+const EMPTY: Draft = {
+  enabled: false,
+  eyebrow: 'New · Lunch Special',
+  title: '',
+  body: '',
+  price: '',
+  image: '',
+  ctaLabel: 'Order now',
+  ctaUrl: ORDER_ONLINE_URL,
+  startsAt: '',
+  endsAt: '',
+};
+
+/** Editable fields of a stored promo, in EMPTY's key order (the dirty check compares JSON). */
+const toDraft = (p: Promo): Draft => ({
+  enabled: p.enabled,
+  eyebrow: p.eyebrow,
+  title: p.title,
+  body: p.body,
+  price: p.price,
+  image: p.image,
+  ctaLabel: p.ctaLabel,
+  ctaUrl: p.ctaUrl,
+  startsAt: p.startsAt,
+  endsAt: p.endsAt,
+});
+
+const CTA_PRESETS: { label: string; ctaLabel: string; ctaUrl: string }[] = [
+  { label: 'สั่งออนไลน์ (Toast)', ctaLabel: 'Order now', ctaUrl: ORDER_ONLINE_URL },
+  { label: 'เมนู Lunch Specials', ctaLabel: 'See lunch specials', ctaUrl: '/lunch' },
+  { label: 'ดูเมนู', ctaLabel: 'See the menu', ctaUrl: '/menu' },
+  { label: 'จองโต๊ะ', ctaLabel: 'Reserve a table', ctaUrl: '/contact/reservation' },
+  { label: 'โทรหาร้าน', ctaLabel: 'Call us', ctaUrl: 'tel:' + RESTAURANT.phone.replace(/[^\d+]/g, '') },
+  { label: 'ไม่มีปุ่ม', ctaLabel: '', ctaUrl: '' },
+];
+
+const STATUS_TEXT: Record<PromoStatus, string> = {
+  live: '🟢 กำลังแสดงบนเว็บ',
+  off: '⚪ ปิดอยู่ — ลูกค้าไม่เห็น',
+  scheduled: '🕒 ตั้งเวลาไว้ — จะเริ่มแสดงตามวันที่กำหนด',
+  ended: '⏹ หมดเวลาแล้ว — เลยวันสิ้นสุด',
+  empty: 'ยังไม่มีป้าย',
+};
+
+const ERROR_TEXT: Record<string, string> = {
+  title_required: 'ใส่ชื่อโปรก่อนเปิดแสดง',
+  bad_cta_url: 'ลิงก์ปุ่มไม่ถูกต้อง (ต้องขึ้นต้นด้วย https:// หรือ /)',
+  bad_image: 'ลิงก์รูปไม่ถูกต้อง',
+  bad_start: 'วันเริ่มไม่ถูกต้อง',
+  bad_end: 'วันสิ้นสุดไม่ถูกต้อง',
+  end_before_start: 'วันสิ้นสุดอยู่ก่อนวันเริ่ม',
+  too_large: 'รูปใหญ่เกินไป (ลองรูปเล็กกว่านี้)',
+  store_failed: 'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง',
+  unauthorized: 'หมดเวลาเข้าสู่ระบบ — รีเฟรชแล้วเข้าใหม่',
+};
+
+/* Downsize a phone photo in the browser: ≤1400px on the long side, JPEG 0.86.
+   A 4 MB camera shot becomes ~200 KB, which keeps the upload fast and the
+   card quick to load for visitors. Goes through an <img> (not
+   createImageBitmap) so EXIF rotation from phones is applied everywhere. */
+async function fileToDataUrl(file: File, max = 1400, quality = 0.86): Promise<string> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('canvas');
+    ctx.drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL('image/jpeg', quality);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+/* ── styles: match the rest of /stats (inline, navy + brass) ───────────── */
+const OFF = 'var(--off-white, #F5F0E6)';
+const NAVY = 'var(--navy, #0B1F33)';
+const BRASS = 'var(--brass, #B08D3C)';
+const BRASSL = 'var(--brass-light, #D4B36A)';
+const LINE = 'rgba(200,162,78,0.20)';
+const label: React.CSSProperties = { fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(245,240,230,0.55)' };
+const field: React.CSSProperties = { width: '100%', marginTop: 6, padding: '9px 13px', borderRadius: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid ' + LINE, color: OFF, fontSize: 14, outline: 'none', fontFamily: 'inherit' };
+const chip = (on: boolean): React.CSSProperties => ({ padding: '6px 12px', borderRadius: 999, fontSize: 12.5, cursor: 'pointer', border: '1px solid ' + (on ? 'rgba(200,162,78,0.6)' : LINE), background: on ? 'rgba(200,162,78,0.16)' : 'rgba(255,255,255,0.04)', color: on ? BRASSL : 'rgba(245,240,230,0.75)' });
+const hint: React.CSSProperties = { fontSize: 11.5, color: 'rgba(245,240,230,0.45)', marginTop: 4 };
+
+export default function PromoEditor({ images }: { images: PromoImageOption[] }) {
+  const [draft, setDraft] = useState<Draft>(EMPTY);
+  const [saved, setSaved] = useState<Promo | null>(null);
+  const [status, setStatus] = useState<PromoStatus>('empty');
+  const [loaded, setLoaded] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [imageMode, setImageMode] = useState<ImageMode>('dish');
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch('/api/owner/promo', { credentials: 'same-origin', cache: 'no-store' });
+        const j = (await r.json()) as { ok: boolean; promo: Promo | null; status: PromoStatus };
+        if (j.ok && j.promo) {
+          const d = toDraft(j.promo);
+          setDraft(d);
+          setSaved(j.promo);
+          setStatus(j.status);
+          setImageMode(!d.image ? 'none' : d.image.startsWith('/api/promo/image') ? 'upload' : 'dish');
+        } else if (j.ok) {
+          setImageMode(images.length ? 'dish' : 'none');
+        }
+      } catch {
+        /* shown as not loaded */
+      } finally {
+        setLoaded(true);
+      }
+    })();
+  }, [images.length]);
+
+  const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setDraft((d) => ({ ...d, [k]: v }));
+  const dirty = loaded && JSON.stringify(draft) !== JSON.stringify(saved ? toDraft(saved) : EMPTY);
+  const preview = { id: 'preview', eyebrow: draft.eyebrow, title: draft.title || 'ชื่อโปรจะขึ้นตรงนี้', body: draft.body, price: draft.price, image: draft.image, ctaLabel: draft.ctaLabel, ctaUrl: draft.ctaUrl };
+
+  async function save() {
+    setBusy(true);
+    setMsg('');
+    try {
+      const r = await fetch('/api/owner/promo', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(draft),
+      });
+      const j = (await r.json()) as { ok: boolean; error?: string; promo?: Promo; status?: PromoStatus };
+      if (!j.ok || !j.promo) {
+        setMsg('❌ ' + (ERROR_TEXT[j.error || ''] || 'บันทึกไม่สำเร็จ (' + (j.error || r.status) + ')'));
+        return;
+      }
+      setSaved(j.promo);
+      setDraft(toDraft(j.promo)); // server-normalised copy (trimmed, defaults filled)
+      setStatus(j.status || promoStatus(j.promo));
+      setMsg('✅ บันทึกแล้ว — ' + STATUS_TEXT[j.status || promoStatus(j.promo)] + ' (ขึ้นบนเว็บภายในประมาณ 1 นาที)');
+    } catch {
+      setMsg('❌ เชื่อมต่อไม่ได้ ลองใหม่');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function upload(file: File) {
+    setUploading(true);
+    setMsg('');
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const r = await fetch('/api/owner/promo/image', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ dataUrl }),
+      });
+      const j = (await r.json()) as { ok: boolean; url?: string; error?: string };
+      if (!j.ok || !j.url) {
+        setMsg('❌ ' + (ERROR_TEXT[j.error || ''] || 'อัปโหลดรูปไม่สำเร็จ'));
+        return;
+      }
+      set('image', j.url);
+      setMsg('🖼 อัปโหลดรูปแล้ว — อย่าลืมกด "บันทึกขึ้นเว็บ"');
+    } catch {
+      setMsg('❌ อ่านรูปไม่ได้ ลองรูป JPG/PNG อื่น');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  return (
+    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid ' + (status === 'live' ? 'rgba(80,170,110,0.45)' : LINE), borderRadius: 14, padding: '18px 20px', marginBottom: 22 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
+        <div style={label}>📣 ป้ายโปรโมชั่น (Pop-up หน้าเว็บ)</div>
+        <div style={{ fontSize: 12.5, color: status === 'live' ? '#8fd6a8' : 'rgba(245,240,230,0.6)' }}>{loaded ? STATUS_TEXT[status] : 'กำลังโหลด…'}</div>
+      </div>
+      <p style={{ color: 'rgba(245,240,230,0.55)', fontSize: 12.5, margin: '0 0 14px', lineHeight: 1.5 }}>
+        ป้ายเด้งขึ้นครั้งเดียวต่อการเข้าเว็บ ลูกค้ากดปิดได้ (ปิดแล้วไม่เห็นป้ายเดิมอีก 3 วัน) · ไม่ขึ้นบนหน้า /order ของโฆษณา · แก้ข้อความหรือรูป = ป้ายใหม่ ทุกคนจะเห็นอีกครั้ง
+      </p>
+
+      <div className="promo-editor-grid">
+        {/* ── form ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <input type="checkbox" checked={draft.enabled} onChange={(e) => set('enabled', e.target.checked)} style={{ width: 18, height: 18, accentColor: '#C8A24E' }} />
+            <span style={{ color: OFF, fontSize: 14, fontWeight: 600 }}>แสดงป้ายบนเว็บ</span>
+          </label>
+
+          <div>
+            <div style={label}>หัวข้อเล็ก (บรรทัดบน)</div>
+            <input value={draft.eyebrow} maxLength={LIMITS.eyebrow} onChange={(e) => set('eyebrow', e.target.value)} placeholder="New · Lunch Special" style={field} />
+          </div>
+          <div>
+            <div style={label}>ชื่อโปร *</div>
+            <input value={draft.title} maxLength={LIMITS.title} onChange={(e) => set('title', e.target.value)} placeholder="เช่น Panang Curry Lunch Set" style={field} />
+          </div>
+          <div>
+            <div style={label}>รายละเอียด</div>
+            <textarea value={draft.body} maxLength={LIMITS.body} onChange={(e) => set('body', e.target.value)} rows={3} placeholder="เช่น Panang curry with jasmine rice and a Thai iced tea. Weekdays 11:30–3." style={{ ...field, resize: 'vertical', lineHeight: 1.5 }} />
+            <div style={hint}>{draft.body.length}/{LIMITS.body} · สั้นๆ 1–2 ประโยคอ่านง่ายสุด</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div>
+              <div style={label}>ราคา / ป้ายราคา</div>
+              <input value={draft.price} maxLength={LIMITS.price} onChange={(e) => set('price', e.target.value)} placeholder="$14.95" style={field} />
+            </div>
+            <div>
+              <div style={label}>ข้อความบนปุ่ม</div>
+              <input value={draft.ctaLabel} maxLength={LIMITS.ctaLabel} onChange={(e) => set('ctaLabel', e.target.value)} placeholder="Order now" style={field} />
+            </div>
+          </div>
+          <div>
+            <div style={label}>ปุ่มพาไปที่</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+              {CTA_PRESETS.map((p) => (
+                <button key={p.label} type="button" onClick={() => setDraft((d) => ({ ...d, ctaLabel: p.ctaLabel, ctaUrl: p.ctaUrl }))} style={chip(draft.ctaUrl === p.ctaUrl)}>{p.label}</button>
+              ))}
+            </div>
+            <input value={draft.ctaUrl} maxLength={LIMITS.ctaUrl} onChange={(e) => set('ctaUrl', e.target.value)} placeholder="https://… หรือ /menu (ว่าง = ไม่มีปุ่ม)" style={{ ...field, fontSize: 12.5 }} />
+          </div>
+
+          <div>
+            <div style={label}>รูปภาพ</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+              <button type="button" style={chip(imageMode === 'dish')} onClick={() => setImageMode('dish')}>รูปจานบนเว็บ</button>
+              <button type="button" style={chip(imageMode === 'upload')} onClick={() => setImageMode('upload')}>อัปโหลดรูปเอง</button>
+              <button type="button" style={chip(imageMode === 'none')} onClick={() => { setImageMode('none'); set('image', ''); }}>ไม่ใส่รูป</button>
+            </div>
+            {imageMode === 'dish' && (
+              <select value={images.some((i) => i.src === draft.image) ? draft.image : ''} onChange={(e) => set('image', e.target.value)} style={{ ...field, cursor: 'pointer' }}>
+                <option value="">— เลือกรูปจาน —</option>
+                {images.map((i) => <option key={i.src} value={i.src}>{i.label}</option>)}
+              </select>
+            )}
+            {imageMode === 'upload' && (
+              <div style={{ marginTop: 6 }}>
+                <input ref={fileRef} type="file" accept="image/*" disabled={uploading} onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); }} style={{ color: 'rgba(245,240,230,0.75)', fontSize: 13 }} />
+                <div style={hint}>{uploading ? 'กำลังย่อรูปและอัปโหลด…' : 'ถ่ายจากมือถือได้เลย ระบบย่อรูปให้อัตโนมัติ (แนวนอน 16:10 สวยสุด)'}</div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div>
+              <div style={label}>แสดงตั้งแต่วันที่</div>
+              <input type="date" value={draft.startsAt} onChange={(e) => set('startsAt', e.target.value)} style={{ ...field, colorScheme: 'dark' }} />
+            </div>
+            <div>
+              <div style={label}>ถึงวันที่</div>
+              <input type="date" value={draft.endsAt} onChange={(e) => set('endsAt', e.target.value)} style={{ ...field, colorScheme: 'dark' }} />
+            </div>
+          </div>
+          <div style={{ ...hint, marginTop: -6 }}>ว่างทั้งคู่ = แสดงตลอดจนกว่าจะปิด · นับตามเวลาแคลิฟอร์เนีย</div>
+
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginTop: 4 }}>
+            <button type="button" onClick={save} disabled={busy || !loaded} style={{ padding: '10px 18px', borderRadius: 999, background: BRASS, color: NAVY, border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: 13.5, opacity: busy || !loaded ? 0.6 : 1 }}>
+              {busy ? 'กำลังบันทึก…' : '💾 บันทึกขึ้นเว็บ'}
+            </button>
+            {dirty && !msg && <span style={{ fontSize: 12.5, color: BRASSL }}>มีการแก้ไขที่ยังไม่บันทึก</span>}
+            {status === 'live' && !dirty && (
+              <a href="/?promo=show" target="_blank" rel="noopener" style={{ fontSize: 12.5, color: BRASSL }}>ดูบนเว็บ ↗</a>
+            )}
+          </div>
+          {msg && <div style={{ fontSize: 13, color: msg.startsWith('✅') || msg.startsWith('🖼') ? '#8fd6a8' : '#e0907a', lineHeight: 1.5 }}>{msg}</div>}
+        </div>
+
+        {/* ── live preview ── */}
+        <div style={{ minWidth: 0 }}>
+          <div style={{ ...label, marginBottom: 8 }}>ตัวอย่างที่ลูกค้าจะเห็น</div>
+          <div className="promo-preview">
+            <PromoCardView promo={preview} preview />
+          </div>
+          <div style={hint}>บนมือถือป้ายจะเลื่อนขึ้นจากด้านล่าง ไม่บังทั้งจอ</div>
+        </div>
+      </div>
+    </div>
+  );
+}
