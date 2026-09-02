@@ -107,8 +107,8 @@ export default function ThaiFoodFountainValleyPage() {
             Some things don&apos;t go in a box: a <Dish slug="fried-whole-pompano">whole fried pompano</Dish>{' '}
             for the table, <Dish slug="crying-tiger">crying tiger</Dish> off the grill with jaew for
             dipping, a bowl of <Dish slug="thai-boat-noodles">boat noodles</Dish>. Bring the dog — the patio
-            is dog-friendly — and stay for the last course, because every dine-in meal here ends with
-            ice cream on the house. <Link href="/contact/reservation">Save a seat</Link> for a weekend
+            is dog-friendly — and stay for the last course: the mango sticky rice.{' '}
+            <Link href="/contact/reservation">Save a seat</Link> for a weekend
             night, or just walk in.
           </p>
 

@@ -128,7 +128,7 @@ export default function OrderPage() {
 
         <p className="menu-note" style={{ marginTop: 48 }}>
           Sixty-seven dishes across thirteen categories — <Link href="/menu" style={{ color: 'var(--brass-light)' }}>browse the full menu</Link> with every story and price.
-          Dining in tonight instead? Dinner here ends with ice cream on the house — <Link href="/contact/reservation" style={{ color: 'var(--brass-light)' }}>save a seat</Link>.
+          Dining in tonight instead? The patio is dog-friendly and the mango sticky rice is worth staying for — <Link href="/contact/reservation" style={{ color: 'var(--brass-light)' }}>save a seat</Link>.
         </p>
       </div>
     </section>

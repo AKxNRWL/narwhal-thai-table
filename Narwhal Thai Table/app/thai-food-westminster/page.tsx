@@ -111,8 +111,8 @@ export default function ThaiFoodWestminsterPage() {
           <h2>Stay for <em>dinner</em></h2>
           <p>
             The room is small and warm, the patio is dog-friendly and strung with lights, there&apos;s a
-            short wine list, and every dine-in meal ends with ice cream on the house — the way Thai
-            family dinners end. Order a <Dish slug="fried-whole-pompano">whole fried pompano</Dish> for
+            short wine list, and a mango sticky rice that ends dinner the way Thai family dinners
+            end. Order a <Dish slug="fried-whole-pompano">whole fried pompano</Dish> for
             the table and you&apos;ll understand the drive. <Link href="/contact/reservation">Save a
             seat</Link>, or walk in any day.
           </p>

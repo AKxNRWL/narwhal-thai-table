@@ -14,7 +14,8 @@ import { SITE_URL, RESTAURANT_ID, DIRECTIONS_URL, RESTAURANT } from '@/lib/site'
  * would use at the door, and links out to the pages that prove each claim.
  *
  * Copy rules: owner-confirmed facts only (acquisition + rename July 2026, soft
- * opening 9 Aug 2026, three siblings, payments, patio, ice cream). No sourcing
+ * opening 9 Aug 2026, three siblings, payments, patio). No free-ice-cream claims
+ * anywhere (the soft-opening treat ended 2 Sep 2026 — owner's instruction). No sourcing
  * claims, no chef details before the grand-opening reveal (SHOW_CHEF).
  */
 
@@ -82,7 +83,7 @@ const FACTS: { k: string; v: React.ReactNode }[] = [
   { k: 'Hours', v: <>Open every day · Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM · <Link href="/lunch">lunch specials</Link> Mon–Fri 11:30–3</> },
   { k: 'What we cook', v: <>Thai food the way we grew up eating it — curry pastes pounded in a granite mortar, wok noodles and fried rice made to order, whole fried fish, an Isaan corner of som tum, larb and crying tiger. <Link href="/menu">67 dishes across 13 categories</Link>.</> },
   { k: 'Price', v: <>Most plates $12–20, seafood plates up to $35 · <Link href="/lunch">lunch specials</Link> from $11.99</> },
-  { k: 'The room', v: <>A small dining room and a dog-friendly patio under string lights · a short wine list by the glass · free ice cream after every dine-in meal</> },
+  { k: 'The room', v: <>A small dining room and a dog-friendly patio under string lights · a short wine list by the glass · mango sticky rice for the table</> },
   { k: 'Ways to eat', v: <>Dine in · <Link href="/contact/reservation">reservations</Link> · <Link href="/order">pickup and delivery</Link> · <Link href="/contact/catering">catering and private events</Link></> },
   { k: 'Payment', v: <>Credit and debit cards, Apple Pay and Google Pay (and cash)</> },
   { k: 'Languages', v: <>English and Thai</> },
@@ -151,8 +152,7 @@ export default function AboutPage() {
             <li>
               <strong>From our family.</strong> Every message to{' '}
               <a href={`mailto:${RESTAURANT.email}`}>{RESTAURANT.email}</a> reaches one of us three,
-              and when you leave a review, a sibling answers it — not a service. Every dine-in meal
-              ends with ice cream on the house, because that is how family dinners end.
+              and when you leave a review, a sibling answers it — not a service.
             </li>
           </ul>
 

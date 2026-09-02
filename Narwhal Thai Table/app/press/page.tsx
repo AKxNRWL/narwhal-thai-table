@@ -75,7 +75,7 @@ const FACTS: { k: string; v: React.ReactNode }[] = [
   { k: 'Hours', v: 'Open every day · Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM · Lunch specials Mon–Fri 11:30 AM–3 PM' },
   { k: 'Cuisine', v: 'Thai — curry pastes pounded by hand, wok noodles and fried rice cooked to order, whole fried fish, Isaan salads and grills; vegetarian options' },
   { k: 'Menu', v: <><Link href="/menu">67 dishes across 13 categories</Link> · most plates $12–20 · <Link href="/lunch">weekday lunch specials</Link> from $11.99</> },
-  { k: 'Service', v: 'Dine-in, reservations, pickup, delivery, catering and private events · dog-friendly patio · free ice cream after every dine-in meal' },
+  { k: 'Service', v: 'Dine-in, reservations, pickup, delivery, catering and private events · dog-friendly patio' },
   { k: 'Web & social', v: <><a href={SITE_URL}>narwhalthaihb.com</a> · <a href="https://www.instagram.com/narwhalthaitablehb/" target="_blank" rel="noopener noreferrer">Instagram @narwhalthaitablehb</a> · <a href="https://www.facebook.com/Narwhalthaitablehb" target="_blank" rel="noopener noreferrer">Facebook</a> · <a href={GBP_MAP_URL} target="_blank" rel="noopener noreferrer">Google Maps</a></> },
   { k: 'Press contact', v: <><a href={`mailto:${RESTAURANT.email}`}>{RESTAURANT.email}</a> — ask for Aileen, Annie or AK</> },
 ];
@@ -115,8 +115,8 @@ export default function PressPage() {
             family-run Thai restaurant at 19072 Beach Blvd in Huntington Beach, California. Three
             siblings — Aileen, Annie and AK — bought the former Thai Gulf Restaurant in July 2026,
             renamed it, and opened on August 9, 2026, cooking Thai food the way they grew up eating
-            it: curry pastes pounded by hand, wok dishes made to order, and free ice cream after every
-            dine-in meal.
+            it: curry pastes pounded by hand, wok dishes made to order, and weekday lunch specials from
+            $11.99.
           </p>
           <p>
             <strong style={{ color: 'var(--off-white)' }}>Long.</strong> Narwhal Thai Table is a
@@ -129,8 +129,8 @@ export default function PressPage() {
             runs from Bangkok street plates and an Isaan corner of som tum, larb and crying tiger to
             whole fried pompano and Super Crab Fried Rice, with vegetarian options and weekday lunch
             specials from $11.99. The small dining room is joined by a dog-friendly patio under string
-            lights, a short wine list, and one house rule: every dine-in meal ends with ice cream on the
-            house. Open every day. narwhalthaihb.com · (714) 378-6003.
+            lights, a short wine list, and a dessert list that starts with mango sticky rice. Open every
+            day. narwhalthaihb.com · (714) 378-6003.
           </p>
 
           <h2>Story <em>angles</em></h2>
@@ -150,8 +150,9 @@ export default function PressPage() {
               kitchen to keep doing it.
             </li>
             <li>
-              <strong>Free ice cream, every night.</strong> A small, stubborn tradition — Thai family
-              dinners end with something sweet, so every dine-in meal here does too.
+              <strong>Mango sticky rice, done properly.</strong> Why the rice matters more than the
+              mango — warm coconut sticky rice, a whisper of salt, ripe fruit — and how a small kitchen
+              keeps it right every day.
             </li>
             <li>
               <strong>Lunch on Beach Boulevard.</strong> Weekday lunch specials from $11.99 with a

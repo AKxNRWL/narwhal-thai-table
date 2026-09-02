@@ -157,7 +157,7 @@ export default function LunchPage() {
           </div>
           <div className="lunch-tray-item">
             <span className="lunch-tray-num">3</span>
-            <p><strong>Soup, when you stay.</strong> Dine in and a cup of soup is included — and, like every dine-in meal here, lunch ends with ice cream on the house.</p>
+            <p><strong>Soup, when you stay.</strong> Dine in and a cup of soup is included — and if you have ten more minutes, the mango sticky rice is right there.</p>
           </div>
         </div>
 

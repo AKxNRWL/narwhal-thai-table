@@ -89,16 +89,19 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         <Link href="/menu/narwhal-chicken-wings">Narwhal Chicken Wings</Link>,{' '}
         <Link href="/menu/og-pad-thai">OG Pad Thai</Link>, <Link href="/menu/panang-curry">Panang Curry</Link>{' '}
         and the <Link href="/menu/fried-whole-pompano">Fried Whole Pompano</Link> for the table. Order a
-        curry and a wok dish to share, and save room — dessert is on us.
+        curry and a wok dish to share, and save room for dessert.
       </p>
     ),
   },
   {
-    q: 'Is the free ice cream real?',
+    q: 'What should we order for dessert?',
     a: (
       <p>
-        Very real. Every dine-in meal ends with ice cream on the house — it&apos;s how Thai family
-        dinners end, so it&apos;s how ours end.
+        <Link href="/menu/mango-sticky-rice">Mango Sticky Rice</Link> is the one we&apos;d send you home
+        with — warm coconut sticky rice, ripe mango, a whisper of salt. The{' '}
+        <Link href="/menu/coconut-ice-cream-bread">Coconut Ice Cream &amp; Bread</Link> is the Bangkok
+        street classic, and the <Link href="/menu/narwhal-sundae">Narwhal Sundae</Link> is built for
+        sharing.
       </p>
     ),
   },

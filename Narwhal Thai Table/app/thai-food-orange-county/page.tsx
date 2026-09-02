@@ -156,8 +156,8 @@ export default function ThaiFoodOrangeCountyPage() {
             What we can put on the record is our own kitchen. At Narwhal Thai Table in Huntington
             Beach, the curry pastes start whole in a granite mortar, the spices are roasted and
             ground here, and nothing is cooked until you&apos;ve ordered it. Sixty-seven dishes,
-            thirteen categories, three siblings — and every dine-in dinner still ends with free
-            ice cream, because that&apos;s how family dinners end.
+            thirteen categories, three siblings — and a mango sticky rice we&apos;d put up against
+            anyone&apos;s.
           </p>
 
           <h2>Thai food in <em>Huntington Beach</em></h2>

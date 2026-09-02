@@ -103,7 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               // + rename, July 2026). Plain facts only — no ratings/reviews (self-serving
               // review markup is against Google policy).
               description:
-                'Family-run Thai restaurant on Beach Blvd in Huntington Beach. Three siblings cook Thai the way they grew up eating it: curry pastes pounded by hand, wok noodles and fried rice made to order, fresh seafood and vegetarian options, with a dog-friendly patio and free ice cream after every dine-in meal.',
+                'Family-run Thai restaurant on Beach Blvd in Huntington Beach. Three siblings cook Thai the way they grew up eating it: curry pastes pounded by hand, wok noodles and fried rice made to order, fresh seafood and vegetarian options, weekday lunch specials, and a dog-friendly patio.',
               disambiguatingDescription:
                 'Formerly Thai Gulf Restaurant — same address (19072 Beach Blvd Ste A & B, Huntington Beach), new owners and new name since July 2026.',
               alternateName: ['Narwhal Thai', 'Narwhal Thai Table HB'],
@@ -113,7 +113,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               amenityFeature: [
                 { '@type': 'LocationFeatureSpecification', name: 'Outdoor patio seating', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Dog-friendly patio', value: true },
-                { '@type': 'LocationFeatureSpecification', name: 'Complimentary ice cream after dine-in meals', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Takeout', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Delivery', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Wheelchair accessible', value: true },
