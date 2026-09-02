@@ -70,6 +70,28 @@ export async function requireSession(req: Request): Promise<{ tenantId: string }
   }
 }
 
+/* Owner auth for the Narwhal HQ app: `Authorization: Bearer <HQ_GAME_TOKEN>`
+   (the same GAME_TOKEN the app already holds) instead of the /stats cookie —
+   cross-origin cookies are unreliable in an installed PWA. Token access is
+   pinned to the Narwhal tenant; when the env var is unset it simply never
+   matches. Falls back to the normal cookie session. */
+export async function requireOwner(req: Request): Promise<{ tenantId: string; via: 'token' | 'cookie' } | null> {
+  const expected = process.env.HQ_GAME_TOKEN || '';
+  const auth = req.headers.get('authorization') || '';
+  const given = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  if (expected && given) {
+    const a = Buffer.from(given);
+    const b = Buffer.from(expected);
+    if (a.length === b.length && timingSafeEqual(a, b)) {
+      const { TENANT_NARWHAL_ID } = await import('@/lib/tenants');
+      return { tenantId: TENANT_NARWHAL_ID, via: 'token' };
+    }
+    return null; // a wrong bearer token is a hard no — don't fall through to cookies
+  }
+  const sess = await requireSession(req);
+  return sess ? { ...sess, via: 'cookie' } : null;
+}
+
 export function sessionCookie(value: string, maxAgeSec: number = Math.floor(TTL_MS / 1000)): string {
   return `${SESSION_COOKIE}=${value}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAgeSec}`;
 }

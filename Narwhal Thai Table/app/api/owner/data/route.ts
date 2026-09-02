@@ -1,6 +1,9 @@
 import { getStore } from '@netlify/blobs';
-import { requireSession } from '@/lib/session';
+import { requireOwner } from '@/lib/session';
+import { jsonCors } from '@/lib/cors';
 import { dataFor, getTenant, TENANT_NARWHAL_ID } from '@/lib/tenants';
+
+export { OPTIONS } from '@/lib/cors';
 import { listCustomers, segmentCustomers } from '@/lib/customers';
 import { aggregateChatLogs } from '@/lib/statsAggregate';
 import type { LogEntry } from '@/lib/chatLog';
@@ -22,10 +25,10 @@ async function readArray<T>(storeName: string, key: string): Promise<T[]> {
 }
 
 export async function GET(req: Request) {
-  const sess = await requireSession(req);
-  if (!sess) return Response.json({ ok: false }, { status: 401 });
+  const sess = await requireOwner(req); // cookie (/stats) or Bearer HQ_GAME_TOKEN (HQ app)
+  if (!sess) return jsonCors(req, { ok: false }, { status: 401 });
   const tenant = await getTenant(sess.tenantId);
-  if (!tenant) return Response.json({ ok: false }, { status: 401 });
+  if (!tenant) return jsonCors(req, { ok: false }, { status: 401 });
 
   const loc = dataFor(tenant.id);
   const [logs, reservations, messages] = await Promise.all([
@@ -38,7 +41,8 @@ export async function GET(req: Request) {
   // later, mirroring dataFor) — other tenants just see an empty book.
   const customers = tenant.id === TENANT_NARWHAL_ID ? await listCustomers() : [];
 
-  return Response.json(
+  return jsonCors(
+    req,
     {
       ok: true,
       tenant: { id: tenant.id, name: tenant.name },

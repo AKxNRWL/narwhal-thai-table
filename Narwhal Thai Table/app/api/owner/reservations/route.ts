@@ -1,7 +1,10 @@
 import { getStore } from '@netlify/blobs';
-import { requireSession } from '@/lib/session';
+import { requireOwner } from '@/lib/session';
+import { jsonCors } from '@/lib/cors';
 import { dataFor, getTenant } from '@/lib/tenants';
 import { looksLikeEmail, sendReservationConfirmed } from '@/lib/guestMail';
+
+export { OPTIONS } from '@/lib/cors';
 
 /**
  * Owner action on one reservation — the "Confirm" button in the Control Room.
@@ -23,24 +26,25 @@ type Rec = Record<string, unknown>;
 const str = (r: Rec, k: string): string => (typeof r[k] === 'string' ? (r[k] as string) : '');
 
 export async function POST(req: Request) {
-  const sess = await requireSession(req);
-  if (!sess) return Response.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  const json = (body: unknown, init: ResponseInit = {}) => jsonCors(req, body, init);
+  const sess = await requireOwner(req); // cookie (/stats) or Bearer HQ_GAME_TOKEN (HQ app)
+  if (!sess) return json({ ok: false, error: 'unauthorized' }, { status: 401 });
   const tenant = await getTenant(sess.tenantId);
-  if (!tenant) return Response.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  if (!tenant) return json({ ok: false, error: 'unauthorized' }, { status: 401 });
 
   let body: { action?: string; id?: string; note?: string; resend?: boolean };
   try {
     body = (await req.json()) as typeof body;
   } catch {
-    return Response.json({ ok: false, error: 'bad json' }, { status: 400 });
+    return json({ ok: false, error: 'bad json' }, { status: 400 });
   }
 
   const action = String(body.action || '');
   const id = String(body.id || '').trim();
   const note = String(body.note || '').replace(/\s+/g, ' ').trim().slice(0, 300);
-  if (!id) return Response.json({ ok: false, error: 'missing id' }, { status: 400 });
+  if (!id) return json({ ok: false, error: 'missing id' }, { status: 400 });
   if (action !== 'confirm' && action !== 'unconfirm') {
-    return Response.json({ ok: false, error: 'unknown action' }, { status: 400 });
+    return json({ ok: false, error: 'unknown action' }, { status: 400 });
   }
 
   const loc = dataFor(tenant.id);
@@ -51,23 +55,23 @@ export async function POST(req: Request) {
     const raw = await store.get(loc.reservations.key, { type: 'json' });
     list = Array.isArray(raw) ? (raw as Rec[]) : [];
   } catch {
-    return Response.json({ ok: false, error: 'store unavailable' }, { status: 503 });
+    return json({ ok: false, error: 'store unavailable' }, { status: 503 });
   }
 
   const idx = list.findIndex((r) => str(r, 'id') === id);
-  if (idx < 0) return Response.json({ ok: false, error: 'not found' }, { status: 404 });
+  if (idx < 0) return json({ ok: false, error: 'not found' }, { status: 404 });
   const rec = list[idx];
 
   if (action === 'unconfirm') {
     list[idx] = { ...rec, status: 'new', confirmedAt: '', confirmEmailed: false };
     await store.setJSON(loc.reservations.key, list);
-    return Response.json({ ok: true, status: 'new', emailed: false });
+    return json({ ok: true, status: 'new', emailed: false });
   }
 
   // ── confirm ──────────────────────────────────────────────────────────────
   const already = str(rec, 'status') === 'confirmed';
   if (already && !body.resend) {
-    return Response.json({ ok: true, status: 'confirmed', emailed: false, already: true });
+    return json({ ok: true, status: 'confirmed', emailed: false, already: true });
   }
 
   const email = str(rec, 'email');
@@ -104,8 +108,8 @@ export async function POST(req: Request) {
   try {
     await store.setJSON(loc.reservations.key, list);
   } catch {
-    return Response.json({ ok: false, error: 'could not save', emailed }, { status: 503 });
+    return json({ ok: false, error: 'could not save', emailed }, { status: 503 });
   }
 
-  return Response.json({ ok: true, status: 'confirmed', emailed, ...(emailed ? {} : { mailError }) });
+  return json({ ok: true, status: 'confirmed', emailed, ...(emailed ? {} : { mailError }) });
 }

@@ -19,6 +19,7 @@
 import { getStore } from '@netlify/blobs';
 import { upsertCustomer } from './customers';
 import { looksLikeEmail, sendReservationReceived } from './guestMail';
+import { notifyHQ } from './hqNotify';
 
 export const RESV_STORE = 'aileen-reservations';
 export const RESV_KEY = 'list';
@@ -135,6 +136,17 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
     email: rec.email,
     source: 'reservation',
   });
+
+  // 5) 🔔 Ping the owner's HQ app (Web Push + inbox log). Best-effort, ≤3.5s.
+  if (emailed || stored) {
+    const guest = [rec.first_name, rec.last_name].filter(Boolean).join(' ') || 'ไม่ระบุชื่อ';
+    await notifyHQ({
+      title: `📅 จองใหม่ ${rec.party_size || '?'} ท่าน · ${guest}`,
+      body: `${rec.date} ${rec.time} · ☎ ${rec.phone || '-'}${rec.notes ? ' · ' + rec.notes : ''} · ผ่าน${via.replace('the website form', 'ฟอร์มเว็บ').replace('Aileen phone line', 'โทร Aileen').replace('Aileen chat', 'แชต Aileen')}`,
+      url: './#inbox',
+      tag: 'resv-' + id,
+    });
+  }
 
   return { ok: emailed || stored, id, emailed, stored, guestEmailed };
 }
