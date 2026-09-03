@@ -167,7 +167,9 @@ export default function AboutPage() {
             <Link href="/menu/som-tum-thai">som tum</Link>, <Link href="/menu/larb">larb</Link>,{' '}
             <Link href="/menu/crying-tiger">crying tiger</Link> — or a bowl of{' '}
             <Link href="/menu/thai-boat-noodles">boat noodles</Link>. Weekdays until 3, the{' '}
-            <Link href="/lunch">lunch specials</Link> start at $11.99.
+            <Link href="/lunch">lunch specials</Link> start at $11.99. And if you want to know how
+            we judge any Thai kitchen, ours included, we wrote a field guide to the{' '}
+            <Link href="/thai-food-orange-county">best Thai food in Orange County</Link>.
           </p>
         </div>
 

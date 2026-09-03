@@ -256,6 +256,15 @@ function DishDetail({ dish }: { dish: Dish }) {
               </div>
             )}
 
+            {/* SEO batch 8: an in-body, descriptive-anchor link from all 67 dish
+                pages to the Orange County field guide (the footer link exists
+                site-wide, but contextual links carry more weight). */}
+            <p className="dish-guide-note">
+              Not sure how to judge a plate like this? Read our field guide to the{' '}
+              <Link href="/thai-food-orange-county">best Thai food in Orange County</Link> — five
+              signs of a real Thai kitchen, and what to order once you&apos;re in one.
+            </p>
+
             <div className="dish-section" style={{ marginTop: 64 }}>
               {ORDER_ONLINE_URL ? (
                 <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-primary" style={{ color: 'var(--navy)' }}>

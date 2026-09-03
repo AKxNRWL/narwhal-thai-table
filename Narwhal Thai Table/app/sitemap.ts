@@ -11,7 +11,7 @@ import { SITE_URL } from '@/lib/site';
 // Stable content-update date — bump this when pages/menu meaningfully change.
 // Using a fixed date (not `new Date()`) keeps <lastmod> meaningful to Google
 // instead of resetting to "now" on every deploy.
-const LAST_CONTENT_UPDATE = new Date('2026-09-02T00:00:00Z');
+const LAST_CONTENT_UPDATE = new Date('2026-09-03T00:00:00Z');
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = LAST_CONTENT_UPDATE;

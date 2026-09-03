@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL } from '@/lib/site';
+import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT_ID } from '@/lib/site';
 
 /**
  * /thai-food-orange-county — the field guide.
@@ -18,9 +18,13 @@ import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL } from '@/lib/site';
  * our own table on the record.
  */
 
-const TITLE = "Best Thai Food in Orange County — A Thai Family's Field Guide";
+const TITLE = "Best Thai Food in Orange County (2026) — A Thai Family's Field Guide";
 const DESCRIPTION =
-  'Three Thai siblings who cook in Huntington Beach on how to find real Thai food in Orange County: the five signs of a true Thai kitchen, what to order, and how to judge every dish.';
+  "A Thai family's guide to the best Thai food in Orange County: five signs of a real Thai kitchen, what to order, how to judge every dish. Updated Sept 2026.";
+// Dates feed the Article markup + Open Graph below. Bump DATE_MODIFIED whenever
+// the guide's content changes (the sitemap has its own LAST_CONTENT_UPDATE).
+const DATE_PUBLISHED = '2026-08-28';
+const DATE_MODIFIED = '2026-09-03';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -31,7 +35,41 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: `${SITE_URL}/thai-food-orange-county`,
     type: 'article',
+    publishedTime: `${DATE_PUBLISHED}T00:00:00-07:00`,
+    modifiedTime: `${DATE_MODIFIED}T00:00:00-07:00`,
+    authors: [`${SITE_URL}/about`],
   },
+};
+
+/**
+ * Article markup so Google/AI readers see this as an authored, dated guide
+ * (not a menu page): who wrote it, when, and which Restaurant entity stands
+ * behind it. No aggregateRating / Review / FAQPage here — house rule.
+ */
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${SITE_URL}/thai-food-orange-county#article`,
+  headline: TITLE,
+  description: DESCRIPTION,
+  url: `${SITE_URL}/thai-food-orange-county`,
+  mainEntityOfPage: `${SITE_URL}/thai-food-orange-county`,
+  inLanguage: 'en-US',
+  datePublished: DATE_PUBLISHED,
+  dateModified: DATE_MODIFIED,
+  image: [`${SITE_URL}/images/og-cover.jpg`],
+  author: {
+    '@type': 'Organization',
+    name: 'Narwhal Thai Table',
+    url: `${SITE_URL}/about`,
+    description: 'Three siblings — Aileen, Annie and AK — who run a Thai kitchen in Huntington Beach, California.',
+  },
+  publisher: { '@id': RESTAURANT_ID },
+  about: [
+    { '@type': 'Thing', name: 'Thai cuisine' },
+    { '@type': 'Place', name: 'Orange County, California' },
+  ],
+  keywords: 'best Thai food in Orange County, Thai food Orange County, Thai restaurant Huntington Beach, authentic Thai food',
 };
 
 const breadcrumbLd = {
@@ -50,15 +88,16 @@ function Dish({ slug, children }: { slug: string; children: React.ReactNode }) {
 export default function ThaiFoodOrangeCountyPage() {
   return (
     <section className="menu-section" style={{ paddingTop: 140, paddingBottom: 100 }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <div className="container">
         <div className="section-head">
-          <span className="label">The Field Guide</span>
-          <h1>Finding <em>real Thai food</em> in Orange County</h1>
+          <span className="label">The Field Guide · Updated September 2026</span>
+          <h1>The best Thai food in Orange County — <em>a Thai family&apos;s field guide</em></h1>
           <p>
             Written by three siblings who grew up in Thai restaurant kitchens and now run one on
-            Beach Boulevard. Not a top-ten list — a guide to what makes Thai food good, wherever
-            you end up eating it.
+            Beach Boulevard in Huntington Beach. Not a top-ten list — a guide to what makes Thai
+            food good, wherever in Orange County you end up eating it.
           </p>
         </div>
 
@@ -171,6 +210,52 @@ export default function ThaiFoodOrangeCountyPage() {
           </p>
           <p>
             Come hungry, order the boat noodles, and judge us by everything above.
+          </p>
+
+          <h2>Thai food near you, <em>around the county</em></h2>
+          <p>
+            We cook in Huntington Beach and feed a lot of neighbors from next door. If you&apos;re
+            coming from <Link href="/thai-food-fountain-valley">Fountain Valley</Link> it&apos;s
+            about eight minutes down Brookhurst or Slater; from{' '}
+            <Link href="/thai-food-westminster">Westminster</Link> it&apos;s a straight run down
+            Beach Boulevard, about twelve minutes. Costa Mesa, Seal Beach and the rest of the
+            coast are a short drive — and{' '}
+            <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener">pickup</a> is ready by the time
+            you get here.
+          </p>
+
+          <h2>Questions people <em>ask us</em></h2>
+          {/* Plain-text FAQ on purpose — no FAQPage markup (Google dropped the
+              rich result; the words themselves are what search and AI read). */}
+          <h3>Where is the best Thai food in Orange County?</h3>
+          <p>
+            Wherever the curry paste is pounded and the wok isn&apos;t lit until you order — use the
+            five signs above and you&apos;ll find it in more than one city. Our own answer is
+            Narwhal Thai Table, 19072 Beach Blvd in Huntington Beach: a family kitchen with sixty-seven
+            dishes, an Isaan corner, and a mango sticky rice we&apos;re proud of. Come judge for
+            yourself.
+          </p>
+          <h3>What should I order at a Thai restaurant in Orange County?</h3>
+          <p>
+            Order the plates that show a kitchen&apos;s passport: <Dish slug="thai-boat-noodles">boat
+            noodles</Dish>, <Dish slug="krapow-over-rice">krapow over rice</Dish>, a{' '}
+            <Dish slug="som-tum-thai">som tum</Dish>, and one curry — <Dish slug="green-curry">green</Dish>{' '}
+            if you like heat, <Dish slug="panang-curry">panang</Dish> if you like it rich. Finish
+            with <Dish slug="mango-sticky-rice">mango sticky rice</Dish>.
+          </p>
+          <h3>How can I tell if a Thai restaurant is authentic?</h3>
+          <p>
+            Ask whether the curry paste is made in-house, watch whether plates are cooked to order,
+            taste the basil in the krapow (holy basil is peppery, not sweet), look for an Isaan
+            section on the menu, and pay attention to the rice. A kitchen that gets those five right
+            rarely gets the rest wrong.
+          </p>
+          <h3>Is Huntington Beach a good place for Thai food?</h3>
+          <p>
+            Yes — Beach Boulevard has had Thai kitchens for years, ours included. Narwhal Thai
+            Table is open every day for dine-in, pickup and delivery, with a dog-friendly patio
+            and <Link href="/lunch">weekday lunch specials</Link> from $11.99, Monday to Friday
+            until 3 PM. Here is <Link href="/menu">the full menu</Link>.
           </p>
 
           <div className="guide-cta">

@@ -1729,6 +1729,13 @@ h3.dish-name{margin:0;font-weight:500;}
 .guide-prose ul{margin:0 0 18px;padding-left:1.2em;color:var(--muted);line-height:1.7;}
 .guide-prose li{margin:8px 0;}
 .guide-prose li strong{color:var(--off-white);}
+/* SEO batch 8: FAQ questions on the OC field guide (plain text, no FAQPage markup) */
+.guide-prose h3{font-family:var(--font-display);font-size:clamp(19px,2.4vw,23px);color:var(--off-white);margin:30px 0 8px;letter-spacing:-0.01em;}
+.guide-prose h3+p{margin-top:0;}
+/* SEO batch 8: one-line pointer from every dish page to the OC field guide */
+.dish-guide-note{margin:28px 0 0;font-size:15px;line-height:1.7;color:var(--muted-dark);}
+.dish-guide-note a{color:var(--brass-deep);text-decoration:underline;text-underline-offset:3px;}
+.dish-guide-note a:hover{color:var(--navy);}
 .guide-cta{display:flex;flex-wrap:wrap;gap:14px;margin:30px 0 8px;}
 
 /* ===== PROMO POP-UP (owner-managed, /stats → "ป้ายโปรโมชั่น") =====
