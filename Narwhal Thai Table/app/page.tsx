@@ -21,11 +21,13 @@ export default function HomePage() {
   return (
     <>
       <Hero media={heroMedia} />
-      {/* Weekday Lunch Specials — first thing after the hero (owner, 2 Sep 2026). */}
-      <LunchSpecials />
+      {/* Signature dishes straight after the hero — owner, 7 Sep 2026: "เอาเมนูมาอยู่รองจาก hero". */}
+      <MenuPreviewSection />
       <StorySection />
       {SHOW_CHEF && <ChefSection />}
-      <MenuPreviewSection />
+      {/* Weekday Lunch Specials — was first under the hero (2 Sep); owner moved it down
+          on 7 Sep ("เอาลงไปข้างล่าง"). The hero pill still jumps to #lunch-specials. */}
+      <LunchSpecials />
       <ExperienceSection />
       <RoomSection />
       <ContactSection />

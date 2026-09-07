@@ -2047,8 +2047,8 @@ h3.dish-name{margin:0;font-weight:500;}
   background:
     /* left scrim for the headline column, fading out before the narwhal */
     linear-gradient(90deg, rgba(11,31,51,0.80) 0%, rgba(11,31,51,0.60) 32%, rgba(11,31,51,0.18) 56%, rgba(11,31,51,0) 70%),
-    /* nav legibility at the top, seamless join into the navy lunch section at the bottom */
-    linear-gradient(180deg, rgba(11,31,51,0.62) 0%, rgba(11,31,51,0) 24%, rgba(11,31,51,0) 74%, var(--navy) 100%);
+    /* nav legibility at the top, seamless join into the navy-deep menu section at the bottom */
+    linear-gradient(180deg, rgba(11,31,51,0.62) 0%, rgba(11,31,51,0) 24%, rgba(11,31,51,0) 74%, var(--navy-deep) 100%);
 }
 /* Owner keeps the narwhal medallion card (tap → whale jump). It turns to glass so the
    lanterns and the illustrated narwhal show through instead of being boxed out. */
@@ -2074,7 +2074,7 @@ h3.dish-name{margin:0;font-weight:500;}
   .hero-art{ padding-bottom:120px; }                /* room for the scroll cue under the last button */
   .hero-art::before{
     background:
-      linear-gradient(180deg, rgba(11,31,51,0.70) 0%, rgba(11,31,51,0.50) 28%, rgba(11,31,51,0.52) 70%, rgba(11,31,51,0.22) 88%, var(--navy) 100%);
+      linear-gradient(180deg, rgba(11,31,51,0.70) 0%, rgba(11,31,51,0.50) 28%, rgba(11,31,51,0.52) 70%, rgba(11,31,51,0.22) 88%, var(--navy-deep) 100%);
   }
   .hero-art .hero-media{ object-position:50% 50%; }
 }
