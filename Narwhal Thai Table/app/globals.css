@@ -2018,3 +2018,63 @@ h3.dish-name{margin:0;font-weight:500;}
   .press-grid{grid-template-columns:repeat(2,1fr);}
   .fact-row{grid-template-columns:1fr;gap:4px;}
 }
+
+/* ============================================================
+   PLACEMAT ART DIRECTION — owner, 7 Sep 2026:
+   "อยากให้ในเว็บเป็นงานอาร์ตแบบประมานนี้ เอาลงไปให้หน่อยครับ"
+   The two printed placemats (night: lanterns over the HB pier +
+   narwhal; border: cream with Thai waves) become the site's world:
+   the night scene opens the page (hero), the border placemat sits
+   on the table in Our Story, the krathongs + narwhal close the page
+   (footer). Photos keep selling the food; the art frames it.
+   Round 1 (approved 7 Sep): the hero only — the border placemat in
+   Our Story and the footer scene are drafted and waiting.
+   Assets: public/images/art/ (plain crops of the print rasters —
+   nothing repainted, no generative edits). Toggle: HERO_ART in
+   components/Hero.tsx.
+   ============================================================ */
+
+/* ----- HERO: the night placemat, full-bleed ----- */
+.hero.hero-art{ background:#0F2034; }               /* the art's own sky, so letterboxing never shows */
+.hero-art .hero-media{
+  /* The lantern sky is the first thing people see; the narwhal's horn rises into the
+     bottom-right of a laptop screen and the whole whale arrives on the first scroll. */
+  object-position:50% 62%;                          /* on very wide screens, keep the krathongs + narwhal */
+  opacity:1;
+}
+.hero-art .hero-fallback{ animation:none; }         /* the art carries the mood; no flicker underneath */
+.hero-art::before{
+  background:
+    /* left scrim for the headline column, fading out before the narwhal */
+    linear-gradient(90deg, rgba(11,31,51,0.80) 0%, rgba(11,31,51,0.60) 32%, rgba(11,31,51,0.18) 56%, rgba(11,31,51,0) 70%),
+    /* nav legibility at the top, seamless join into the navy lunch section at the bottom */
+    linear-gradient(180deg, rgba(11,31,51,0.62) 0%, rgba(11,31,51,0) 24%, rgba(11,31,51,0) 74%, var(--navy) 100%);
+}
+/* Owner keeps the narwhal medallion card (tap → whale jump). It turns to glass so the
+   lanterns and the illustrated narwhal show through instead of being boxed out. */
+.hero-art .visual-frame{
+  background:rgba(11,31,51,0.34);
+  backdrop-filter:blur(14px) saturate(1.15); -webkit-backdrop-filter:blur(14px) saturate(1.15);
+  border-color:rgba(200,162,78,0.42);
+  box-shadow:0 30px 60px -28px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
+}
+.hero-art .visual-frame::before{ border-color:rgba(200,162,78,0.28); }
+.hero-art .ornament-text{ text-shadow:0 1px 14px rgba(6,18,31,0.6); }
+.hero-art .hero-text p{ color:rgba(245,240,230,0.9); text-shadow:0 1px 18px rgba(6,18,31,0.55); }
+.hero-art .hero-text h1{ text-shadow:0 2px 28px rgba(6,18,31,0.55); }
+/* outlined buttons get a glass backing so they read over the gold line-work */
+.hero-art .hero-cta .btn-secondary{ background:rgba(6,18,31,0.42); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border-color:rgba(245,240,230,0.5); }
+.hero-art .hero-cta .btn-secondary:hover{ background:rgba(6,18,31,0.6); }
+/* slow drift — the lanterns feel afloat. Desktop pointer devices only, and never for reduced-motion users. */
+@media (min-width:981px) and (hover:hover) and (prefers-reduced-motion:no-preference){
+  .hero-art .hero-media{ animation:heroDrift 28s ease-in-out infinite alternate; transform-origin:62% 38%; will-change:transform; }
+  @keyframes heroDrift{ from{ transform:scale(1); } to{ transform:scale(1.055); } }
+}
+@media (max-width:980px){
+  .hero-art{ padding-bottom:120px; }                /* room for the scroll cue under the last button */
+  .hero-art::before{
+    background:
+      linear-gradient(180deg, rgba(11,31,51,0.70) 0%, rgba(11,31,51,0.50) 28%, rgba(11,31,51,0.52) 70%, rgba(11,31,51,0.22) 88%, var(--navy) 100%);
+  }
+  .hero-art .hero-media{ object-position:50% 50%; }
+}

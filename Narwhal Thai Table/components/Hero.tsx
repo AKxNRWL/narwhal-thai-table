@@ -7,6 +7,17 @@ import { ORDER_ONLINE_URL } from '@/lib/site';
 import { LUNCH } from '@/lib/lunchPhotos';
 
 /**
+ * Placemat art in the hero — owner, 7 Sep 2026 ("อยากให้ในเว็บเป็นงานอาร์ตแบบนี้"):
+ * the printed night placemat (Loy Krathong lanterns over the Huntington Beach
+ * pier, the narwhal riding Thai waves) is the hero background instead of the
+ * food video. Files live in public/images/art — plain crops of the print
+ * raster, nothing repainted. Set HERO_ART to false to fall back to the
+ * drop-in video/photo detection below (public/media/hero.mp4 is still there).
+ */
+const HERO_ART = true;
+const ART = '/images/art';
+
+/**
  * Hero structure (z-stack inside the .hero section):
  *   z-0: .hero-video         — background video (when present)
  *   z-0: .hero-fallback      — flicker gradient under the video
@@ -44,7 +55,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
   };
 
   return (
-    <section className="hero" aria-labelledby="hero-title">
+    <section className={HERO_ART ? 'hero hero-art' : 'hero'} aria-labelledby="hero-title">
       {/*
         HERO BACKGROUND (auto drop-in — no code edit needed):
           • Video: drop /public/media/hero.mp4 (or .webm) → plays automatically.
@@ -55,7 +66,29 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
         8–15s seamless loop, muted, under ~4MB.
       */}
       <div className="hero-fallback" aria-hidden="true" ref={fallbackRef} />
-      {media.video ? (
+      {HERO_ART ? (
+        /* Landscape art on laptops/tablets; on phones a portrait crop of the
+           right-hand side (lanterns → narwhal → krathongs) so the whale stays
+           in frame behind the copy. AVIF → WebP → JPEG, sized to the viewport. */
+        <picture>
+          <source media="(max-width:700px)" type="image/avif" srcSet={`${ART}/hero-night-portrait-1080.avif`} />
+          <source media="(max-width:700px)" type="image/webp" srcSet={`${ART}/hero-night-portrait-720.webp 720w, ${ART}/hero-night-portrait-1080.webp 1080w`} sizes="100vw" />
+          <source media="(max-width:700px)" srcSet={`${ART}/hero-night-portrait-720.jpg 720w, ${ART}/hero-night-portrait-1080.jpg 1080w`} sizes="100vw" />
+          <source type="image/avif" srcSet={`${ART}/hero-night-1600.avif 1600w, ${ART}/hero-night-2560.avif 2560w`} sizes="100vw" />
+          <source type="image/webp" srcSet={`${ART}/hero-night-1600.webp 1600w, ${ART}/hero-night-2560.webp 2560w`} sizes="100vw" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- art-directed <picture>; next/image can't switch crops per breakpoint */}
+          <img
+            className="hero-media"
+            src={`${ART}/hero-night-1600.jpg`}
+            srcSet={`${ART}/hero-night-1600.jpg 1600w, ${ART}/hero-night-2560.jpg 2560w`}
+            sizes="100vw"
+            alt=""
+            aria-hidden="true"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
+      ) : media.video ? (
         <video
           ref={videoRef}
           className="hero-media hero-video"
