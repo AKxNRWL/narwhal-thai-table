@@ -160,7 +160,7 @@ export const DISHES: Dish[] = [
       'Prime rib-eye, grilled over open flame to a hard sear',
       'Jaew dipping sauce: toasted sticky-rice powder (khao kua), fish sauce, lime, chili flakes',
       'Fresh mint, cilantro, sliced shallot',
-      'Grilled cabbage wedges and sticky rice on the side',
+      'Grilled cabbage wedges on the side',
     ],
     allergens: ['fish'],
     pairing: {
@@ -359,7 +359,7 @@ export const DISHES: Dish[] = [
   { slug: 'spicy-basil-alacarte', name: 'Spicy Basil', thai: 'ผัดกะเพรา', category: 'alacarte', spicy: true, protein: true,
     description: "The krapow classic — chili & holy basil, loud & fragrant.", price: '$14',
     story: {
-      lede: "The krapow classic served the purist's way — all fire in the wok, jasmine rice standing by.",
+      lede: "The krapow classic served the purist's way — all fire in the wok.",
       history: "Born in the 1920s when Chinese wok technique embraced Thailand's sacred holy basil, pad kaphrao grew into the country's default order — the dish that answers every undecided lunch. This is the à la carte cut for the table that wants the legend itself: chili, garlic, your protein and a storm of true bai kaphrao, loud and fragrant. The fried egg is optional but historically encouraged.",
     }  },
   { slug: 'spicy-basil-eggplant', name: 'Spicy Basil Eggplant', thai: 'ผัดกะเพรามะเขือยาว', category: 'alacarte', spicy: true, protein: true,
