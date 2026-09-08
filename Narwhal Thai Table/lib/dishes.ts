@@ -155,7 +155,7 @@ export const DISHES: Dish[] = [
       history: "Sai krok Isan is the northeast's roadside treasure: coarse pork and sticky rice seasoned with garlic, stuffed by hand and left to ferment until natural lactic cultures turn it gently, addictively sour — a matter of days, never hours. You smell the charcoal before you see the cart. Tradition dictates the escort of raw cabbage, fresh ginger, bird's-eye chili and peanuts: alternate bites, and let sour, hot and cool keep trading places.",
     }  },
   { slug: 'crying-tiger', name: 'Crying Tiger', thai: 'เสือร้องไห้', category: 'grill', signature: true,
-    description: 'Fire-charred rib-eye with a smoky toasted rice–mint–tamarind sauce — so good the tiger wept.', price: '$20',
+    description: 'Fire-charred rib-eye with a smoky toasted rice–mint–tamarind sauce — so good the tiger wept.', price: '$27',
     ingredients: [
       'Prime rib-eye, grilled over open flame to a hard sear',
       'Jaew dipping sauce: toasted sticky-rice powder (khao kua), fish sauce, lime, chili flakes',
