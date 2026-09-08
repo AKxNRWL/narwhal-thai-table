@@ -120,7 +120,7 @@ export default function ThaiFoodWestminsterPage() {
           <div className="guide-cta">
             <Link href="/lunch" className="btn-primary">See lunch specials</Link>
             <a href={DIRECTIONS_URL} target="_blank" rel="noopener" className="btn-secondary">Directions from Westminster</a>
-            <Link href="/menu" className="btn-secondary">Browse all 67 dishes</Link>
+            <Link href="/menu" className="btn-secondary">Browse all 75 dishes</Link>
           </div>
 
           <p style={{ marginTop: 28, fontSize: 15 }}>

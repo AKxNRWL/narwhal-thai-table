@@ -106,8 +106,20 @@ export const DISHES: Dish[] = [
       lede: "The cool customer — no fryer, no crunch, just a fresh bundle eaten like a secret.",
       history: "Fresh rolls are Southeast Asia's answer to a salad you can hold: rice paper stretched around glass noodles, herbs and cool vegetables. They flow from the same popiah tradition that produced the fried roll — the fresh version simply refuses the oil. Ours bundles ground chicken and tofu with crisp lettuce, cucumber, carrot and basil: the calm, cold counterpoint to a spicy table.",
     }  },
+  { slug: 'orange-chicken', name: 'Orange Chicken', thai: 'ไก่ผัดซอสส้ม', category: 'appetizers',
+    description: "Crispy chicken tossed in a bright, sticky orange glaze.", price: '$15',
+    story: {
+      lede: "Crackling fried chicken in a glossy, citrus-bright glaze — the crowd-pleaser that gets along with everything else on the table.",
+      history: "Orange chicken is American by birth — a 1980s invention that grew out of the old Hunan habit of cooking with dried tangerine peel — and it found its way onto Thai-American menus the same way it found its way into every American heart: crisp, sweet-sour, impossible to stop eating. Ours keeps the batter light and the glaze bright and sticky, tossed hot so the crackle survives the sauce. Order it for the kids, then watch the adults reach for it.",
+    }  },
+  { slug: 'fried-tofu', name: 'Fried Tofu', thai: 'เต้าหู้ทอด', category: 'appetizers',
+    description: "Golden fried tofu with sweet chili–peanut dipping sauce.", price: '$11',
+    story: {
+      lede: "Golden cubes, crisp outside and custardy within, with a sweet chili–peanut sauce for dunking.",
+      history: "Tao hu tod is the Bangkok street snack that changes tofu skeptics' minds: firm tofu fried until the outside shatters and the inside stays soft as custard, then dipped in a sweet chili sauce thick with crushed peanuts. It is one of the oldest Chinese gifts to Thai cooking and one of the simplest — no marinade, no batter, just hot oil and patience. Fast enough to arrive before anyone has finished deciding on mains.",
+    }  },
   { slug: 'house-salad', name: 'House Salad', thai: 'สลัดผักสด', category: 'salad',
-    description: "Crisp greens, cool cucumber & tomato, chewy-sweet dried cranberries, bright Thai dressing.", price: '$14',
+    description: "Crisp greens, cool cucumber & tomato, chewy-sweet dried cranberries, bright Thai dressing.", price: '$11',
     story: {
       lede: "Familiar greens, unmistakably Thai dressing — our quiet bridge between two food cultures.",
       history: "Every Thai restaurant abroad eventually invents its own house salad; this one is ours. The greens are pure California, the dressing pure Thailand — savory depth, lime brightness, just enough sweetness to hold hands with the chewy dried cranberries. It is the plate we hand to the friend who claims they don't do Thai food. By the last bite, they do.",
@@ -174,6 +186,12 @@ export const DISHES: Dish[] = [
       chefNote: 'My uncle said the test of a real crying tiger is the moment after the first bite — the sticky rice, the smoke, the lime, the chili — they should hit one after the other, like a small parade. If they all hit at once, the cook rushed it. If only one hits, the cook was scared of the grill. We are not scared of the grill.',
     },
   },
+  { slug: 'meat-ball-skewer', name: 'Meat Ball Skewer (3)', thai: 'ลูกชิ้นปิ้ง', category: 'grill',
+    description: "Grilled Thai pork meatball skewers with sweet chili sauce.", price: '$12',
+    story: {
+      lede: "Three skewers of bouncy Thai pork meatballs, charred over the grill and painted with sweet chili sauce.",
+      history: "Look chin ping is the sound of every Thai night market — meatballs threaded on bamboo, turning over charcoal, the vendor fanning the coals with a scrap of cardboard. Thai meatballs are made bouncy on purpose: the pork is worked until it springs back, so each one bites back before it gives. The grill blisters the outside; the sweet chili sauce is not optional. Eat them straight off the stick.",
+    }  },
   { slug: 'tom-yum', name: 'Tom Yum', thai: 'ต้มยำ', category: 'soup', spicy: true, protein: true,
     description: "The famous hot & sour — lemongrass, galangal & kaffir lime steaming from a chili-red broth of straw mushrooms.", price: '$14',
     story: {
@@ -215,7 +233,7 @@ export const DISHES: Dish[] = [
       history: "Tom kha made its name as a chicken soup, but Thai coastal kitchens have always known what coconut milk does for seafood: softens, rounds, flatters. The galangal stays non-negotiable — it is the kha in the name — and the lime still lands right at the end. Served center-table the Thai way: creamy enough for the cautious, fragrant enough for the devoted.",
     }  },
   { slug: 'po-tak-seafood', name: 'Po Tak Seafood Soup', thai: 'โป๊ะแตก', category: 'soup', spicy: true,
-    description: "'The fish-trap bursts' — a clear, blazing hot & sour broth crowded with seafood & Thai herbs. Pot.", price: '$25',
+    description: "'The fish-trap bursts' — a clear, blazing hot & sour broth crowded with seafood & Thai herbs. Pot.", price: '$26',
     story: {
       lede: "'The fish trap bursts' — a fisherman's boast of a soup, so loaded the gear gave way.",
       history: "A po is the staked fish trap Thai coastal fishermen have set in the shallows for generations; taek means it breaks. Po taek is the soup for the day the catch overwhelms the equipment — everything goes into a clear, blazing broth of lemongrass, galangal and Thai basil, with no coconut milk to soften the blow. Tom yum's leaner, saltier cousin: pure sea, pure herb, pure heat.",
@@ -243,6 +261,12 @@ export const DISHES: Dish[] = [
     story: {
       lede: "The 'sweet-green' curry — named for its color, not its sugar — and barely a century old.",
       history: "Kaeng khiao wan is a young classic, first recorded between 1908 and 1926, late in Siam's royal era. The name fools translators: wan, sweet, describes the pale creamy shade Thais call 'sweet green' — not the taste, which runs hotter than red curry. Fresh green bird's-eye chilies give the paste both its color and its temper; coconut milk, eggplant, zucchini and basil round it into one of the best-loved curries on earth.",
+    }  },
+  { slug: 'panang-dino-rib', name: 'Panang Dino Rib', thai: 'พะแนงซี่โครงไดโน', category: 'curry',
+    description: "Slow-cooked beef dino rib in thick, creamy panang curry.", price: '$30',
+    story: {
+      lede: "A whole slow-cooked beef dino rib under our thick, creamy panang — the curry people cross town for, given a rib to match.",
+      history: "Panang is the gentle aristocrat of Thai curries — thicker and sweeter than red curry, perfumed with kaffir lime, made to cling to meat rather than pool around it. It has always been at its best on slow-cooked cuts, and a dino rib is the slowest of all: a full beef short rib on the bone, cooked until the meat gives way to a fork. Here the rib takes the place of the usual sliced protein — one plate, one rib, and a great deal of sauce worth chasing.",
     }  },
   { slug: 'house-fried-rice', name: 'Fried Rice', thai: 'ข้าวผัด', category: 'rice', protein: true,
     description: "Wok-fried red rice with egg & green onion, cool cucumber on the side.", price: '$12',
@@ -350,6 +374,12 @@ export const DISHES: Dish[] = [
       lede: "The famous broth becomes a sauce — lemongrass, kaffir lime and chili paste clinging to every strand.",
       history: "Once Thai cooks learned spaghetti could survive the wok, the next question was inevitable: could it carry tom yum? This plate is the answer — chili paste, lemongrass, kaffir lime and galangal reduced from Thailand's most famous soup into a glossy coat for al dente pasta. Modern Thai cooking at its most confident: national-treasure flavors on a borrowed Italian spine. Our test kitchen refused to let this one go.",
     }  },
+  { slug: 'thai-boat-noodles-dino-rib', name: 'Thai Boat Noodles Dino-rib', thai: 'ก๋วยเตี๋ยวเรือซี่โครงไดโน', category: 'noodles',
+    description: "Rich, herbal boat-noodle broth with slow-cooked beef dino rib.", price: '$29',
+    story: {
+      lede: "Our dark, herbal boat-noodle broth with a whole slow-cooked beef dino rib laid across the bowl.",
+      history: "Boat noodles were born on Bangkok's canals, ladled from rowboats into small bowls so nothing would spill between boat and bank — a dark, herbal, slow-simmered broth that Thais still argue about by the bowlful. The bowls grew when the boats came ashore; this one grows further. In place of the usual sliced beef and meatballs comes a dino rib: a full short rib cooked for hours until it slides off the bone into the broth. The soup does the rest.",
+    }  },
   { slug: 'garlic-pepper-alacarte', name: 'Garlic & Pepper', thai: 'ผัดกระเทียมพริกไทย', category: 'alacarte', protein: true,
     description: "Golden garlic & cracked white pepper, seared savory.", price: '$14',
     story: {
@@ -367,6 +397,12 @@ export const DISHES: Dish[] = [
     story: {
       lede: "The krapow treatment applied to its best student — eggplant that chars silky and drinks the sauce.",
       history: "Long eggplant is the quiet genius of the Thai wok: charred, its flesh turns custard-soft and holds chili-basil sauce the way bread holds butter. Pairing it with krapow's fire is a vegetable-lover's classic all over Thailand — proof the dish never needed meat to be beloved. Same roaring flame, same holy basil finish. The eggplant does the rest.",
+    }  },
+  { slug: 'spicy-basil-dino-rib', name: 'Spicy Basil Dino-rib', thai: 'กะเพราซี่โครงไดโน', category: 'alacarte', spicy: true,
+    description: "Slow-cooked beef dino rib stir-fried with holy basil, garlic & chili.", price: '$29',
+    story: {
+      lede: "The krapow treatment on a whole slow-cooked beef dino rib — fire, garlic, chili and a storm of holy basil.",
+      history: "Pad kaphrao was built for quick meat and a hot wok; this plate slows one half of the equation down. The dino rib — a full beef short rib on the bone — is cooked low for hours until it is fork-tender, then finished in the wok with garlic, bird's-eye chili and true holy basil, so the sauce sears onto the meat instead of sitting under it. It is the dish for the table that wants krapow loud and wants to share it.",
     }  },
   { slug: 'chinese-broccoli', name: 'Chinese Broccoli', thai: 'ผัดคะน้า', category: 'alacarte', protein: true,
     description: "Crisp-stemmed greens seared with garlic & oyster sauce.", price: '$14',
@@ -427,6 +463,18 @@ export const DISHES: Dish[] = [
     story: {
       lede: "Bangkok street style — cool coconut ice cream on pillowy bread, born when ice was a royal luxury.",
       history: "Ice reached Siam by ship in the 1860s and was precious enough for royal receptions; only when ice factories spread under King Rama V did frozen treats reach the street. Thai vendors, short on dairy, churned coconut milk instead — and i-tim kati was born, scooped for schoolchildren ever since. The bread is the masterstroke: a soft sweet roll cradling the cold scoops, dessert you can eat while walking. Humble treat, royal backstory.",
+    }  },
+  { slug: 'banana-samosa', name: 'Banana Samosa', thai: 'กล้วยทอดแป้งกรอบ', category: 'dessert',
+    description: "Crispy golden pastry with warm banana filling.", price: '$10',
+    story: {
+      lede: "Crisp golden pastry around warm, soft banana — a sweet handheld to end the night.",
+      history: "Bananas have been Thailand's dessert since long before anyone imported sugar — grilled over coals, poached in syrup, fried in batter at every market. The samosa is a newer wrapper on that old idea: a thin pastry folded around ripe banana and fried until it blisters, so the fruit inside turns jammy and warm. Best eaten within minutes, while the crunch and the softness still disagree.",
+    }  },
+  { slug: 'roti', name: 'Roti', thai: 'โรตี', category: 'dessert',
+    description: "Buttery, flaky griddled roti — Thai street-style, served sweet.", price: '$9',
+    story: {
+      lede: "Flaky, buttery roti off the griddle, folded and served sweet the way Thai street stalls do it.",
+      history: "Roti came to Thailand with Muslim traders from the Indian subcontinent and became one of the country's best-loved street desserts — the cart with the griddle is a fixture of every night market. The dough is stretched paper-thin, slapped onto a buttered griddle until it blisters and crisps, then folded and finished sweet, condensed milk and sugar in the classic version. Crisp edges, soft folds, eaten hot.",
     }  },
   { slug: 'thai-tea', name: 'Thai Tea', thai: 'ชาไทย', category: 'drinks',
     description: "Strong-brewed, amber-orange, sweet & creamy over ice.", price: '$7',

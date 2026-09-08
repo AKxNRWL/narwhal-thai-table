@@ -259,7 +259,7 @@ export default function ThaiFoodOrangeCountyPage() {
           </p>
 
           <div className="guide-cta">
-            <Link href="/menu" className="btn-primary">Browse all 67 dishes</Link>
+            <Link href="/menu" className="btn-primary">Browse all 75 dishes</Link>
             {ORDER_ONLINE_URL && (
               <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-secondary">Order pickup</a>
             )}

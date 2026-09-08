@@ -74,7 +74,7 @@ const FACTS: { k: string; v: React.ReactNode }[] = [
   { k: 'Phone', v: <a href="tel:+17143786003">(714) 378-6003</a> },
   { k: 'Hours', v: 'Open every day · Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM · Lunch specials Mon–Fri 11:30 AM–3 PM' },
   { k: 'Cuisine', v: 'Thai — curry pastes pounded by hand, wok noodles and fried rice cooked to order, whole fried fish, Isaan salads and grills; vegetarian options' },
-  { k: 'Menu', v: <><Link href="/menu">67 dishes across 13 categories</Link> · most plates $12–20 · <Link href="/lunch">weekday lunch specials</Link> from $11.99</> },
+  { k: 'Menu', v: <><Link href="/menu">75 dishes across 13 categories</Link> · most plates $12–20 · <Link href="/lunch">weekday lunch specials</Link> from $11.99</> },
   { k: 'Service', v: 'Dine-in, reservations, pickup, delivery, catering and private events · dog-friendly patio' },
   { k: 'Web & social', v: <><a href={SITE_URL}>narwhalthaihb.com</a> · <a href="https://www.instagram.com/narwhalthaitablehb/" target="_blank" rel="noopener noreferrer">Instagram @narwhalthaitablehb</a> · <a href="https://www.facebook.com/Narwhalthaitablehb" target="_blank" rel="noopener noreferrer">Facebook</a> · <a href={GBP_MAP_URL} target="_blank" rel="noopener noreferrer">Google Maps</a></> },
   { k: 'Press contact', v: <><a href={`mailto:${RESTAURANT.email}`}>{RESTAURANT.email}</a> — ask for Aileen, Annie or AK</> },
@@ -125,7 +125,7 @@ export default function PressPage() {
             between them. The family bought the neighborhood&apos;s longtime Thai Gulf Restaurant in
             July 2026 and rebuilt it as their own: curry pastes pounded from whole chilies, garlic,
             lemongrass and galangal in a granite mortar; dry spices toasted and ground in small
-            batches; wok noodles, fried rice and curries cooked only when ordered. The 67-dish menu
+            batches; wok noodles, fried rice and curries cooked only when ordered. The 75-dish menu
             runs from Bangkok street plates and an Isaan corner of som tum, larb and crying tiger to
             whole fried pompano and Super Crab Fried Rice, with vegetarian options and weekday lunch
             specials from $11.99. The small dining room is joined by a dog-friendly patio under string

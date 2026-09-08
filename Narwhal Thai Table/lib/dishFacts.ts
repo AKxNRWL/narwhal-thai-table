@@ -119,6 +119,16 @@ export const DISH_FACTS: Record<string, DishFacts> = {
   'passion-fruit': { key: 'passion fruit juice', allergens: [] },
   'fresh-cucumber': { key: 'fresh cucumber juice', allergens: [] },
   'pineapple-soda': { key: 'pineapple juice, sparkling soda', allergens: [] },
+
+  // ---------- Added 8 Sep 2026 (from Toast; allergens not yet confirmed by the kitchen — bot must route allergy questions to staff) ----------
+  'orange-chicken': { key: 'crispy fried chicken, sticky orange glaze', allergens: ['not yet confirmed - ask staff'] },
+  'fried-tofu': { key: 'firm tofu, fried; sweet chili-peanut dipping sauce', allergens: ['soy (tofu)', 'peanut (dipping sauce)', 'others not yet confirmed - ask staff'] },
+  'meat-ball-skewer': { key: 'grilled Thai pork meatballs (3 skewers), sweet chili sauce', allergens: ['not yet confirmed - ask staff'] },
+  'panang-dino-rib': { key: 'slow-cooked beef dino rib (short rib), panang curry, coconut cream', allergens: ['coconut', 'others not yet confirmed - ask staff'] },
+  'thai-boat-noodles-dino-rib': { key: 'slow-simmered herbal beef broth, noodles, slow-cooked beef dino rib', allergens: ['not yet confirmed - ask staff'] },
+  'spicy-basil-dino-rib': { key: 'slow-cooked beef dino rib, holy basil, garlic, chili', allergens: ['not yet confirmed - ask staff'] },
+  'banana-samosa': { key: 'crispy pastry, banana filling, fried', allergens: ['gluten (pastry)', 'others not yet confirmed - ask staff'] },
+  'roti': { key: 'griddled roti flatbread, butter, served sweet', allergens: ['gluten (wheat dough)', 'dairy (may contain)', 'others not yet confirmed - ask staff'] },
 };
 
 /** One-line ingredient/allergen note for a dish, or '' if unknown. */
