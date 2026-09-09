@@ -5,8 +5,8 @@ import { cn } from '@/lib/cn';
 
 /**
  * Particles — a light canvas of drifting brass embers (Magic UI-style).
- * Used behind the hero art so the lanterns feel alive. Skips entirely for
- * prefers-reduced-motion users and pauses when the tab is hidden.
+ * Used behind the hero art so the lanterns feel alive. Pauses when the tab
+ * is hidden.
  */
 type Props = {
   className?: string;
@@ -34,7 +34,6 @@ export default function Particles({ className, quantity = 70, color = '#E3C581',
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 

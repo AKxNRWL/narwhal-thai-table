@@ -331,7 +331,7 @@ export default function ChatWidget() {
           </button>
         </div>
 
-        <div className="nara-msgs" ref={scrollRef}>
+        <div className="nara-msgs" data-lenis-prevent ref={scrollRef}>
           {msgs.map((m, i) => (
             <div key={i} className={`nara-msg nara-${m.role}`}>{m.content}</div>
           ))}

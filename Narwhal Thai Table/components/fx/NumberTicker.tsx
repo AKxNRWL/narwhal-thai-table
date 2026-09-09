@@ -5,8 +5,7 @@ import { cn } from '@/lib/cn';
 
 /**
  * NumberTicker — counts up from 0 to `value` the first time it scrolls into
- * view (Magic UI-style, no animation library needed). Reduced-motion users
- * see the final number immediately.
+ * view (Magic UI-style, no animation library needed).
  */
 export default function NumberTicker({
   value,
@@ -29,8 +28,7 @@ export default function NumberTicker({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || !('IntersectionObserver' in window)) {
+    if (!('IntersectionObserver' in window)) {
       setN(value);
       return;
     }

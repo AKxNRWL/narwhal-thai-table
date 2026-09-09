@@ -135,7 +135,7 @@ export default function MenuPage() {
     if (src) photos[d.slug] = src;
   }
   return (
-    <Section first tone="glow">
+    <Section first tone="aurora">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd()) }}
@@ -159,7 +159,7 @@ export default function MenuPage() {
           )}
         >
           <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-brass/40 bg-brass/10 px-3 py-1.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.16em] text-brass-light sm:self-auto">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light motion-safe:animate-pulse-dot" />
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light animate-pulse-dot" />
             Mon–Fri · 11:30–3
           </span>
           <span className="flex-1 text-[15px] leading-relaxed text-cream/80 transition-colors duration-300 group-hover:text-cream">

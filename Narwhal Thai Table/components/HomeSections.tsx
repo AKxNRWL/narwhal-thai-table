@@ -468,7 +468,7 @@ function ContactCard({ href, num, title, email, go, children }: { href: string; 
 
 export function ContactSection() {
   return (
-    <Section id="contact" tone="glow">
+    <Section id="contact" tone="aurora">
       <DotPattern className="[mask-image:radial-gradient(60%_50%_at_50%_100%,#000,transparent)]" />
       <Container>
         <FadeUp>

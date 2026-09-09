@@ -11,6 +11,8 @@ import MobileActionBar from '@/components/MobileActionBar';
 import AdsConversions from '@/components/AdsConversions';
 import NotoTickerFonts from '@/components/NotoTickerFonts';
 import CardGlow from '@/components/fx/CardGlow';
+import SmoothScroll from '@/components/fx/SmoothScroll';
+import Ambience from '@/components/fx/Ambience';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 
 /* Self-hosted webfonts (next/font).
@@ -206,8 +208,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Owner-managed promo pop-up (content from /api/promo; edited in /stats). */}
         <PromoCard />
         <AdsConversions />
-        {/* Cursor spotlight for glass cards (components/fx/CardGlow) — renders nothing. */}
+        {/* Cursor spotlight + 3D tilt + magnetic buttons (components/fx/CardGlow) — renders nothing. */}
         <CardGlow />
+        {/* Inertial smooth scrolling (Lenis) — pauses when the drawer/promo lock the page. */}
+        <SmoothScroll />
+        {/* Scroll progress hairline, cursor aura, film grain. */}
+        <Ambience />
         {/* Google Analytics 4 — property "narwhalthaihb.com", stream "Narwhal Thai Table Website" (welcome@ account)
             + Google Ads conversion tag AW-18329609126 — one shared gtag loader, two configs. */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-XJF37GZ4NB" strategy="afterInteractive" />

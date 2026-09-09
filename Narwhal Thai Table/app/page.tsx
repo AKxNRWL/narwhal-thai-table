@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import LunchSpecials from '@/components/LunchSpecials';
+import PhotoMarquee from '@/components/PhotoMarquee';
 import { getHeroMedia } from '@/lib/media';
 import { SHOW_CHEF } from '@/lib/site';
 import {
@@ -24,6 +25,8 @@ export default function HomePage() {
       {/* Signature dishes straight after the hero — owner, 7 Sep 2026: "เอาเมนูมาอยู่รองจาก hero". */}
       <MenuPreviewSection />
       <StorySection />
+      {/* "From the kitchen" — two counter-scrolling rows of every photographed plate. */}
+      <PhotoMarquee />
       {SHOW_CHEF && <ChefSection />}
       {/* Weekday Lunch Specials — was first under the hero (2 Sep); owner moved it down
           on 7 Sep ("เอาลงไปข้างล่าง"). The hero pill still jumps to #lunch-specials. */}
