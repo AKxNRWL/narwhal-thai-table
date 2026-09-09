@@ -1,7 +1,12 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MediaFrame from '@/components/MediaFrame';
+import Lens from '@/components/fx/Lens';
+import Button from '@/components/ui/Button';
+import { Section, Container, Eyebrow, Heading, Tag } from '@/components/ui/Section';
+import { cn } from '@/lib/cn';
 import { DISHES, getDishBySlug, type Dish } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
 import { getCategoryLabel } from '@/lib/categories';
@@ -89,30 +94,42 @@ function dishJsonLd(dish: Dish, photo?: string | null) {
   };
 }
 
+/* Shared type ramp for the long-form copy on this page. */
+const bodyText = 'text-[16.5px] leading-[1.75] text-cream/75';
+/* Inline text link inside body copy (brass, hairline underline). */
+const inlineLink =
+  'text-brass-light underline decoration-brass/40 underline-offset-4 transition-colors duration-300 hover:text-cream hover:decoration-brass-light';
+/* Small brass label used inside cards and the chef note. */
+const miniLabel = 'font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light';
+/* Static glass surface (no hover lift) for the pairing / sibling cards. */
+const glass = 'rounded-[var(--radius-card)] border border-cream/10 bg-white/[0.035] shadow-card';
+
+/** One titled block of the story column — renders only when its data exists. */
+function DishSection({ title, className, children }: { title: ReactNode; className?: string; children: ReactNode }) {
+  return (
+    <div className={cn('mt-12 first:mt-0', className)}>
+      <Heading as="h2" size="sm">{title}</Heading>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
 function DishDetail({ dish }: { dish: Dish }) {
   const photo = dish.image?.src ?? getDishImage(dish.slug);
   // Sibling dishes in the same category — turns 67 orphan pages into 13
   // interlinked topical clusters and gives guests somewhere to go next.
   const siblings = DISHES.filter(d => d.category === dish.category && d.slug !== dish.slug).slice(0, 5);
+  const hasMeta = Boolean(dish.signature || dish.spicy || dish.variants?.length);
   const placeholder = (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{
-        fontFamily: 'var(--font-display)', fontStyle: 'italic',
-        fontSize: 64, color: 'var(--brass)', lineHeight: 1,
-      }}>★</div>
-      <div style={{
-        marginTop: 16, fontSize: 10, letterSpacing: '0.32em',
-        textTransform: 'uppercase', color: 'var(--brass-light)',
-      }}>Photo coming soon</div>
-      <div style={{
-        marginTop: 8, fontFamily: 'var(--font-serif)', fontStyle: 'italic',
-        fontSize: 20, color: 'var(--off-white)',
-      }}>{dish.name}</div>
+    <div className="text-center">
+      <div className="font-display text-[64px] italic leading-none text-brass">★</div>
+      <div className="mt-4 font-sans text-[10px] uppercase tracking-[0.32em] text-brass-light">Photo coming soon</div>
+      <div className="mt-2 font-serif text-[20px] italic text-cream">{dish.name}</div>
     </div>
   );
 
   return (
-    <article className="dish-detail">
+    <Section as="article" first>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(dishJsonLd(dish, photo)) }}
@@ -125,163 +142,182 @@ function DishDetail({ dish }: { dish: Dish }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(dish)) }}
       />
-      <div className="container" style={{ maxWidth: 1280 }}>
-        <Link href="/menu" className="dish-detail-back">Back to menu</Link>
+      <Container>
+        <Button href="/menu" variant="ghost" className="text-[10.5px]">
+          <span aria-hidden="true" className="transition-transform duration-300 group-hover:-translate-x-0.5">←</span> Back to menu
+        </Button>
 
-        <div className="dish-detail-grid">
+        <div className="mt-8 grid gap-10 lg:mt-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 xl:gap-20">
           {/*
-            Image column.
+            Image column — pinned while the story scrolls on desktop.
             When a real photo is shot, pass `src` to MediaFrame and the
             placeholder will fade out automatically:
-              <MediaFrame ratio="4/5" ornament="corners"
+              <MediaFrame ratio="4/5" ornament="inset"
                 src={`/images/dishes/${dish.slug}.jpg`} alt={dish.name} priority />
           */}
-          <MediaFrame
-            ratio="4/5"
-            ornament="corners"
-            src={photo ?? undefined}
-            alt={dish.image?.alt ?? `${dish.name}${dish.thai ? ` (${dish.thai})` : ''} — ${dish.description} Served at Narwhal Thai Table, Huntington Beach.`}
-            /* Only render the "Photo coming soon" card when there really is no
-               photo — otherwise that text sits in the DOM beside the H1 and gets
-               read by crawlers and AI extractors on pages that DO have a photo. */
-            placeholder={photo ? undefined : placeholder}
-            priority
-          />
+          <div className="lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)] lg:self-start">
+            {/* Lens = hover magnifier on desktop (Magic UI-style); it only wraps real photos. */}
+            <LensIf enabled={Boolean(photo)}>
+              <MediaFrame
+                ratio="4/5"
+                ornament="inset"
+                src={photo ?? undefined}
+                alt={dish.image?.alt ?? `${dish.name}${dish.thai ? ` (${dish.thai})` : ''} — ${dish.description} Served at Narwhal Thai Table, Huntington Beach.`}
+                /* Only render the "Photo coming soon" card when there really is no
+                   photo — otherwise that text sits in the DOM beside the H1 and gets
+                   read by crawlers and AI extractors on pages that DO have a photo. */
+                placeholder={photo ? undefined : placeholder}
+                priority
+                className="border border-brass/20 shadow-card"
+              />
+            </LensIf>
+          </div>
 
-          <div className="dish-detail-header">
-            <span className="label">{getCategoryLabel(dish.category)}</span>
-            <h1>
+          <div className="min-w-0">
+            <Eyebrow>{getCategoryLabel(dish.category)}</Eyebrow>
+            <Heading as="h1" size="lg" className="mt-5">
               {dish.name}
               {dish.signature && <em> — Signature</em>}
-            </h1>
-            {dish.thai && <div className="thai">{dish.thai}</div>}
+            </Heading>
+            {dish.thai && <div lang="th" className="mt-3 font-serif text-[clamp(18px,1.8vw,22px)] italic text-cream/60">{dish.thai}</div>}
 
-            {dish.story?.lede && <p className="lede">{dish.story.lede}</p>}
+            {dish.story?.lede && (
+              <p className="mt-6 max-w-2xl font-serif text-[clamp(18px,1.7vw,21px)] italic leading-[1.6] text-cream/80">{dish.story.lede}</p>
+            )}
 
-            <div className="dish-detail-meta">
-              {dish.signature && <span className="tag">★ Signature</span>}
-              {dish.spicy && <span className="tag spicy">Spicy</span>}
-              {dish.variants?.map(v => <span key={v} className="tag">{v}</span>)}
-            </div>
+            {hasMeta && (
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                {dish.signature && <Tag>★ Signature</Tag>}
+                {dish.spicy && <Tag tone="spicy">Spicy</Tag>}
+                {dish.variants?.map(v => <Tag key={v} tone="muted">{v}</Tag>)}
+              </div>
+            )}
 
             {dish.price && (
-              <div className="dish-detail-price">{dish.price}</div>
+              <div className="mt-6 font-display text-[clamp(36px,4vw,52px)] font-medium leading-none tracking-[-0.01em] text-brass-light">{dish.price}</div>
             )}
 
-            {/* Long-form sections — each renders only if data exists */}
-            {dish.story?.history && (
-              <div className="dish-section">
-                <h2>Where it comes <em>from</em></h2>
-                <ParagraphsFrom text={dish.story.history} />
-              </div>
-            )}
+            <div className="mt-12 border-t border-cream/10 pt-12">
+              {/* Long-form sections — each renders only if data exists */}
+              {dish.story?.history && (
+                <DishSection title={<>Where it comes <em>from</em></>}>
+                  <div className={cn('flex flex-col gap-4', bodyText)}>
+                    <ParagraphsFrom text={dish.story.history} />
+                  </div>
+                </DishSection>
+              )}
 
-            {dish.story?.howToEat && (
-              <div className="dish-section">
-                <h2>How to <em>eat it</em></h2>
-                <ParagraphsFrom text={dish.story.howToEat} />
-              </div>
-            )}
+              {dish.story?.howToEat && (
+                <DishSection title={<>How to <em>eat it</em></>}>
+                  <div className={cn('flex flex-col gap-4', bodyText)}>
+                    <ParagraphsFrom text={dish.story.howToEat} />
+                  </div>
+                </DishSection>
+              )}
 
-            {dish.ingredients && dish.ingredients.length > 0 && (
-              <div className="dish-section">
-                <h2>What&apos;s in <em>the bowl</em></h2>
-                <ul>
-                  {dish.ingredients.map(i => <li key={i}>{i}</li>)}
-                </ul>
-              </div>
-            )}
+              {dish.ingredients && dish.ingredients.length > 0 && (
+                <DishSection title={<>What&apos;s in <em>the bowl</em></>}>
+                  <ul className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+                    {dish.ingredients.map(i => (
+                      <li key={i} className="flex items-start gap-3 text-[15.5px] leading-[1.6] text-cream/80">
+                        <span aria-hidden="true" className="mt-[9px] size-1.5 shrink-0 rounded-full bg-brass" />
+                        <span>{i}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </DishSection>
+              )}
 
-            {dish.pairing && (dish.pairing.drink || dish.pairing.sides) && (
-              <div className="dish-section">
-                <h2>What goes <em>with it</em></h2>
-                <div className="dish-pairing">
-                  {dish.pairing.drink && (
-                    <div>
-                      <h4>To drink</h4>
-                      <p>{dish.pairing.drink}</p>
-                    </div>
-                  )}
-                  {dish.pairing.sides && dish.pairing.sides.length > 0 && (
-                    <div>
-                      <h4>On the side</h4>
-                      <p>{dish.pairing.sides.join(' · ')}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+              {dish.pairing && (dish.pairing.drink || dish.pairing.sides) && (
+                <DishSection title={<>What goes <em>with it</em></>}>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {dish.pairing.drink && (
+                      <div className={cn(glass, 'p-5 sm:p-6')}>
+                        <h4 className={miniLabel}>To drink</h4>
+                        <p className="mt-3 text-[15.5px] leading-relaxed text-cream/80">{dish.pairing.drink}</p>
+                      </div>
+                    )}
+                    {dish.pairing.sides && dish.pairing.sides.length > 0 && (
+                      <div className={cn(glass, 'p-5 sm:p-6')}>
+                        <h4 className={miniLabel}>On the side</h4>
+                        <p className="mt-3 text-[15.5px] leading-relaxed text-cream/80">{dish.pairing.sides.join(' · ')}</p>
+                      </div>
+                    )}
+                  </div>
+                </DishSection>
+              )}
 
-            {dish.allergens && dish.allergens.length > 0 && (
-              <div className="dish-section">
-                <h2>Good to <em>know</em></h2>
-                <p style={{ marginBottom: 12 }}>
-                  Contains the following common allergens — please flag any sensitivities when you order and we&apos;ll adjust:
-                </p>
-                <div className="dish-allergens">
-                  {dish.allergens.map(a => <span key={a} className="tag">{a.replace('-', ' ')}</span>)}
-                </div>
-              </div>
-            )}
+              {dish.allergens && dish.allergens.length > 0 && (
+                <DishSection title={<>Good to <em>know</em></>}>
+                  <p className={bodyText}>
+                    Contains the following common allergens — please flag any sensitivities when you order and we&apos;ll adjust:
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {dish.allergens.map(a => <Tag key={a} tone="muted">{a.replace('-', ' ')}</Tag>)}
+                  </div>
+                </DishSection>
+              )}
 
-            {dish.story?.chefNote && (
-              <div className="dish-chef-note">
-                <div className="who">— From our kitchen</div>
-                <p>&ldquo;{dish.story.chefNote}&rdquo;</p>
-              </div>
-            )}
+              {dish.story?.chefNote && (
+                <blockquote className="relative mt-12 overflow-hidden rounded-[var(--radius-card)] border border-brass/30 bg-brass/[0.06] px-7 py-7 shadow-card first:mt-0 sm:px-9 sm:py-8">
+                  <span aria-hidden="true" className="pointer-events-none absolute -right-3 -top-6 select-none font-serif text-[140px] italic leading-none text-brass/10">&ldquo;</span>
+                  <div className={cn('relative', miniLabel)}>— From our kitchen</div>
+                  <p className="relative mt-4 font-serif text-[clamp(18px,1.8vw,22px)] italic leading-[1.55] text-cream">&ldquo;{dish.story.chefNote}&rdquo;</p>
+                </blockquote>
+              )}
 
-            {!dish.story && (
-              <div className="dish-section">
-                <p style={{ color: 'var(--muted-dark)', fontStyle: 'italic' }}>
+              {!dish.story && (
+                <p className="mt-12 font-serif text-[17px] italic leading-relaxed text-cream/60 first:mt-0">
                   We&apos;re still writing the story for this plate — it&apos;ll show up here soon. In the meantime, ask your server about the dish when you visit.
                 </p>
-              </div>
-            )}
-
-            {siblings.length > 0 && (
-              <div className="dish-section dish-siblings">
-                <h2>More from <em>{getCategoryLabel(dish.category)}</em></h2>
-                <ul className="dish-sibling-list">
-                  {siblings.map(s => (
-                    <li key={s.slug}>
-                      <Link href={`/menu/${s.slug}`}>
-                        <span className="sib-name">{s.name}</span>
-                        {s.thai && <span className="sib-thai">{s.thai}</span>}
-                      </Link>
-                      {s.price && <span className="sib-price">{s.price}</span>}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* SEO batch 8: an in-body, descriptive-anchor link from all 67 dish
-                pages to the Orange County field guide (the footer link exists
-                site-wide, but contextual links carry more weight). */}
-            <p className="dish-guide-note">
-              Not sure how to judge a plate like this? Read our field guide to the{' '}
-              <Link href="/thai-food-orange-county">best Thai food in Orange County</Link> — five
-              signs of a real Thai kitchen, and what to order once you&apos;re in one.
-            </p>
-
-            <div className="dish-section" style={{ marginTop: 64 }}>
-              {ORDER_ONLINE_URL ? (
-                <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-primary" style={{ color: 'var(--navy)' }}>
-                  Order Online
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
-              ) : (
-                <Link href="/contact/reservation" className="btn-primary" style={{ color: 'var(--navy)' }}>
-                  Save a Seat
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </Link>
               )}
+
+              {siblings.length > 0 && (
+                <DishSection title={<>More from <em>{getCategoryLabel(dish.category)}</em></>}>
+                  <ul className={cn(glass, 'overflow-hidden')}>
+                    {siblings.map(s => (
+                      <li key={s.slug} className="border-t border-cream/[0.06] first:border-t-0">
+                        <Link
+                          href={`/menu/${s.slug}`}
+                          className="group flex items-baseline justify-between gap-4 px-5 py-3.5 transition-colors duration-300 hover:bg-white/[0.04] focus-visible:outline-none focus-visible:bg-white/[0.06]"
+                        >
+                          <span className="min-w-0">
+                            <span className="block font-display text-[16px] font-medium leading-tight text-cream transition-colors duration-300 group-hover:text-brass-light">{s.name}</span>
+                            {s.thai && <span lang="th" className="mt-0.5 block font-serif text-[12.5px] italic text-cream/50">{s.thai}</span>}
+                          </span>
+                          {s.price && <span className="shrink-0 font-display text-[15px] font-medium text-brass-light">{s.price}</span>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </DishSection>
+              )}
+
+              {/* SEO batch 8: an in-body, descriptive-anchor link from all 67 dish
+                  pages to the Orange County field guide (the footer link exists
+                  site-wide, but contextual links carry more weight). */}
+              <p className="mt-10 border-t border-cream/10 pt-6 text-[14px] leading-relaxed text-cream/55">
+                Not sure how to judge a plate like this? Read our field guide to the{' '}
+                <Link href="/thai-food-orange-county" className={inlineLink}>best Thai food in Orange County</Link> — five
+                signs of a real Thai kitchen, and what to order once you&apos;re in one.
+              </p>
+
+              <div className="mt-12">
+                {ORDER_ONLINE_URL ? (
+                  <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow>
+                    Order Online
+                  </Button>
+                ) : (
+                  <Button href="/contact/reservation" variant="primary" size="lg" arrow>
+                    Save a Seat
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </article>
+      </Container>
+    </Section>
   );
 }
 
@@ -290,4 +326,8 @@ function ParagraphsFrom({ text }: { text: string }) {
   return (
     <>{text.split(/\n\s*\n/).map((para, i) => <p key={i}>{para}</p>)}</>
   );
+}
+
+function LensIf({ enabled, children }: { enabled: boolean; children: ReactNode }) {
+  return enabled ? <Lens zoom={1.7} size={190}>{children}</Lens> : <>{children}</>;
 }

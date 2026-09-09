@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import Button from '@/components/ui/Button';
+import { Section, Container, SectionHead } from '@/components/ui/Section';
 import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/site';
 
 /**
@@ -46,25 +48,38 @@ function Dish({ slug, children }: { slug: string; children: React.ReactNode }) {
   return <Link href={`/menu/${slug}`}>{children}</Link>;
 }
 
+/* "Also nearby" tail — sits outside `.prose-nt`, so its links are styled here. */
+const tailLinks =
+  '[&_a]:text-brass-light [&_a]:underline [&_a]:decoration-brass/40 [&_a]:underline-offset-4 [&_a]:transition-colors [&_a]:duration-300 [&_a:hover]:text-cream [&_a:hover]:decoration-brass-light';
+
 export default function ThaiFoodWestminsterPage() {
   return (
-    <section className="menu-section" style={{ paddingTop: 140, paddingBottom: 100 }}>
+    <Section first tone="glow">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-      <div className="container">
-        <div className="section-head">
-          <span className="label">Westminster neighbors</span>
-          <h1>Thai food near Westminster — <em>one road, twelve minutes</em>.</h1>
-          <p>
-            You already know the road. Beach Boulevard runs straight from Westminster into Huntington
-            Beach, and we&apos;re on it — at the corner of Garfield, 5.2 miles south of the Westminster
-            city center. About twelve minutes by car, no freeway, one turn at the end.
-          </p>
-        </div>
 
-        <div className="guide-prose">
+      <Container narrow>
+        <SectionHead
+          align="left"
+          as="h1"
+          size="md"
+          eyebrow="Westminster neighbors"
+          title={<>Thai food near Westminster — <em>one road, twelve minutes</em>.</>}
+          lede={
+            <>
+              You already know the road. Beach Boulevard runs straight from Westminster into Huntington
+              Beach, and we&apos;re on it — at the corner of Garfield, 5.2 miles south of the Westminster
+              city center. About twelve minutes by car, no freeway, one turn at the end.
+            </>
+          }
+        />
+      </Container>
+
+      {/* Reading column: semantic HTML inside `.prose-nt` (globals.css). */}
+      <Container narrow className="mt-12 lg:mt-16">
+        <div className="prose-nt">
           <h2>Getting here from <em>Westminster</em></h2>
           <p>
-            Head south on <strong style={{ color: 'var(--off-white)' }}>Beach Blvd (State Route 39)</strong>{' '}
+            Head south on <strong>Beach Blvd (State Route 39)</strong>{' '}
             past Bolsa, Warner and Slater to Garfield Ave — we&apos;re right at the corner, at{' '}
             <a href={DIRECTIONS_URL} target="_blank" rel="noopener">{RESTAURANT.address.street}</a>,{' '}
             with free parking in the plaza lot out front. No car tonight? OCTA Route 29 runs the length
@@ -116,19 +131,20 @@ export default function ThaiFoodWestminsterPage() {
             the table and you&apos;ll understand the drive. <Link href="/contact/reservation">Save a
             seat</Link>, or walk in any day.
           </p>
-
-          <div className="guide-cta">
-            <Link href="/lunch" className="btn-primary">See lunch specials</Link>
-            <a href={DIRECTIONS_URL} target="_blank" rel="noopener" className="btn-secondary">Directions from Westminster</a>
-            <Link href="/menu" className="btn-secondary">Browse all 75 dishes</Link>
-          </div>
-
-          <p style={{ marginTop: 28, fontSize: 15 }}>
-            Also nearby: <Link href="/thai-food-fountain-valley">Thai food near Fountain Valley</Link> · our{' '}
-            <Link href="/thai-food-orange-county">field guide to Thai food in Orange County</Link>.
-          </p>
         </div>
-      </div>
-    </section>
+
+        {/* Directions already lives in the phone action bar — hide that one there. */}
+        <div className="mt-14 flex flex-wrap items-center gap-3 border-t border-cream/10 pt-10">
+          <Button href="/lunch" variant="primary" arrow>See lunch specials</Button>
+          <Button href={DIRECTIONS_URL} variant="secondary" target="_blank" rel="noopener" className="max-[760px]:hidden">Directions from Westminster</Button>
+          <Button href="/menu" variant="secondary">Browse all 75 dishes</Button>
+        </div>
+
+        <p className={`mt-8 text-[15px] leading-relaxed text-cream/60 ${tailLinks}`}>
+          Also nearby: <Link href="/thai-food-fountain-valley">Thai food near Fountain Valley</Link> · our{' '}
+          <Link href="/thai-food-orange-county">field guide to Thai food in Orange County</Link>.
+        </p>
+      </Container>
+    </Section>
   );
 }

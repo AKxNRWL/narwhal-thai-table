@@ -1,53 +1,70 @@
-import Link from 'next/link';
 import FadeUp from './FadeUp';
 import PhotoCarousel from './PhotoCarousel';
+import BorderBeam from '@/components/fx/BorderBeam';
+import Button from '@/components/ui/Button';
+import { Section, Container, Eyebrow, Heading } from '@/components/ui/Section';
 import { LUNCH, LUNCH_PHOTOS, LUNCH_PHOTO_DIR } from '@/lib/lunchPhotos';
 import { RESTAURANT } from '@/lib/site';
 
 /**
- * Homepage — Lunch Specials, directly under the hero.
+ * Homepage — Weekday Lunch Specials (#lunch-specials, the hero pill's target).
  *
  * Owner's ask (2 Sep 2026): "เอาให้ขึ้นหน้าแรกเลย ตอนเปิดเว็บมาเจอเลย" — the
- * weekday lunch deal should be the first thing a visitor meets, not only the
- * dismissable pop-up. This is real, server-rendered content (indexable for
- * "thai lunch special huntington beach"), with the eight plate photos in the
- * same swipeable strip the pop-up uses. Facts live in lib/lunchPhotos.ts.
+ * weekday lunch deal should be real, server-rendered content (indexable for
+ * "thai lunch special huntington beach"), not only the dismissable pop-up.
+ * The eight plate photos ride in the same swipeable strip the pop-up uses.
+ * Facts live in lib/lunchPhotos.ts. Moved below the story on 7 Sep.
  */
 export default function LunchSpecials() {
   const photos = LUNCH_PHOTOS.map(({ file, label }) => ({ src: `${LUNCH_PHOTO_DIR}/${file}`, alt: label }));
   const tel = 'tel:' + RESTAURANT.phone.replace(/[^\d+]/g, '');
   return (
-    <section className="lunch" id="lunch-specials" aria-labelledby="lunch-title">
-      <div className="container lunch-grid">
-        <FadeUp className="lunch-photos">
-          <PhotoCarousel images={photos} label="Lunch Special plates" eagerCount={1} />
-        </FadeUp>
-        <FadeUp className="lunch-copy">
-          <span className="label">Weekday Lunch Specials</span>
-          <h2 id="lunch-title">
-            Thai lunch specials, <em>from {LUNCH.fromPrice}</em>
-          </h2>
-          <div className="lunch-when">{LUNCH.days} · {LUNCH.hours}</div>
-          <p>
-            Pick a plate — every lunch comes with {LUNCH.includes}.
-          </p>
-          <ul className="lunch-plates" aria-label="Lunch Special plates">
-            {LUNCH.plates.map((p) => <li key={p}>{p}</li>)}
-          </ul>
-          <div className="lunch-cta">
-            {RESTAURANT.phone && (
-              <a className="btn-primary" href={tel}>
-                Call to order lunch
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </a>
-            )}
-            <Link className="btn-secondary" href={LUNCH.menuPath}>
-              See the lunch menu
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </Link>
+    <Section id="lunch-specials" tone="glow" aria-labelledby="lunch-title" className="border-t border-cream/[0.06]">
+      <Container className="grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
+        <FadeUp>
+          {/* PhotoCarousel fills its parent (position:absolute; inset:0) — this
+              box supplies the aspect ratio, the frame and the clipping. */}
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-frame)] border border-brass/25 bg-navy shadow-card">
+            <PhotoCarousel images={photos} label="Lunch Special plates" eagerCount={1} />
+            <BorderBeam radius={18} size={260} duration={14} />
           </div>
         </FadeUp>
-      </div>
-    </section>
+
+        <FadeUp className="flex flex-col items-start gap-5">
+          <Eyebrow>Weekday Lunch Specials</Eyebrow>
+          <Heading as="h2" size="lg" id="lunch-title">
+            Thai lunch specials, <em>from {LUNCH.fromPrice}</em>
+          </Heading>
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-brass/40 bg-brass/10 px-4 py-2 font-sans text-[11px] font-medium uppercase tracking-[0.16em] text-brass-light">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light motion-safe:animate-pulse-dot" />
+            {LUNCH.days} · {LUNCH.hours}
+          </div>
+          <p className="text-[16.5px] leading-[1.75] text-cream/75">
+            Pick a plate — every lunch comes with {LUNCH.includes}.
+          </p>
+          <ul aria-label="Lunch Special plates" className="grid w-full gap-2 sm:grid-cols-2">
+            {LUNCH.plates.map((p) => (
+              <li
+                key={p}
+                className="flex items-center gap-2.5 rounded-full border border-cream/10 bg-white/[0.035] px-3.5 py-2 font-sans text-[13.5px] text-cream/85"
+              >
+                <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-brass" />
+                {p}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-2 flex flex-wrap gap-3">
+            {RESTAURANT.phone && (
+              <Button href={tel} variant="primary" arrow>
+                Call to order lunch
+              </Button>
+            )}
+            <Button href={LUNCH.menuPath} variant={RESTAURANT.phone ? 'secondary' : 'primary'} arrow>
+              See the lunch menu
+            </Button>
+          </div>
+        </FadeUp>
+      </Container>
+    </Section>
   );
 }

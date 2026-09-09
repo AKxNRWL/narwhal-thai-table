@@ -1,5 +1,6 @@
 import Image, { type ImageProps } from 'next/image';
 import { type CSSProperties, type ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
 type Ornament = 'none' | 'corners' | 'inset';
 
@@ -16,6 +17,10 @@ type Props = {
   priority?: boolean;
   /** Placeholder JSX shown while no src is provided (or as background art) */
   placeholder?: ReactNode;
+  /** Zoom the photo slightly when a parent `.group` is hovered (cards) */
+  hoverZoom?: boolean;
+  /** Square corners — for frames that sit flush inside a card */
+  flush?: boolean;
   className?: string;
   style?: CSSProperties;
 };
@@ -23,11 +28,10 @@ type Props = {
 /**
  * Universal photo / video container.
  *
- * Wraps next/image so all photography on the site goes through one consistent
- * frame: aspect ratio preserved via CSS var, optional brass-corner ornament,
- * and a stylized placeholder while real photos aren't shot yet.
- *
- * When you drop a file into /public/images, just pass `src="/images/file.jpg"`.
+ * All photography goes through one consistent frame: aspect ratio preserved
+ * via the `--ratio` custom property, soft rounded corners, optional inset
+ * hairline ornament, and a stylized placeholder while a photo is missing.
+ * When a photo exists the placeholder fades out (data-state="loaded").
  */
 export default function MediaFrame({
   ratio = '4/5',
@@ -37,15 +41,22 @@ export default function MediaFrame({
   sizes = '(max-width: 768px) 100vw, 50vw',
   priority = false,
   placeholder,
+  hoverZoom = false,
+  flush = false,
   className,
   style,
 }: Props) {
-  const dataState = src ? 'loaded' : 'placeholder';
-  const classes = ['media-frame', className].filter(Boolean).join(' ');
+  const loaded = Boolean(src);
   return (
     <figure
-      className={classes}
-      data-state={dataState}
+      className={cn(
+        'relative isolate m-0 w-full overflow-hidden bg-navy aspect-[var(--ratio,4/5)]',
+        flush ? 'rounded-none' : 'rounded-[var(--radius-frame)]',
+        ornament === 'inset' &&
+          "after:pointer-events-none after:absolute after:inset-[14px] after:z-[3] after:rounded-[10px] after:border after:border-brass/35 after:content-['']",
+        className,
+      )}
+      data-state={loaded ? 'loaded' : 'placeholder'}
       data-ornament={ornament === 'none' ? undefined : ornament}
       style={{ ['--ratio' as string]: ratio, ...style }}
     >
@@ -56,9 +67,24 @@ export default function MediaFrame({
           fill
           sizes={sizes}
           priority={priority}
+          className={cn(
+            'object-cover',
+            hoverZoom && 'transition-transform duration-700 ease-out-soft group-hover:scale-[1.04]',
+          )}
         />
       )}
-      {placeholder && <div className="media-placeholder">{placeholder}</div>}
+      {placeholder && (
+        <div
+          className={cn(
+            'absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 p-6 text-center',
+            'bg-[radial-gradient(80%_80%_at_50%_30%,#152F4A_0%,#0B1F33_70%)]',
+            'transition-opacity duration-500',
+            loaded && 'pointer-events-none opacity-0',
+          )}
+        >
+          {placeholder}
+        </div>
+      )}
     </figure>
   );
 }
