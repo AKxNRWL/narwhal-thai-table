@@ -188,7 +188,14 @@ export function MenuPreviewSection() {
   // plain signature list if fewer than six have photos yet.
   const allSignatures = DISHES.filter(d => d.signature);
   const photographed = allSignatures.filter(d => d.image?.src ?? getDishImage(d.slug));
-  const signatures = (photographed.length >= 6 ? photographed : allSignatures).slice(0, 6);
+  // Owner-curated (8 Sep 2026): the Panang Dino Rib photo leads the grid as the
+  // feature tile and the Narwhal Chicken Wings tile steps out of the home
+  // preview (it stays on /menu). Everything else keeps the signature order.
+  const HOME_LEAD = 'panang-dino-rib';
+  const HOME_SKIP = new Set(['narwhal-chicken-wings']);
+  const lead = DISHES.find(d => d.slug === HOME_LEAD);
+  const pool = (photographed.length >= 6 ? photographed : allSignatures).filter(d => d.slug !== HOME_LEAD && !HOME_SKIP.has(d.slug));
+  const signatures = [...(lead ? [lead] : []), ...pool].slice(0, 6);
   return (
     <Section id="menu">
       <Container>
