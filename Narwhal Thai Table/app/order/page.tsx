@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import MediaFrame from '@/components/MediaFrame';
+import Button, { Arrow } from '@/components/ui/Button';
+import { Section, Container, SectionHead, Tag, cardSurface } from '@/components/ui/Section';
+import { cn } from '@/lib/cn';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
 import { ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/site';
@@ -34,6 +38,33 @@ export const metadata: Metadata = {
   },
 };
 
+/* Inline text link inside body copy (brass, hairline underline). */
+const inlineLink =
+  'text-brass-light underline decoration-brass/40 underline-offset-4 transition-colors duration-300 hover:text-cream hover:decoration-brass-light';
+
+/* Muted one-liners under the CTA row (hours, lunch pointer). */
+const hoursLine = 'text-center font-sans text-[13.5px] leading-relaxed text-cream/60';
+
+/* CTA buttons stack full-width on phones (one thumb, one tap) and sit in a
+   row from the sm breakpoint up. */
+const ctaBtn = 'w-full sm:w-auto';
+
+/* One "How pickup works" step: a glass card with a serif numeral. The <ol>
+   already conveys the order to assistive tech, so the numeral is decorative.
+   Non-interactive → the card's hover lift is neutralised (same trick as the
+   Experience pillars on the home page). */
+function PickupStep({ num, children }: { num: string; children: ReactNode }) {
+  return (
+    <li className={cardSurface('h-full p-7 hover:translate-y-0 sm:p-8')}>
+      <div aria-hidden="true" className="flex items-center gap-4">
+        <span className="font-serif text-[30px] italic leading-none text-brass">{num}</span>
+        <span className="h-px flex-1 bg-brass/25 transition-colors duration-500 group-hover:bg-brass/45" />
+      </div>
+      <p className="mt-5 text-[15.5px] leading-relaxed text-cream/70 [&_strong]:font-semibold [&_strong]:text-cream">{children}</p>
+    </li>
+  );
+}
+
 export default function OrderPage() {
   // Same photographed-signatures rule as the homepage preview: only real
   // plates on an ad landing page, never placeholders.
@@ -42,95 +73,116 @@ export default function OrderPage() {
   ).slice(0, 6);
 
   return (
-    <section className="menu-section order-page" style={{ paddingTop: 140 }}>
-      <div className="container">
-        <div className="section-head">
-          <span className="label">Takeout &amp; Delivery</span>
-          <h1>Hungry now? <em>The wok is ready</em>.</h1>
-          <p>
-            Every plate is cooked when you order it — nothing made ahead, nothing under a lamp.
-            Order pickup on Beach Blvd, or have it brought to you.
-          </p>
-        </div>
+    <>
+      {/* No FadeUp here on purpose — an ad click must see the order button and
+          the plates instantly, with nothing waiting on a scroll observer. */}
+      <Section first tone="glow">
+        <Container>
+          <SectionHead
+            as="h1"
+            eyebrow="Takeout & Delivery"
+            title={<>Hungry now? <em>The wok is ready</em>.</>}
+            lede="Every plate is cooked when you order it — nothing made ahead, nothing under a lamp. Order pickup on Beach Blvd, or have it brought to you."
+          />
 
-        <div className="order-ctas">
-          {ORDER_ONLINE_URL && (
-            <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-primary">
-              Order Pickup — Toast
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          {/* The one job of this page. Real <a href> to Toast + tel: — the Ads
+              conversion listener keys off those literal hrefs. The primary is
+              full-width and taller on phones so it is the obvious thumb target. */}
+          <div className="mx-auto mt-10 flex w-full max-w-md flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center">
+            {ORDER_ONLINE_URL && (
+              <Button
+                href={ORDER_ONLINE_URL}
+                target="_blank"
+                rel="noopener"
+                variant="primary"
+                size="lg"
+                arrow
+                className={cn(ctaBtn, 'max-sm:py-5 max-sm:text-[13px]')}
+              >
+                Order Pickup — Toast
+              </Button>
+            )}
+            <Button href={DOORDASH_URL} target="_blank" rel="noopener" variant="secondary" size="lg" arrow className={ctaBtn}>
+              Delivery — DoorDash
+            </Button>
+            <Button href="tel:+17143786003" variant="secondary" size="lg" className={ctaBtn}>
+              Call it in — (714) 378-6003
+            </Button>
+          </div>
+
+          <p className={cn('mt-8', hoursLine)}>
+            Open every day · Mon–Fri 11:30 AM – 10 PM · Sat–Sun 12 – 10 PM ·{' '}
+            <a href={DIRECTIONS_URL} target="_blank" rel="noopener" className={inlineLink}>
+              {RESTAURANT.address.street}, {RESTAURANT.address.city} →
             </a>
-          )}
-          <a href={DOORDASH_URL} target="_blank" rel="noopener" className="btn-secondary">
-            Delivery — DoorDash
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <a href="tel:+17143786003" className="btn-secondary">
-            Call it in — (714) 378-6003
-          </a>
-        </div>
+          </p>
+          <p className={cn('mt-2.5', hoursLine)}>
+            Weekday lunch? <Link href="/lunch" className={inlineLink}>Lunch specials from $11.99, Mon–Fri 11:30–3 →</Link>
+          </p>
 
-        <p className="order-hours">
-          Open every day · Mon–Fri 11:30 AM – 10 PM · Sat–Sun 12 – 10 PM ·{' '}
-          <a href={DIRECTIONS_URL} target="_blank" rel="noopener">
-            {RESTAURANT.address.street}, {RESTAURANT.address.city} →
-          </a>
-        </p>
-        <p className="order-hours" style={{ marginTop: 10 }}>
-          Weekday lunch? <Link href="/lunch">Lunch specials from $11.99, Mon–Fri 11:30–3 →</Link>
-        </p>
+          <ol aria-label="How pickup works" className="mt-14 grid gap-6 md:grid-cols-3 lg:mt-20 lg:gap-8">
+            <PickupStep num="1">
+              <strong>Order online.</strong> The menu, your spice level, any allergies — checkout tells you exactly when it&apos;ll be ready.
+            </PickupStep>
+            <PickupStep num="2">
+              <strong>We light the wok.</strong> Your order goes straight to the kitchen — it isn&apos;t cooked until you&apos;ve asked for it.
+            </PickupStep>
+            <PickupStep num="3">
+              <strong>Grab it hot.</strong> Park right outside on Beach Blvd, tell us your name, and dinner&apos;s handled.
+            </PickupStep>
+          </ol>
+        </Container>
+      </Section>
 
-        <div className="order-steps" aria-label="How pickup works">
-          <div className="order-step">
-            <span className="order-step-num">1</span>
-            <p><strong>Order online.</strong> The menu, your spice level, any allergies — checkout tells you exactly when it&apos;ll be ready.</p>
-          </div>
-          <div className="order-step">
-            <span className="order-step-num">2</span>
-            <p><strong>We light the wok.</strong> Your order goes straight to the kitchen — it isn&apos;t cooked until you&apos;ve asked for it.</p>
-          </div>
-          <div className="order-step">
-            <span className="order-step-num">3</span>
-            <p><strong>Grab it hot.</strong> Park right outside on Beach Blvd, tell us your name, and dinner&apos;s handled.</p>
-          </div>
-        </div>
+      <Section className="border-t border-cream/[0.06]">
+        <Container>
+          <SectionHead title={<>People order these <em>first</em>.</>} />
 
-        <div className="section-head" style={{ marginTop: 72 }}>
-          <h2>People order these <em>first</em>.</h2>
-        </div>
-
-        <div className="sig-grid">
-          {photographed.map((d) => {
-            const photo = d.image?.src ?? getDishImage(d.slug) ?? undefined;
-            return (
-              <a key={d.slug} href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="sig-card">
-                <MediaFrame
-                  ratio="4/3"
-                  src={photo}
-                  alt={`${d.name}${d.thai ? ` (${d.thai})` : ''} — Thai takeout in Huntington Beach`}
-                  sizes="(max-width: 600px) 100vw, (max-width: 980px) 50vw, 33vw"
-                />
-                <div className="sig-body">
-                  <div className="sig-head">
-                    <div className="sig-name">{d.name}<span className="thai">{d.thai}</span></div>
-                    {d.price && <div className="sig-price">{d.price}</div>}
+          {/* Every card goes straight to Toast (real <a>, not a router Link) —
+              the plate is the pitch, the tap is the order. */}
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-8">
+            {photographed.map((d) => {
+              const photo = d.image?.src ?? getDishImage(d.slug) ?? undefined;
+              return (
+                <a key={d.slug} href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className={cardSurface('h-full')}>
+                  <MediaFrame
+                    ratio="4/3"
+                    flush
+                    hoverZoom
+                    src={photo}
+                    alt={`${d.name}${d.thai ? ` (${d.thai})` : ''} — Thai takeout in Huntington Beach`}
+                    sizes="(max-width: 600px) 100vw, (max-width: 980px) 50vw, 33vw"
+                  />
+                  <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <h3 className="font-display text-[19px] font-medium leading-tight text-cream">{d.name}</h3>
+                        <span lang="th" className="mt-1 block font-serif text-[13px] italic text-cream/55">{d.thai}</span>
+                      </div>
+                      {d.price && (
+                        <span className="shrink-0 font-display text-[17px] font-medium leading-tight text-brass-light">{d.price}</span>
+                      )}
+                    </div>
+                    <p className="line-clamp-2 text-[14.5px] leading-relaxed text-cream/70">{d.description}</p>
+                    <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-cream/10 pt-4">
+                      <Tag>Signature</Tag>
+                      {d.spicy && <Tag tone="spicy">Spicy</Tag>}
+                      <span className="ml-auto inline-flex items-center gap-1.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-brass-light">
+                        Add to your order <Arrow />
+                      </span>
+                    </div>
                   </div>
-                  <p className="sig-desc">{d.description}</p>
-                  <div className="sig-foot">
-                    <span className="sig-tag">Signature</span>
-                    {d.spicy && <span className="sig-tag spicy">Spicy</span>}
-                    <span className="sig-read">Add to your order</span>
-                  </div>
-                </div>
-              </a>
-            );
-          })}
-        </div>
+                </a>
+              );
+            })}
+          </div>
 
-        <p className="menu-note" style={{ marginTop: 48 }}>
-          Sixty-seven dishes across thirteen categories — <Link href="/menu" style={{ color: 'var(--brass-light)' }}>browse the full menu</Link> with every story and price.
-          Dining in tonight instead? The patio is dog-friendly and the mango sticky rice is worth staying for — <Link href="/contact/reservation" style={{ color: 'var(--brass-light)' }}>save a seat</Link>.
-        </p>
-      </div>
-    </section>
+          <p className="mx-auto mt-12 max-w-2xl text-center text-[15px] leading-relaxed text-cream/60 lg:mt-16">
+            Sixty-seven dishes across thirteen categories — <Link href="/menu" className={inlineLink}>browse the full menu</Link> with every story and price.
+            Dining in tonight instead? The patio is dog-friendly and the mango sticky rice is worth staying for — <Link href="/contact/reservation" className={inlineLink}>save a seat</Link>.
+          </p>
+        </Container>
+      </Section>
+    </>
   );
 }

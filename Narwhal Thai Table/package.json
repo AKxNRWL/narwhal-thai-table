@@ -13,16 +13,23 @@
   },
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
     "next": "^15.5.5",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22.9.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.14.0",
     "eslint-config-next": "^15.5.5",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.6.3"
   }
 }

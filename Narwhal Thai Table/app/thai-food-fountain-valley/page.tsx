@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import Button from '@/components/ui/Button';
+import { Section, Container, SectionHead } from '@/components/ui/Section';
 import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/site';
 
 /**
@@ -47,29 +49,42 @@ function Dish({ slug, children }: { slug: string; children: React.ReactNode }) {
   return <Link href={`/menu/${slug}`}>{children}</Link>;
 }
 
+/* "Also nearby" tail — sits outside `.prose-nt`, so its links are styled here. */
+const tailLinks =
+  '[&_a]:text-brass-light [&_a]:underline [&_a]:decoration-brass/40 [&_a]:underline-offset-4 [&_a]:transition-colors [&_a]:duration-300 [&_a:hover]:text-cream [&_a:hover]:decoration-brass-light';
+
 export default function ThaiFoodFountainValleyPage() {
   return (
-    <section className="menu-section" style={{ paddingTop: 140, paddingBottom: 100 }}>
+    <Section first tone="glow">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-      <div className="container">
-        <div className="section-head">
-          <span className="label">Fountain Valley neighbors</span>
-          <h1>Thai food near Fountain Valley — <em>eight minutes west</em>.</h1>
-          <p>
-            We&apos;ll be honest before you drive: Narwhal Thai Table is in Huntington Beach, not Fountain
-            Valley. But we sit at Beach Boulevard and Garfield Avenue — 3.6 miles from the center of
-            Fountain Valley, about eight minutes door to door — close enough that Fountain Valley
-            counts as the neighborhood to us.
-          </p>
-        </div>
 
-        <div className="guide-prose">
+      <Container narrow>
+        <SectionHead
+          align="left"
+          as="h1"
+          size="md"
+          eyebrow="Fountain Valley neighbors"
+          title={<>Thai food near Fountain Valley — <em>eight minutes west</em>.</>}
+          lede={
+            <>
+              We&apos;ll be honest before you drive: Narwhal Thai Table is in Huntington Beach, not Fountain
+              Valley. But we sit at Beach Boulevard and Garfield Avenue — 3.6 miles from the center of
+              Fountain Valley, about eight minutes door to door — close enough that Fountain Valley
+              counts as the neighborhood to us.
+            </>
+          }
+        />
+      </Container>
+
+      {/* Reading column: semantic HTML inside `.prose-nt` (globals.css). */}
+      <Container narrow className="mt-12 lg:mt-16">
+        <div className="prose-nt">
           <h2>Getting here from <em>Fountain Valley</em></h2>
           <p>
-            Two easy ways, both about eight minutes: take <strong style={{ color: 'var(--off-white)' }}>Brookhurst
+            Two easy ways, both about eight minutes: take <strong>Brookhurst
             St to Garfield Ave</strong> and head west until you reach Beach Blvd — we&apos;re on the corner,
             at <a href={DIRECTIONS_URL} target="_blank" rel="noopener">{RESTAURANT.address.street}</a>. Or
-            take <strong style={{ color: 'var(--off-white)' }}>Slater Ave to Newland St</strong>, then south to
+            take <strong>Slater Ave to Newland St</strong>, then south to
             Garfield and one block west. Either way you&apos;ll find free parking in the plaza lot right in front of the door,
             with free street parking nearby if the lot is busy.
           </p>
@@ -119,19 +134,20 @@ export default function ThaiFoodFountainValleyPage() {
             <Link href="/contact/catering">Tell us about the event</Link> and one of the three of us will
             write back.
           </p>
-
-          <div className="guide-cta">
-            <Link href="/lunch" className="btn-primary">See lunch specials</Link>
-            <a href={DIRECTIONS_URL} target="_blank" rel="noopener" className="btn-secondary">Directions from Fountain Valley</a>
-            <Link href="/menu" className="btn-secondary">Browse all 75 dishes</Link>
-          </div>
-
-          <p style={{ marginTop: 28, fontSize: 15 }}>
-            Also nearby: <Link href="/thai-food-westminster">Thai food near Westminster</Link> · our{' '}
-            <Link href="/thai-food-orange-county">field guide to Thai food in Orange County</Link>.
-          </p>
         </div>
-      </div>
-    </section>
+
+        {/* Directions already lives in the phone action bar — hide that one there. */}
+        <div className="mt-14 flex flex-wrap items-center gap-3 border-t border-cream/10 pt-10">
+          <Button href="/lunch" variant="primary" arrow>See lunch specials</Button>
+          <Button href={DIRECTIONS_URL} variant="secondary" target="_blank" rel="noopener" className="max-[760px]:hidden">Directions from Fountain Valley</Button>
+          <Button href="/menu" variant="secondary">Browse all 75 dishes</Button>
+        </div>
+
+        <p className={`mt-8 text-[15px] leading-relaxed text-cream/60 ${tailLinks}`}>
+          Also nearby: <Link href="/thai-food-westminster">Thai food near Westminster</Link> · our{' '}
+          <Link href="/thai-food-orange-county">field guide to Thai food in Orange County</Link>.
+        </p>
+      </Container>
+    </Section>
   );
 }

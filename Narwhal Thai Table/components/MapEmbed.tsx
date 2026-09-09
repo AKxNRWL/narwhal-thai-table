@@ -1,3 +1,5 @@
+import Button from '@/components/ui/Button';
+
 /**
  * Prominent embedded Google Map for the "Find us" blocks (home + /contact).
  *
@@ -21,17 +23,24 @@ const DIRECTIONS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${en
 
 export default function MapEmbed() {
   return (
-    <div className="map-embed">
-      <iframe
-        src={EMBED_SRC}
-        title="Narwhal Thai Table on Google Maps — 19072 Beach Blvd, Huntington Beach"
-        loading="lazy"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-      <a className="map-embed-link" href={DIRECTIONS_LINK} target="_blank" rel="noopener">
-        Get directions <span aria-hidden="true">&rarr;</span>
-      </a>
+    /* min-w-0: the aspect-ratio + min-height pair would otherwise transfer a
+       512px min-content width into a 1fr grid column and overflow on phones. */
+    <div className="w-full min-w-0">
+      <div className="relative aspect-[16/10] min-h-[320px] w-full min-w-0 overflow-hidden rounded-[var(--radius-frame)] border border-brass/25 bg-navy shadow-card">
+        <iframe
+          src={EMBED_SRC}
+          title="Narwhal Thai Table on Google Maps — 19072 Beach Blvd, Huntington Beach"
+          loading="lazy"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+          className="absolute inset-0 h-full w-full border-0"
+        />
+      </div>
+      <div className="mt-4">
+        <Button href={DIRECTIONS_LINK} target="_blank" rel="noopener" variant="ghost" arrow className="text-[11px]">
+          Get directions
+        </Button>
+      </div>
     </div>
   );
 }

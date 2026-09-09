@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import Button from '@/components/ui/Button';
+import { Section, Container, SectionHead } from '@/components/ui/Section';
 import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT_ID } from '@/lib/site';
 
 /**
@@ -87,21 +89,31 @@ function Dish({ slug, children }: { slug: string; children: React.ReactNode }) {
 
 export default function ThaiFoodOrangeCountyPage() {
   return (
-    <section className="menu-section" style={{ paddingTop: 140, paddingBottom: 100 }}>
+    <Section first tone="glow">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-      <div className="container">
-        <div className="section-head">
-          <span className="label">The Field Guide · Updated September 2026</span>
-          <h1>The best Thai food in Orange County — <em>a Thai family&apos;s field guide</em></h1>
-          <p>
-            Written by three siblings who grew up in Thai restaurant kitchens and now run one on
-            Beach Boulevard in Huntington Beach. Not a top-ten list — a guide to what makes Thai
-            food good, wherever in Orange County you end up eating it.
-          </p>
-        </div>
 
-        <div className="guide-prose">
+      <Container narrow>
+        <SectionHead
+          align="left"
+          as="h1"
+          size="md"
+          eyebrow="The Field Guide · Updated September 2026"
+          title={<>The best Thai food in Orange County — <em>a Thai family&apos;s field guide</em></>}
+          lede={
+            <>
+              Written by three siblings who grew up in Thai restaurant kitchens and now run one on
+              Beach Boulevard in Huntington Beach. Not a top-ten list — a guide to what makes Thai
+              food good, wherever in Orange County you end up eating it.
+            </>
+          }
+        />
+      </Container>
+
+      {/* Reading column: semantic HTML inside `.prose-nt` (globals.css) — every
+          dish name links to its own story page. */}
+      <Container narrow className="mt-12 lg:mt-16">
+        <div className="prose-nt">
           <p>
             Search &ldquo;best Thai food in Orange County&rdquo; and you&apos;ll get pages of
             review scores. Scores tell you a restaurant is liked; they don&apos;t tell you it&apos;s
@@ -257,16 +269,18 @@ export default function ThaiFoodOrangeCountyPage() {
             and <Link href="/lunch">weekday lunch specials</Link> from $11.99, Monday to Friday
             until 3 PM. Here is <Link href="/menu">the full menu</Link>.
           </p>
-
-          <div className="guide-cta">
-            <Link href="/menu" className="btn-primary">Browse all 75 dishes</Link>
-            {ORDER_ONLINE_URL && (
-              <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-secondary">Order pickup</a>
-            )}
-            <Link href="/contact/reservation" className="btn-secondary">Save a seat</Link>
-          </div>
         </div>
-      </div>
-    </section>
+
+        {/* Toast + reservation already live in the phone action bar — hide those two there.
+            The Toast link stays a real <a href> (Google Ads conversion listener). */}
+        <div className="mt-14 flex flex-wrap items-center gap-3 border-t border-cream/10 pt-10">
+          <Button href="/menu" variant="primary" arrow>Browse all 75 dishes</Button>
+          {ORDER_ONLINE_URL && (
+            <Button href={ORDER_ONLINE_URL} variant="secondary" target="_blank" rel="noopener" className="max-[760px]:hidden">Order pickup</Button>
+          )}
+          <Button href="/contact/reservation" variant="secondary" className="max-[760px]:hidden">Save a seat</Button>
+        </div>
+      </Container>
+    </Section>
   );
 }

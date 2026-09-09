@@ -1,18 +1,21 @@
 'use client';
 
 import { useEffect, useRef, type ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
 type Props = {
   className?: string;
+  /** Cascade the direct children in one by one (grids of cards). */
+  stagger?: boolean;
   children: ReactNode;
 };
 
 /**
  * Wraps content in a div that fades up into view on scroll using
- * IntersectionObserver. Respects prefers-reduced-motion via the
- * global CSS rule that flattens fade-up to opacity:1.
+ * IntersectionObserver. The `.fade-up` / `.visible` / `.stagger` styles live
+ * in app/globals.css and respect prefers-reduced-motion.
  */
-export default function FadeUp({ className, children }: Props) {
+export default function FadeUp({ className, stagger = false, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,12 +34,15 @@ export default function FadeUp({ className, children }: Props) {
           }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  const classes = ['fade-up', className].filter(Boolean).join(' ');
-  return <div ref={ref} className={classes}>{children}</div>;
+  return (
+    <div ref={ref} className={cn('fade-up', stagger && 'stagger', className)}>
+      {children}
+    </div>
+  );
 }

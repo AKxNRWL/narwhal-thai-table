@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import MenuTabs from '@/components/MenuTabs';
+import { Section, Container, SectionHead, Heading } from '@/components/ui/Section';
+import { cn } from '@/lib/cn';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
 import { CATEGORIES, getCategoryLabel } from '@/lib/categories';
@@ -86,30 +88,40 @@ function menuJsonLd() {
  */
 function DishIndex() {
   return (
-    <nav className="dish-index" aria-labelledby="dish-index-title">
-      <h2 id="dish-index-title">Every dish, <em>by course</em></h2>
-      <p className="dish-index-note">
+    <nav aria-labelledby="dish-index-title" className="mt-20 border-t border-cream/[0.06] pt-14 lg:mt-28 lg:pt-16">
+      <Heading as="h2" size="md" id="dish-index-title">Every dish, <em>by course</em></Heading>
+      <p className="mt-4 max-w-xl font-serif text-[15.5px] italic leading-relaxed text-cream/55">
         Tap any name to read where the recipe comes from, what goes in it, and how to eat it well.
       </p>
-      {CATEGORIES.map((cat) => {
-        const items = DISHES.filter((d) => d.category === cat.id);
-        if (!items.length) return null;
-        return (
-          <div className="dish-index-group" key={cat.id}>
-            <h3>{getCategoryLabel(cat.id)}</h3>
-            <ul>
-              {items.map((d) => (
-                <li key={d.slug}>
-                  <Link href={`/menu/${d.slug}`}>
-                    {d.name}
-                    {d.thai && <span className="dix-thai">{d.thai}</span>}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      })}
+      <div className="mt-10 columns-2 gap-x-8 md:columns-3 xl:columns-4">
+        {CATEGORIES.map((cat) => {
+          const items = DISHES.filter((d) => d.category === cat.id);
+          if (!items.length) return null;
+          return (
+            <div className="mb-8 break-inside-avoid" key={cat.id}>
+              <h3 className="font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{getCategoryLabel(cat.id)}</h3>
+              <ul className="mt-3 flex flex-col gap-1.5">
+                {items.map((d) => (
+                  <li key={d.slug}>
+                    <Link
+                      href={`/menu/${d.slug}`}
+                      className="group inline-block text-[13.5px] leading-snug text-cream/70 transition-colors duration-300 hover:text-brass-light"
+                    >
+                      {d.name}
+                      {d.thai && (
+                        <>
+                          {' '}
+                          <span lang="th" className="font-serif text-[12px] italic text-cream/40 transition-colors duration-300 group-hover:text-brass-light/70">{d.thai}</span>
+                        </>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
     </nav>
   );
 }
@@ -123,29 +135,43 @@ export default function MenuPage() {
     if (src) photos[d.slug] = src;
   }
   return (
-    <section className="menu-section" style={{ paddingTop: 140 }}>
+    <Section first tone="glow">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd()) }}
       />
-      <div className="container">
-        <div className="section-head">
-          <span className="label">The Menu</span>
-          <h1>The full menu — <em>tap a plate to hear its story</em>.</h1>
-          <p>
-            Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe&apos;s history, how to eat it well, and what belongs beside it.
-          </p>
-        </div>
+      <Container>
+        <SectionHead
+          as="h1"
+          eyebrow="The Menu"
+          title={<>The full menu — <em>tap a plate to hear its story</em>.</>}
+          lede={<>Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe&apos;s history, how to eat it well, and what belongs beside it.</>}
+        />
         {/* Weekday lunch specials (launched late Aug 2026) live on their own page —
             this strip is the pointer for the 11:45-on-a-Tuesday visitor. */}
-        <Link href="/lunch" className="lunch-strip">
-          <span className="lunch-strip-tag">Mon–Fri · 11:30–3</span>
-          <span>Lunch specials from $11.99 — Pad Thai, curries, krapow &amp; more, with salad and a spring roll</span>
-          <span className="lunch-strip-go">See lunch →</span>
+        <Link
+          href="/lunch"
+          className={cn(
+            'group mt-10 flex flex-col gap-3 rounded-[var(--radius-card)] border border-brass/25 bg-white/[0.035] px-5 py-4 shadow-card backdrop-blur-md lg:mt-12',
+            'sm:flex-row sm:items-center sm:gap-5 sm:px-6',
+            'transition-[transform,border-color,background-color] duration-300 ease-out-soft hover:-translate-y-0.5 hover:border-brass-light/60 hover:bg-brass/[0.07]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep',
+          )}
+        >
+          <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-brass/40 bg-brass/10 px-3 py-1.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.16em] text-brass-light sm:self-auto">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light motion-safe:animate-pulse-dot" />
+            Mon–Fri · 11:30–3
+          </span>
+          <span className="flex-1 text-[15px] leading-relaxed text-cream/80 transition-colors duration-300 group-hover:text-cream">
+            Lunch specials from $11.99 — Pad Thai, curries, krapow &amp; more, with salad and a spring roll
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-1.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-brass-light">
+            See lunch <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+          </span>
         </Link>
         <MenuTabs photos={photos} />
         <DishIndex />
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

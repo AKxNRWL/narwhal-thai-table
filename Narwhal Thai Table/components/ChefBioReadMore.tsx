@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Button from '@/components/ui/Button';
+import { cn } from '@/lib/cn';
 
 /**
  * Wraps the long-form portion of the chef bio in a collapsible panel
@@ -9,8 +11,9 @@ import { useState } from 'react';
  * deeper credentials / competitions / golden-quote / tags block.
  *
  * Uses the grid-template-rows: 0fr → 1fr trick so the height animates
- * smoothly to the content's natural size (no max-height guessing).
- * Respects prefers-reduced-motion via CSS in globals.css.
+ * smoothly to the content's natural size (no max-height guessing). The
+ * `.chef-bio-collapsible` / `.chef-bio-inner` / `.is-open` rules (and their
+ * prefers-reduced-motion guard) live in app/globals.css.
  */
 export default function ChefBioReadMore({
   children,
@@ -31,11 +34,12 @@ export default function ChefBioReadMore({
       >
         <div className="chef-bio-inner">{children}</div>
       </div>
-      <button
+      <Button
         type="button"
-        className="chef-bio-toggle"
+        variant="ghost"
         aria-expanded={expanded}
         onClick={() => setExpanded((e) => !e)}
+        className="mt-7 text-[11px]"
       >
         <span>{expanded ? closeLabel : openLabel}</span>
         <svg
@@ -46,14 +50,11 @@ export default function ChefBioReadMore({
           stroke="currentColor"
           strokeWidth="2"
           aria-hidden="true"
-          style={{
-            transition: 'transform 0.3s ease',
-            transform: expanded ? 'rotate(180deg)' : 'none',
-          }}
+          className={cn('shrink-0 transition-transform duration-300 ease-out-soft', expanded && 'rotate-180')}
         >
           <path d="M5 9l7 7 7-7" />
         </svg>
-      </button>
+      </Button>
     </>
   );
 }

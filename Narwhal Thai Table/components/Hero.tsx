@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
 import { ORDER_ONLINE_URL } from '@/lib/site';
 import { LUNCH } from '@/lib/lunchPhotos';
+import Button, { Arrow } from '@/components/ui/Button';
+import Particles from '@/components/fx/Particles';
+import Ripple from '@/components/fx/Ripple';
+import { cn } from '@/lib/cn';
 
 /**
  * Placemat art in the hero — owner, 7 Sep 2026 ("อยากให้ในเว็บเป็นงานอาร์ตแบบนี้"):
@@ -17,22 +20,36 @@ import { LUNCH } from '@/lib/lunchPhotos';
 const HERO_ART = true;
 const ART = '/images/art';
 
-/**
- * Hero structure (z-stack inside the .hero section):
- *   z-0: .hero-video         — background video (when present)
- *   z-0: .hero-fallback      — flicker gradient under the video
- *   z-1: ::before / ::after  — vignette + grid pattern
- *   z-1: .hero-watermark     — giant outline "Coming Soon" atmospheric text
- *   z-2: .hero-inner         — actual content (text column + ornament card)
- *   z-2: .hero-scroll        — scroll cue at the bottom
- *
- * The ornament card now wraps the narwhal in a <button> so hover, focus,
- * and tap all trigger the whale-jump + wave-ripple animation defined in
- * globals.css. The animation runs once per interaction (no constant loop).
- */
+const mediaCls = 'absolute inset-0 z-0 h-full w-full object-cover';
+
 export default function Hero({ media = { video: null, image: null } }: { media?: HeroMedia }) {
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const artRef = useRef<HTMLDivElement>(null);
+
+  // Parallax: the placemat art scrolls at ~15% of the page speed (desktop
+  // pointer devices only, never for reduced-motion users). Cheap: one rAF
+  // per scroll event, transform-only.
+  useEffect(() => {
+    const el = artRef.current;
+    if (!el) return;
+    const mq = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)');
+    if (!mq.matches) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const y = Math.min(window.scrollY, window.innerHeight);
+        el.style.transform = `translate3d(0, ${(y * 0.15).toFixed(1)}px, 0) scale(1.08)`;
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -43,34 +60,34 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
     v.addEventListener('canplay', () => { if (!v.paused) reveal(); });
   }, []);
 
-  // Restart the narwhal animation on tap (covers touch devices where
-  // :hover doesn't really exist). Briefly removing+re-adding the class
-  // forces a CSS animation restart even if the element is still focused.
+  // Restart the narwhal animation on tap (touch devices have no :hover).
+  // Removing + re-adding the class after a forced reflow restarts the CSS animation.
   const playNarwhal = (el: HTMLElement) => {
     el.classList.remove('is-playing');
-    // Force reflow so the next class addition re-triggers the animation.
     void el.offsetWidth;
     el.classList.add('is-playing');
     window.setTimeout(() => el.classList.remove('is-playing'), 1500);
   };
 
   return (
-    <section className={HERO_ART ? 'hero hero-art' : 'hero'} aria-labelledby="hero-title">
-      {/*
-        HERO BACKGROUND (auto drop-in — no code edit needed):
-          • Video: drop /public/media/hero.mp4 (or .webm) → plays automatically.
-          • Image: drop /public/images/hero.jpg (.png/.webp/.avif) → shows as the
-            still background, and as the video poster if both exist.
-          • Neither present → the animated gradient fallback below shows.
-        Detection happens at build time in lib/media.ts. Video tips: 1080p,
-        8–15s seamless loop, muted, under ~4MB.
-      */}
-      <div className="hero-fallback" aria-hidden="true" ref={fallbackRef} />
+    <section
+      aria-labelledby="hero-title"
+      className="relative isolate flex min-h-[calc(100svh-var(--cs-ticker-h))] flex-col justify-end overflow-hidden bg-[#0F2034] pt-[calc(var(--cs-ticker-h)+96px)] lg:justify-center"
+    >
+      {/* z0 — animated gradient fallback under the media */}
+      <div
+        ref={fallbackRef}
+        aria-hidden="true"
+        className="absolute inset-0 z-0 bg-[radial-gradient(70%_60%_at_70%_40%,#152F4A_0%,#0B1F33_55%,#06121F_100%)] transition-opacity duration-1000"
+      />
+
       {HERO_ART ? (
         /* Landscape art on laptops/tablets; on phones a portrait crop of the
-           right-hand side (lanterns → narwhal → krathongs) so the whale stays
-           in frame behind the copy. AVIF → WebP → JPEG, sized to the viewport. */
-        <picture>
+           right-hand side so the whale stays in frame behind the copy.
+           The wrapper is the parallax layer (see artRef); overscan via scale
+           so the edges never show while it drifts. */
+        <div ref={artRef} className="absolute inset-0 z-0 will-change-transform lg:scale-[1.08]">
+        <picture className="contents">
           <source media="(max-width:700px)" type="image/avif" srcSet={`${ART}/hero-night-portrait-1080.avif`} />
           <source media="(max-width:700px)" type="image/webp" srcSet={`${ART}/hero-night-portrait-720.webp 720w, ${ART}/hero-night-portrait-1080.webp 1080w`} sizes="100vw" />
           <source media="(max-width:700px)" srcSet={`${ART}/hero-night-portrait-720.jpg 720w, ${ART}/hero-night-portrait-1080.jpg 1080w`} sizes="100vw" />
@@ -78,7 +95,11 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
           <source type="image/webp" srcSet={`${ART}/hero-night-1600.webp 1600w, ${ART}/hero-night-2560.webp 2560w`} sizes="100vw" />
           {/* eslint-disable-next-line @next/next/no-img-element -- art-directed <picture>; next/image can't switch crops per breakpoint */}
           <img
-            className="hero-media"
+            className={cn(
+              mediaCls,
+              'object-[50%_50%] lg:object-[50%_62%]',
+              'motion-safe:lg:animate-drift motion-safe:lg:[transform-origin:60%_50%]',
+            )}
             src={`${ART}/hero-night-1600.jpg`}
             srcSet={`${ART}/hero-night-1600.jpg 1600w, ${ART}/hero-night-2560.jpg 2560w`}
             sizes="100vw"
@@ -88,10 +109,11 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             decoding="async"
           />
         </picture>
+        </div>
       ) : media.video ? (
         <video
           ref={videoRef}
-          className="hero-media hero-video"
+          className={mediaCls}
           autoPlay
           muted
           loop
@@ -104,74 +126,138 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
         </video>
       ) : media.image ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="hero-media" src={media.image} alt="" aria-hidden="true" />
+        <img className={mediaCls} src={media.image} alt="" aria-hidden="true" />
       ) : null}
 
-      {/* Coming Soon messaging now lives in the multilingual top-of-page
-          ticker (<ComingSoonTicker />) instead of a Hero watermark — the
-          giant outline text didn't scale gracefully on mobile and the
-          ticker reaches a broader audience in Huntington Beach. */}
+      {/* z1 — scrims: left for the headline, top for the nav, bottom into the page */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(6,18,31,0.88)_0%,rgba(6,18,31,0.55)_42%,rgba(6,18,31,0.05)_75%)] max-lg:bg-[linear-gradient(180deg,rgba(6,18,31,0.55)_0%,rgba(6,18,31,0.15)_35%,rgba(6,18,31,0.9)_78%,#06121F_100%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-40 bg-gradient-to-b from-navy-deep/80 to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-48 bg-gradient-to-t from-navy-deep via-navy-deep/70 to-transparent"
+      />
 
-      <div className="hero-inner">
-        <div className="hero-text">
-          <span className="label hero-coming-soon">Now Open · Every Day</span>
+      {/* z1 — drifting brass embers over the lanterns (desktop-weight only) */}
+      <Particles className="z-[1] hidden sm:block" quantity={60} />
+
+      {/* z2 — content */}
+      <div className="relative z-[2] mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-24 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:px-12 lg:pb-28 lg:pt-6">
+        <div className="max-w-2xl">
+          <span
+            className="inline-flex items-center gap-3 font-sans text-[11px] font-medium uppercase tracking-[0.34em] text-brass-light motion-safe:animate-breathe"
+            style={{ animation: 'heroIn 0.9s var(--ease-out-soft) both' }}
+          >
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light shadow-[0_0_12px_rgba(227,197,129,0.9)]" />
+            Now Open · Every Day
+          </span>
+
           {/* Lunch Specials pill — owner (2 Sep 2026): the weekday deal must be on
-              screen the moment the site opens, on every device. Jumps to the
-              <LunchSpecials/> section right under the hero. */}
-          <div className="hero-pill-row">
-            <a className="hero-pill" href="#lunch-specials">
-              <span className="dot" aria-hidden="true" />
-              Weekday Lunch Specials <b>from {LUNCH.fromPrice}</b>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              screen the moment the site opens, on every device. */}
+          <div className="mt-5" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.06s both' }}>
+            <a
+              href="#lunch-specials"
+              className="group inline-flex items-center gap-2.5 rounded-full border border-brass/40 bg-navy-deep/55 py-2 pl-3 pr-4 font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-cream backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/75"
+            >
+              <span aria-hidden="true" className="size-2 rounded-full bg-brass motion-safe:animate-pulse-dot" />
+              Weekday Lunch Specials <b className="font-semibold text-brass-light">from {LUNCH.fromPrice}</b>
+              <Arrow className="text-brass-light" />
             </a>
           </div>
-          <h1 id="hero-title">
-            From Siam&apos;s royal court<br/><em>to Huntington Beach</em>.
+
+          <h1
+            id="hero-title"
+            className="mt-7 font-display text-[clamp(44px,8.2vw,96px)] font-medium leading-[0.96] tracking-[-0.025em] text-cream text-balance [text-shadow:0_2px_24px_rgba(6,18,31,0.6)]"
+          >
+            <Words text="From Siam’s royal court" />
+            <br />
+            <em className="font-serif font-normal italic text-brass-light">
+              <Words text="to Huntington Beach" start={4} />
+            </em>
+            <span className="word-in" style={{ animationDelay: '0.62s' }}>.</span>
           </h1>
-          <p>
-            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard. <strong>The table is set, Huntington Beach.</strong> Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
+
+          <p
+            className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]"
+            style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.24s both' }}
+          >
+            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard.{' '}
+            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">The table is set, Huntington Beach.</strong>{' '}
+            Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
           </p>
-          <div className="hero-cta">
+
+          <div className="mt-9 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
             {ORDER_ONLINE_URL && (
-              <a href={ORDER_ONLINE_URL} target="_blank" rel="noopener" className="btn-primary">
+              <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow>
                 Order Online
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
+              </Button>
             )}
-            <Link href="/menu" className={ORDER_ONLINE_URL ? 'btn-secondary' : 'btn-primary'}>
+            <Button href="/menu" variant={ORDER_ONLINE_URL ? 'secondary' : 'primary'} size="lg" arrow>
               Explore the Menu
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </Link>
-            <Link href="/contact/reservation" className="btn-secondary">
+            </Button>
+            {/* Hidden on phones — the MobileActionBar carries Reserve there. */}
+            <Button href="/contact/reservation" variant="secondary" size="lg" arrow className="max-[760px]:hidden">
               Save a Seat
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </Link>
+            </Button>
           </div>
         </div>
-        <div className="hero-visual">
-          {/* Future: replace this stand-in with a real hero photo via <MediaFrame ratio="4/5" ornament="corners" src="/images/hero.jpg" alt="..." priority /> */}
-          <div className="visual-frame">
-            <div className="ornament">
-              <button
-                type="button"
-                className="ornament-narwhal"
-                aria-label="Tap to see the narwhal jump"
-                onClick={(e) => playNarwhal(e.currentTarget)}
-              >
-                <span className="nm-stack" aria-hidden="true">
-                  <img className="nm-waves" src="/images/logo-hero-waves.png" alt="" />
-                  <img className="nm-whale" src="/images/logo-hero-whale.png" alt="" />
-                  <img className="nm-spark" src="/images/logo-hero-spark.png" alt="" />
-                </span>
-              </button>
-              <div className="ornament-text">Narwhal</div>
-              <div className="ornament-divider"></div>
-              <div className="ornament-tagline">Thai Table · Est. 2026</div>
+
+        {/* The narwhal medallion — glass card; tap/hover makes the whale jump */}
+        <div className="hidden justify-self-end lg:block" style={{ animation: 'heroIn 1s var(--ease-out-soft) 0.3s both' }}>
+          <div className="relative w-[340px] rounded-[28px] border border-brass/30 bg-navy-deep/40 p-9 text-center shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-xl xl:w-[380px]">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-3 rounded-[20px] border border-brass/20" />
+            <div className="relative">
+            <Ripple className="-top-6 h-[280px]" baseSize={240} step={60} circles={4} />
+            <button
+              type="button"
+              className="ornament-narwhal relative z-[1] mx-auto mb-6 block size-[220px] cursor-pointer rounded-full border border-brass/90 bg-[radial-gradient(circle_at_50%_42%,#FBF6EA_0%,#F7F0E1_72%)] p-0 shadow-[0_0_0_8px_rgba(247,240,225,0.06),0_30px_60px_-30px_rgba(0,0,0,0.8)] transition-transform duration-500 hover:scale-[1.04] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-brass xl:size-[240px]"
+              aria-label="Tap to see the narwhal jump"
+              onClick={(e) => playNarwhal(e.currentTarget)}
+            >
+              <span className="nm-stack" aria-hidden="true">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="nm-waves" src="/images/logo-hero-waves.png" alt="" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="nm-whale" src="/images/logo-hero-whale.png" alt="" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="nm-spark" src="/images/logo-hero-spark.png" alt="" />
+              </span>
+            </button>
             </div>
+            <div className="font-serif text-[38px] italic leading-none tracking-[0.02em] text-cream">Narwhal</div>
+            <div aria-hidden="true" className="mx-auto my-4 h-px w-12 bg-brass" />
+            <div className="font-sans text-[10px] font-medium uppercase tracking-[0.34em] text-brass-light">Thai Table · Est. 2026</div>
           </div>
         </div>
       </div>
-      <div className="hero-scroll" aria-hidden="true">Scroll</div>
+
+      {/* scroll cue */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-7 left-1/2 z-[2] hidden -translate-x-1/2 flex-col items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55 lg:flex"
+      >
+        Scroll
+        <span className="block h-10 w-px origin-top bg-brass motion-safe:animate-scroll-cue" />
+      </div>
     </section>
+  );
+}
+
+/** Word-by-word blur reveal (Magic UI "TextAnimate" feel) — pure CSS, SEO-safe. */
+function Words({ text, start = 0, step = 0.07 }: { text: string; start?: number; step?: number }) {
+  return (
+    <>
+      {text.split(' ').map((w, i) => (
+        <span key={i} className="word-in" style={{ animationDelay: `${0.1 + (start + i) * step}s` }}>
+          {w}
+          {i < text.split(' ').length - 1 ? '\u00A0' : ''}
+        </span>
+      ))}
+    </>
   );
 }

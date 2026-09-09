@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import MapEmbed from '@/components/MapEmbed';
+import { Section, Container, SectionHead, Eyebrow, Heading, cardSurface } from '@/components/ui/Section';
 import { DIRECTIONS_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -137,60 +139,85 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
   },
 ];
 
+/* Same glass card as HomeSections.ContactSection so the home teaser and this
+   hub read as one system. */
+function ContactCard({ href, num, title, email, go, children }: { href: string; num: string; title: ReactNode; email: string; go: string; children: ReactNode }) {
+  return (
+    <Link href={href} className={cardSurface('h-full p-7 sm:p-8')}>
+      <span className="font-sans text-[11px] font-medium tracking-[0.3em] text-brass/80">{num}</span>
+      <h3 className="mt-5 font-display text-[22px] font-medium leading-tight text-cream">{title}</h3>
+      <p className="mt-3 text-[15px] leading-relaxed text-cream/70">{children}</p>
+      <span className="mt-5 block break-all font-sans text-[12.5px] text-cream/50">{email}</span>
+      <span className="mt-auto inline-flex items-center gap-2 pt-6 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-brass-light">
+        {go} <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+      </span>
+    </Link>
+  );
+}
+
+/* FAQ answer body — the FAQS entries are plain <p> + links, so the link
+   styling is applied from the wrapper. */
+const faqAnswer =
+  'pt-4 text-[15.5px] leading-[1.75] text-cream/75 sm:pr-14 ' +
+  '[&_a]:text-brass-light [&_a]:underline [&_a]:decoration-brass/40 [&_a]:underline-offset-4 [&_a]:transition-colors [&_a]:duration-300 ' +
+  '[&_a:hover]:text-cream [&_a:hover]:decoration-brass-light';
+
 export default function ContactHubPage() {
   return (
-    <section className="contact" id="contact">
-      <div className="container">
-        <div className="section-head">
-          <span className="label" style={{ color: 'var(--brass-light)' }}>Come See Us</span>
-          <h2 style={{ color: 'var(--off-white)' }}>How can we <em style={{ color: 'var(--brass-light)' }}>help?</em></h2>
+    <Section first tone="glow" id="contact">
+      <Container>
+        <SectionHead eyebrow="Come See Us" title={<>How can we <em>help?</em></>} />
+
+        <div className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-3 lg:gap-8">
+          <ContactCard href="/contact/reservation" num="01" title="Reservations" email="reservations@narwhalthaihb.com" go="Book a table">
+            Request a table &mdash; we&apos;ll confirm within a few hours.
+          </ContactCard>
+          <ContactCard href="/contact/catering" num="02" title={<>Catering &amp; Events</>} email="catering@narwhalthaihb.com" go="Plan an event">
+            Buyouts, family-style tastings, off-site catering.
+          </ContactCard>
+          <ContactCard href="/contact/message" num="03" title="Say Hello" email="welcome@narwhalthaihb.com" go="Send a message">
+            Questions, suppliers, press &mdash; we&apos;ll get back to you.
+          </ContactCard>
         </div>
-        <div className="contact-cards">
-          <Link className="contact-card" href="/contact/reservation">
-            <span className="contact-card-num">01</span>
-            <h3>Reservations</h3>
-            <p>Request a table &mdash; we&apos;ll confirm within a few hours.</p>
-            <span className="contact-card-email">reservations@narwhalthaihb.com</span>
-            <span className="contact-card-go">Book a table <span aria-hidden="true">&rarr;</span></span>
-          </Link>
-          <Link className="contact-card" href="/contact/catering">
-            <span className="contact-card-num">02</span>
-            <h3>Catering &amp; Events</h3>
-            <p>Buyouts, family-style tastings, off-site catering.</p>
-            <span className="contact-card-email">catering@narwhalthaihb.com</span>
-            <span className="contact-card-go">Plan an event <span aria-hidden="true">&rarr;</span></span>
-          </Link>
-          <Link className="contact-card" href="/contact/message">
-            <span className="contact-card-num">03</span>
-            <h3>Say Hello</h3>
-            <p>Questions, suppliers, press &mdash; we&apos;ll get back to you.</p>
-            <span className="contact-card-email">welcome@narwhalthaihb.com</span>
-            <span className="contact-card-go">Send a message <span aria-hidden="true">&rarr;</span></span>
-          </Link>
-        </div>
-        <div className="contact-visit">
-          <div className="contact-visit-info">
-            <span className="label">Find us</span>
-            <h3>Visit the table</h3>
-            <p>19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" style={{ color: 'inherit' }}>(714) 378-6003</a><br/>Open every day &middot; Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM</p>
+
+        {/* Find us — mirrors the "Visit the table" block on the home page */}
+        <div className="mt-16 grid gap-10 border-t border-cream/10 pt-14 lg:mt-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:pt-16">
+          <div className="flex flex-col items-start gap-5">
+            <Eyebrow>Find us</Eyebrow>
+            <Heading as="h3" size="md">Visit the table</Heading>
+            <p className="text-[16.5px] leading-[1.8] text-cream/75">19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" className="text-cream transition-colors duration-300 hover:text-brass-light">(714) 378-6003</a><br/>Open every day &middot; Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM</p>
           </div>
           <MapEmbed />
         </div>
-        <div className="faq-wrap" id="faq">
-          <div className="section-head">
-            <span className="label" style={{ color: 'var(--brass-light)' }}>Good to Know</span>
-            <h2 style={{ color: 'var(--off-white)' }}>Questions we hear <em style={{ color: 'var(--brass-light)' }}>a lot</em></h2>
+
+        {/* FAQ — native <details>; the head stays pinned beside the list on desktop */}
+        <div
+          id="faq"
+          className="mt-16 scroll-mt-[calc(var(--cs-ticker-h)+96px)] border-t border-cream/10 pt-14 lg:mt-20 lg:grid lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:pt-16"
+        >
+          <div className="lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)] lg:self-start">
+            <SectionHead align="left" eyebrow="Good to Know" title={<>Questions we hear <em>a lot</em></>} />
           </div>
-          <div className="faq-list">
+          <div className="mt-10 border-t border-cream/10 lg:mt-0">
             {FAQS.map((f) => (
-              <details key={f.q} className="faq-item">
-                <summary>{f.q}</summary>
-                {f.a}
+              <details key={f.q} className="faq-item group border-b border-cream/10 py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg font-display text-[17px] font-medium leading-snug text-cream transition-colors duration-300 hover:text-brass-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light focus-visible:ring-offset-4 focus-visible:ring-offset-navy-deep group-open:text-brass-light sm:text-[19px]">
+                  <span>{f.q}</span>
+                  <span
+                    aria-hidden="true"
+                    className="faq-plus grid size-8 shrink-0 place-items-center rounded-full border border-brass/30 bg-brass/[0.06] text-brass-light group-hover:border-brass/60 group-open:bg-brass/15"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" focusable="false">
+                      <path d="M6 1v10M1 6h10" />
+                    </svg>
+                  </span>
+                </summary>
+                <div className={faqAnswer}>{f.a}</div>
               </details>
             ))}
           </div>
         </div>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

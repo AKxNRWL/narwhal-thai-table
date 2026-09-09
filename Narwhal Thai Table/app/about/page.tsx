@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import MediaFrame from '@/components/MediaFrame';
+import Button from '@/components/ui/Button';
+import { Section, Container, SectionHead } from '@/components/ui/Section';
+import { cn } from '@/lib/cn';
 import { SITE_URL, RESTAURANT_ID, DIRECTIONS_URL, RESTAURANT } from '@/lib/site';
 
 /**
@@ -90,37 +93,60 @@ const FACTS: { k: string; v: React.ReactNode }[] = [
   { k: 'Reach us', v: <><a href="tel:+17143786003">(714) 378-6003</a> · <a href={`mailto:${RESTAURANT.email}`}>{RESTAURANT.email}</a> · <Link href="/press">press kit</Link></> },
 ];
 
+/* ---- presentation ----------------------------------------------------- */
+/* Inline links inside blocks that sit outside `.prose-nt` (fact table, timeline). */
+const inlineLinks =
+  '[&_a]:text-brass-light [&_a]:underline [&_a]:decoration-brass/40 [&_a]:underline-offset-4 [&_a]:transition-colors [&_a]:duration-300 [&_a:hover]:text-cream [&_a:hover]:decoration-brass-light';
+/* An h2 that lives outside `.prose-nt` but should sit on the same scale as the prose h2s. */
+const blockTitle =
+  'font-display text-[clamp(26px,3vw,34px)] font-medium leading-[1.15] tracking-[-0.01em] text-cream text-balance [&_em]:font-serif [&_em]:font-normal [&_em]:italic [&_em]:text-brass-light';
+const glassCard = 'rounded-[var(--radius-card)] border border-cream/10 bg-white/[0.035] px-5 py-7 shadow-card sm:px-8 sm:py-9 lg:px-10 lg:py-10';
+/* Timeline entry: a brass dot on the rail (the <ul>'s left border), haloed in the page colour. */
+const timelineItem =
+  "relative pb-7 last:pb-0 before:absolute before:top-[0.6em] before:-left-[33px] before:size-[9px] before:rounded-full before:bg-brass before:ring-4 before:ring-navy-deep before:content-[''] sm:before:-left-[41px]";
+
 export default function AboutPage() {
   return (
-    <section className="menu-section about-page" style={{ paddingTop: 140, paddingBottom: 100 }}>
+    <Section first tone="glow">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }} />
-      <div className="container">
-        <div className="section-head">
-          <span className="label">Our Story</span>
-          <h1>Three siblings. <em>One table.</em></h1>
-          <p>
-            We are Aileen, Annie and AK — a Thai family with thirty years of restaurant life between
-            us, and one small dining room on Beach Boulevard where we cook the food we grew up eating.
-          </p>
-        </div>
 
-        <div className="about-page-media">
-          <MediaFrame
-            ratio="16/10"
-            src="/images/room/family-spread.jpg"
-            alt="A family-style spread at Narwhal Thai Table in Huntington Beach — tom yum seafood hot pot, crying tiger, orange chicken, morning glory and Thai iced tea"
-            sizes="(max-width: 900px) 100vw, 60vw"
-          />
-          {/* 16/15 next to a 16/10 frame at 1.5fr:1fr — same rendered height. */}
-          <MediaFrame
-            ratio="16/15"
-            src="/images/room/storefront.jpg"
-            alt="The Narwhal Thai Table storefront on Beach Blvd at dusk, string lights over the patio"
-            sizes="(max-width: 900px) 100vw, 40vw"
-          />
-        </div>
+      <Container narrow>
+        <SectionHead
+          align="left"
+          as="h1"
+          size="lg"
+          eyebrow="Our Story"
+          title={<>Three siblings. <em>One table.</em></>}
+          lede={
+            <>
+              We are Aileen, Annie and AK — a Thai family with thirty years of restaurant life between
+              us, and one small dining room on Beach Boulevard where we cook the food we grew up eating.
+            </>
+          }
+        />
+      </Container>
 
-        <div className="guide-prose">
+      {/* The photo pair breaks out to the full column between the narrow intro and the narrow story. */}
+      <Container className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-[1.5fr_1fr]">
+        <MediaFrame
+          ratio="16/10"
+          src="/images/room/family-spread.jpg"
+          alt="A family-style spread at Narwhal Thai Table in Huntington Beach — tom yum seafood hot pot, crying tiger, orange chicken, morning glory and Thai iced tea"
+          sizes="(max-width: 900px) 100vw, 60vw"
+          className="border border-brass/20 shadow-card"
+        />
+        {/* 16/15 next to a 16/10 frame at 1.5fr:1fr — same rendered height. */}
+        <MediaFrame
+          ratio="16/15"
+          src="/images/room/storefront.jpg"
+          alt="The Narwhal Thai Table storefront on Beach Blvd at dusk, string lights over the patio"
+          sizes="(max-width: 900px) 100vw, 40vw"
+          className="border border-brass/20 shadow-card"
+        />
+      </Container>
+
+      <Container narrow className="mt-16 lg:mt-24">
+        <div className="prose-nt">
           <h2>How this table <em>came to be</em></h2>
           <p>
             For years, the corner of Beach Boulevard and Garfield had a neighborhood Thai restaurant
@@ -172,37 +198,51 @@ export default function AboutPage() {
             <Link href="/thai-food-orange-county">best Thai food in Orange County</Link>.
           </p>
         </div>
+      </Container>
 
-        <div className="fact-list" aria-labelledby="fact-list-title">
-          <h2 id="fact-list-title">The short version, <em>for the record</em></h2>
-          <dl>
+      {/* The fact sheet — every owner-confirmed fact in one crawlable table. */}
+      <Container narrow className="mt-16 lg:mt-20">
+        <div aria-labelledby="fact-list-title" className={glassCard}>
+          <h2 id="fact-list-title" className={blockTitle}>The short version, <em>for the record</em></h2>
+          <dl className={cn('mt-7 border-t border-cream/10', inlineLinks)}>
             {FACTS.map((f) => (
-              <div className="fact-row" key={f.k}>
-                <dt>{f.k}</dt>
-                <dd>{f.v}</dd>
+              <div key={f.k} className="grid gap-x-6 gap-y-1 border-b border-cream/10 py-3 sm:grid-cols-[180px_1fr]">
+                <dt className="font-sans text-[10.5px] font-medium uppercase tracking-[0.22em] text-brass-light sm:pt-1">{f.k}</dt>
+                <dd className="text-[15.5px] leading-[1.65] text-cream/80">{f.v}</dd>
               </div>
             ))}
           </dl>
         </div>
+      </Container>
 
-        <div className="guide-prose" style={{ marginTop: 56 }}>
+      <Container narrow className="mt-16 lg:mt-20">
+        <div className="prose-nt">
           <h2>Timeline</h2>
-          <ul>
-            <li><strong>Before 2026 —</strong> Thai Gulf Restaurant serves the neighborhood at 19072 Beach Blvd.</li>
-            <li><strong>July 2026 —</strong> Our family buys the business and renames it Narwhal Thai Table. New recipes, new kitchen habits, same address.</li>
-            <li><strong>Sunday, August 9, 2026 —</strong> Soft opening. Open every day since.</li>
-            <li><strong>Late August 2026 —</strong> Weekday <Link href="/lunch">lunch specials</Link> begin, Monday–Friday from $11.99.</li>
-            <li><strong>Coming up —</strong> The grand opening, with the chef&apos;s introduction. Follow{' '}
-              <a href="https://www.instagram.com/narwhalthaitablehb/" target="_blank" rel="noopener noreferrer">@narwhalthaitablehb</a> so you don&apos;t miss it.</li>
-          </ul>
-
-          <div className="guide-cta">
-            <Link href="/menu" className="btn-primary">See the menu</Link>
-            <Link href="/contact/reservation" className="btn-secondary">Save a seat</Link>
-            <a href={DIRECTIONS_URL} target="_blank" rel="noopener" className="btn-secondary">Get directions</a>
-          </div>
         </div>
-      </div>
-    </section>
+        {/* Vertical timeline: a brass rail with one dot per entry. Kept outside
+            `.prose-nt` so the list is ours to style (prose lists are bulleted). */}
+        <ul
+          className={cn(
+            'mt-8 border-l border-brass/30 pl-7 text-[17px] leading-[1.75] text-cream/80 sm:pl-9',
+            '[&_strong]:font-semibold [&_strong]:text-cream',
+            inlineLinks,
+          )}
+        >
+          <li className={timelineItem}><strong>Before 2026 —</strong> Thai Gulf Restaurant serves the neighborhood at 19072 Beach Blvd.</li>
+          <li className={timelineItem}><strong>July 2026 —</strong> Our family buys the business and renames it Narwhal Thai Table. New recipes, new kitchen habits, same address.</li>
+          <li className={timelineItem}><strong>Sunday, August 9, 2026 —</strong> Soft opening. Open every day since.</li>
+          <li className={timelineItem}><strong>Late August 2026 —</strong> Weekday <Link href="/lunch">lunch specials</Link> begin, Monday–Friday from $11.99.</li>
+          <li className={timelineItem}><strong>Coming up —</strong> The grand opening, with the chef&apos;s introduction. Follow{' '}
+            <a href="https://www.instagram.com/narwhalthaitablehb/" target="_blank" rel="noopener noreferrer">@narwhalthaitablehb</a> so you don&apos;t miss it.</li>
+        </ul>
+
+        {/* Reserve + directions already live in the phone action bar — hide those two there. */}
+        <div className="mt-14 flex flex-wrap items-center gap-3 border-t border-cream/10 pt-10">
+          <Button href="/menu" variant="primary" arrow>See the menu</Button>
+          <Button href="/contact/reservation" variant="secondary" className="max-[760px]:hidden">Save a seat</Button>
+          <Button href={DIRECTIONS_URL} variant="secondary" target="_blank" rel="noopener" className="max-[760px]:hidden">Get directions</Button>
+        </div>
+      </Container>
+    </Section>
   );
 }
