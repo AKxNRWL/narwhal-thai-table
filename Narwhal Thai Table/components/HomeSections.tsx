@@ -186,16 +186,21 @@ export function MenuPreviewSection() {
   // Prefer signature dishes we actually have photography for, so the preview
   // grid is all real plates (never a wall of placeholders). Falls back to the
   // plain signature list if fewer than six have photos yet.
-  const allSignatures = DISHES.filter(d => d.signature);
-  const photographed = allSignatures.filter(d => d.image?.src ?? getDishImage(d.slug));
-  // Owner-curated (8 Sep 2026): the Panang Dino Rib photo leads the grid as the
-  // feature tile and the Narwhal Chicken Wings tile steps out of the home
-  // preview (it stays on /menu). Everything else keeps the signature order.
-  const HOME_LEAD = 'panang-dino-rib';
-  const HOME_SKIP = new Set(['narwhal-chicken-wings']);
-  const lead = DISHES.find(d => d.slug === HOME_LEAD);
-  const pool = (photographed.length >= 6 ? photographed : allSignatures).filter(d => d.slug !== HOME_LEAD && !HOME_SKIP.has(d.slug));
-  const signatures = [...(lead ? [lead] : []), ...pool].slice(0, 6);
+  // Owner-curated "recommended plates" (8 Sep 2026) — this exact order; the
+  // first one is the feature tile. Edit HOME_PICKS to change the grid. Any
+  // slug that doesn't exist is skipped and the list is topped up from the
+  // photographed signature dishes so the grid always has six plates.
+  const HOME_PICKS = [
+    'panang-dino-rib',
+    'crying-tiger',
+    'tom-kha-seafood',
+    'tom-yum-seafood',
+    'narwhal-garlic-beef',
+    'spicy-basil-dino-rib',
+  ];
+  const picked = HOME_PICKS.map(slug => DISHES.find(d => d.slug === slug)).filter((d): d is (typeof DISHES)[number] => Boolean(d));
+  const photographed = DISHES.filter(d => d.signature && (d.image?.src ?? getDishImage(d.slug)) && !picked.includes(d));
+  const signatures = [...picked, ...photographed].slice(0, 6);
   return (
     <Section id="menu">
       <Container>
@@ -203,7 +208,7 @@ export function MenuPreviewSection() {
           <SectionHead
             eyebrow="What's Cooking"
             title={<>Fresh isn&apos;t a claim here. <em>It&apos;s a schedule</em>.</>}
-            lede="Nothing at this table is made ahead and nothing waits under a lamp — every plate begins when you ask for it. These are the house signatures; the full menu, thirteen categories deep, has a page of its own."
+            lede="Nothing at this table is made ahead and nothing waits under a lamp — every plate begins when you ask for it. These are the plates we'd point you to first; the full menu, thirteen categories deep, has a page of its own."
           />
         </FadeUp>
 
