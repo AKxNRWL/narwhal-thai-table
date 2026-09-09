@@ -22,11 +22,12 @@ export default function HomePage() {
   return (
     <>
       <Hero media={heroMedia} />
-      {/* Signature dishes straight after the hero — owner, 7 Sep 2026: "เอาเมนูมาอยู่รองจาก hero". */}
+      {/* "From the kitchen" — the running menu straight after the hero (owner, 8 Sep 2026:
+          "เอาเมนูที่วิ่งได้ขึ้นไปรองจาก Hero"). */}
+      <PhotoMarquee />
+      {/* Recommended plates — owner-curated grid (7 Sep: "เอาเมนูมาอยู่รองจาก hero"). */}
       <MenuPreviewSection />
       <StorySection />
-      {/* "From the kitchen" — two counter-scrolling rows of every photographed plate. */}
-      <PhotoMarquee />
       {SHOW_CHEF && <ChefSection />}
       {/* Weekday Lunch Specials — was first under the hero (2 Sep); owner moved it down
           on 7 Sep ("เอาลงไปข้างล่าง"). The hero pill still jumps to #lunch-specials. */}
