@@ -73,7 +73,7 @@ export function PromoCardView({
   const bodyId = preview ? 'promo-preview-body' : 'promo-body';
   return (
     <div
-      className="promo-card"
+      className="promo-card" data-lenis-prevent
       role={preview ? undefined : 'dialog'}
       aria-modal={preview ? undefined : true}
       aria-labelledby={titleId}

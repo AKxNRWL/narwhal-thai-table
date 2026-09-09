@@ -7,6 +7,8 @@ import { LUNCH } from '@/lib/lunchPhotos';
 import Button, { Arrow } from '@/components/ui/Button';
 import Particles from '@/components/fx/Particles';
 import Ripple from '@/components/fx/Ripple';
+import Tilt from '@/components/fx/Tilt';
+import CircularText from '@/components/fx/CircularText';
 import { cn } from '@/lib/cn';
 
 /**
@@ -26,14 +28,22 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
+  const spotRef = useRef<HTMLDivElement>(null);
+
+  // Spotlight: a soft brass light follows the pointer across the hero.
+  const onSpot = (e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType !== 'mouse' || !spotRef.current) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    spotRef.current.style.setProperty('--sx', `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
+    spotRef.current.style.setProperty('--sy', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
+  };
 
   // Parallax: the placemat art scrolls at ~15% of the page speed (desktop
-  // pointer devices only, never for reduced-motion users). Cheap: one rAF
-  // per scroll event, transform-only.
+  // only). Cheap: one rAF per scroll event, transform-only.
   useEffect(() => {
     const el = artRef.current;
     if (!el) return;
-    const mq = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)');
+    const mq = window.matchMedia('(min-width: 1024px)');
     if (!mq.matches) return;
     let raf = 0;
     const onScroll = () => {
@@ -72,6 +82,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
   return (
     <section
       aria-labelledby="hero-title"
+      onPointerMove={onSpot}
       className="relative isolate flex min-h-[calc(100svh-var(--cs-ticker-h))] flex-col justify-end overflow-hidden bg-[#0F2034] pt-[calc(var(--cs-ticker-h)+96px)] lg:justify-center"
     >
       {/* z0 — animated gradient fallback under the media */}
@@ -98,7 +109,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             className={cn(
               mediaCls,
               'object-[50%_50%] lg:object-[50%_62%]',
-              'motion-safe:lg:animate-drift motion-safe:lg:[transform-origin:60%_50%]',
+              'lg:animate-drift lg:[transform-origin:60%_50%]',
             )}
             src={`${ART}/hero-night-1600.jpg`}
             srcSet={`${ART}/hero-night-1600.jpg 1600w, ${ART}/hero-night-2560.jpg 2560w`}
@@ -144,17 +155,18 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
       />
 
       {/* z1 — drifting brass embers over the lanterns (desktop-weight only) */}
-      <Particles className="z-[1] hidden sm:block" quantity={60} />
+      <Particles className="z-[1]" quantity={70} />
+      <div ref={spotRef} aria-hidden="true" className="hero-spot pointer-events-none absolute inset-0 z-[1] hidden lg:block" />
 
       {/* z2 — content */}
       <div className="relative z-[2] mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-24 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:px-12 lg:pb-28 lg:pt-6">
         <div className="max-w-2xl">
           <span
-            className="inline-flex items-center gap-3 font-sans text-[11px] font-medium uppercase tracking-[0.34em] text-brass-light motion-safe:animate-breathe"
+            className="inline-flex items-center gap-3 font-sans text-[11px] font-medium uppercase tracking-[0.34em] text-brass-light"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) both' }}
           >
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light shadow-[0_0_12px_rgba(227,197,129,0.9)]" />
-            Now Open · Every Day
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light shadow-[0_0_12px_rgba(227,197,129,0.9)] animate-pulse-dot" />
+            <span className="shiny-text">Now Open · Every Day</span>
           </span>
 
           {/* Lunch Specials pill — owner (2 Sep 2026): the weekday deal must be on
@@ -164,7 +176,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
               href="#lunch-specials"
               className="group inline-flex items-center gap-2.5 rounded-full border border-brass/40 bg-navy-deep/55 py-2 pl-3 pr-4 font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-cream backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/75"
             >
-              <span aria-hidden="true" className="size-2 rounded-full bg-brass motion-safe:animate-pulse-dot" />
+              <span aria-hidden="true" className="size-2 rounded-full bg-brass animate-pulse-dot" />
               Weekday Lunch Specials <b className="font-semibold text-brass-light">from {LUNCH.fromPrice}</b>
               <Arrow className="text-brass-light" />
             </a>
@@ -174,10 +186,10 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             id="hero-title"
             className="mt-7 font-display text-[clamp(44px,8.2vw,96px)] font-medium leading-[0.96] tracking-[-0.025em] text-cream text-balance [text-shadow:0_2px_24px_rgba(6,18,31,0.6)]"
           >
-            <Words text="From Siam’s royal court" />
+            <Words text="Thai cooking is an art." />
             <br />
-            <em className="font-serif font-normal italic text-brass-light">
-              <Words text="to Huntington Beach" start={4} />
+            <em className="text-gold font-serif font-normal italic [text-shadow:none]">
+              <Words text="Come see the exhibition" start={4} />
             </em>
             <span className="word-in" style={{ animationDelay: '0.62s' }}>.</span>
           </h1>
@@ -186,18 +198,18 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.24s both' }}
           >
-            Recipes born in Thailand&apos;s royal-court tradition, carried by three siblings with thirty years of restaurant life — and cooked fresh, plate by plate, on Beach Boulevard.{' '}
-            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">The table is set, Huntington Beach.</strong>{' '}
-            Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
+            Every plate leaves our kitchen the way a painting leaves a studio — composed by hand, in the moment, never quite the same twice. Royal-court Thai recipes, carried by three siblings with thirty years of restaurant life, brushed onto the plate on Beach Boulevard.{' '}
+            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">The gallery is open, Huntington Beach.</strong>{' '}
+            Every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
             {ORDER_ONLINE_URL && (
-              <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow>
+              <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow data-magnetic>
                 Order Online
               </Button>
             )}
-            <Button href="/menu" variant={ORDER_ONLINE_URL ? 'secondary' : 'primary'} size="lg" arrow>
+            <Button href="/menu" variant={ORDER_ONLINE_URL ? 'secondary' : 'primary'} size="lg" arrow data-magnetic>
               Explore the Menu
             </Button>
             {/* Hidden on phones — the MobileActionBar carries Reserve there. */}
@@ -209,10 +221,12 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
 
         {/* The narwhal medallion — glass card; tap/hover makes the whale jump */}
         <div className="hidden justify-self-end lg:block" style={{ animation: 'heroIn 1s var(--ease-out-soft) 0.3s both' }}>
+          <Tilt max={9} className="rounded-[28px]">
           <div className="relative w-[340px] rounded-[28px] border border-brass/30 bg-navy-deep/40 p-9 text-center shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)] backdrop-blur-xl xl:w-[380px]">
             <div aria-hidden="true" className="pointer-events-none absolute inset-3 rounded-[20px] border border-brass/20" />
             <div className="relative">
             <Ripple className="-top-6 h-[280px]" baseSize={240} step={60} circles={4} />
+            <CircularText size={300} className="top-[110px] xl:top-[120px]" />
             <button
               type="button"
               className="ornament-narwhal relative z-[1] mx-auto mb-6 block size-[220px] cursor-pointer rounded-full border border-brass/90 bg-[radial-gradient(circle_at_50%_42%,#FBF6EA_0%,#F7F0E1_72%)] p-0 shadow-[0_0_0_8px_rgba(247,240,225,0.06),0_30px_60px_-30px_rgba(0,0,0,0.8)] transition-transform duration-500 hover:scale-[1.04] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-brass xl:size-[240px]"
@@ -233,6 +247,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             <div aria-hidden="true" className="mx-auto my-4 h-px w-12 bg-brass" />
             <div className="font-sans text-[10px] font-medium uppercase tracking-[0.34em] text-brass-light">Thai Table · Est. 2026</div>
           </div>
+          </Tilt>
         </div>
       </div>
 
@@ -242,7 +257,7 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
         className="absolute bottom-7 left-1/2 z-[2] hidden -translate-x-1/2 flex-col items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55 lg:flex"
       >
         Scroll
-        <span className="block h-10 w-px origin-top bg-brass motion-safe:animate-scroll-cue" />
+        <span className="block h-10 w-px origin-top bg-brass animate-scroll-cue" />
       </div>
     </section>
   );

@@ -143,7 +143,8 @@ export default function Nav() {
                 href={ORDER_ONLINE_URL}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center rounded-full bg-brass px-5 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-brass-light hover:shadow-[0_14px_30px_-12px_rgba(200,162,78,0.8)]"
+                data-magnetic
+                className="btn-shine inline-flex items-center rounded-full bg-brass px-5 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-brass-light hover:shadow-[0_14px_30px_-12px_rgba(200,162,78,0.8)]"
               >
                 Order Online
               </a>

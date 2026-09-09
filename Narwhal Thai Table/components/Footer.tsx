@@ -27,7 +27,14 @@ export default function Footer() {
     <footer className="relative isolate overflow-hidden border-t border-brass/15 bg-navy-deep">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(200,162,78,0.12),transparent_70%)]" />
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+        {/* Giant outlined wordmark — pure decoration, the real brand line is below. */}
+        <div
+          aria-hidden="true"
+          className="wordmark pointer-events-none -mb-6 select-none whitespace-nowrap font-display text-[clamp(72px,15.5vw,236px)] font-medium leading-[0.85] tracking-[-0.03em] sm:-mb-10"
+        >
+          Narwhal
+        </div>
+        <div className="grid gap-12 border-t border-cream/10 pt-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
           {/* brand */}
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-3">

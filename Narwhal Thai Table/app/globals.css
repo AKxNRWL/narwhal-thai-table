@@ -109,7 +109,10 @@
 
 /* ---------------- base ---------------- */
 @layer base {
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: auto; }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
   body {
     font-family: var(--font-sans);
     background: var(--navy-deep);
@@ -163,13 +166,10 @@
 .fade-up.stagger.visible > *:nth-child(4) { transition-delay: 0.24s; }
 .fade-up.stagger.visible > *:nth-child(5) { transition-delay: 0.32s; }
 .fade-up.stagger.visible > *:nth-child(6) { transition-delay: 0.40s; }
-@media (prefers-reduced-motion: reduce) {
-  .fade-up, .fade-up.stagger > * { opacity: 1; transform: none; filter: none; transition: none; }
-}
 
 /* ---------------- free "wow" effects (components/fx/*) ----------------
    Magic UI / Aceternity-style pieces rebuilt in plain CSS so they cost no
-   extra JavaScript. All looping motion is gated behind prefers-reduced-motion. */
+   extra JavaScript. Motion always on (owner's call, Sep 8 2026) — no reduced-motion gates. */
 
 /* cursor spotlight on glass cards — CardGlow.tsx feeds --mx/--my/--glow-o */
 .glow-card { --mx: 50%; --my: 50%; --glow-o: 0; }
@@ -213,12 +213,6 @@
 }
 .btn-shine:hover::after { transform: translateX(130%); transition: transform 0.75s ease; }
 
-@media (prefers-reduced-motion: reduce) {
-  .border-beam, .ripple-ring { animation: none; }
-  .word-in { animation: none; opacity: 1; filter: none; transform: none; }
-  .btn-shine::after { display: none; }
-  .glow-card::before, .glow-card::after { display: none; }
-}
 
 /* ---------------- hero narwhal medallion (components/Hero.tsx) ----------------
    The narwhal is a <button>, so hover / focus / tap all restart the jump. */
@@ -253,10 +247,6 @@
   0%, 100% { transform: scale(1); opacity: 0.8; }
   50% { transform: scale(1.4); opacity: 1; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .ornament-narwhal .nm-whale, .ornament-narwhal .nm-waves, .ornament-narwhal .nm-spark { animation: none !important; }
-  .motion-safe-only { animation: none !important; }
-}
 
 /* ---------------- prose blocks (guides / about / press) ----------------
    Long-form copy keeps semantic HTML; this gives it rhythm without a class
@@ -288,6 +278,72 @@
 .faq-item[open] > summary .faq-plus { transform: rotate(45deg); }
 .faq-item[open] > summary { color: var(--brass-light); }
 
+
+/* 3D tilt for glass cards — CardGlow.tsx writes --rx/--ry (Aceternity 3D card) */
+.glow-card { transform: perspective(1100px) rotateY(var(--rx, 0deg)) rotateX(var(--ry, 0deg)); transform-style: preserve-3d; }
+
+/* gold gradient text with a slow shimmer (Magic UI AnimatedGradientText) */
+.text-gold, .heading-gold em {
+  background: linear-gradient(110deg, #C8A24E 0%, #F4E2AE 30%, #E3C581 48%, #C8A24E 62%, #A8843A 80%, #F1DDA0 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  animation: shine-text 7s linear infinite;
+}
+@keyframes shine-text { to { background-position: 220% center; } }
+
+/* shiny eyebrow text — a light sweep over small caps (Magic UI AnimatedShinyText) */
+.shiny-text {
+  background: linear-gradient(100deg, rgba(227,197,129,0.75) 40%, #FFF6DC 50%, rgba(227,197,129,0.75) 60%);
+  background-size: 250% auto;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  animation: shiny-sweep 4.5s ease-in-out infinite;
+}
+@keyframes shiny-sweep { 0% { background-position: 120% center; } 100% { background-position: -120% center; } }
+
+/* route transition (app/template.tsx) */
+.page-in { animation: page-in 0.75s var(--ease-out-soft) both; }
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(14px); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* infinite marquee track (components/fx/Marquee.tsx) */
+.marquee-track { animation: marquee var(--duration, 60s) linear infinite; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(calc(-100% - var(--gap, 20px))); } }
+
+/* rotating circular text (components/fx/CircularText.tsx) */
+.spin-slow { animation: spin-slow 40s linear infinite; transform-origin: 50% 50%; }
+@keyframes spin-slow { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* hero spotlight that follows the pointer (Aceternity Spotlight) */
+.hero-spot {
+  background: radial-gradient(560px circle at var(--sx, 30%) var(--sy, 40%), rgba(227, 197, 129, 0.16), rgba(227, 197, 129, 0.05) 35%, transparent 65%);
+  transition: opacity 0.6s ease;
+}
+
+/* aurora wash behind sections (Aceternity Aurora, brass edition) */
+.aurora {
+  background:
+    radial-gradient(40% 55% at 20% 20%, rgba(200, 162, 78, 0.18), transparent 70%),
+    radial-gradient(35% 45% at 80% 30%, rgba(21, 47, 74, 0.9), transparent 70%),
+    radial-gradient(45% 55% at 55% 85%, rgba(156, 122, 51, 0.16), transparent 70%);
+  filter: blur(40px);
+  animation: aurora-drift 22s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  0% { transform: translate3d(-3%, -2%, 0) scale(1); }
+  100% { transform: translate3d(3%, 4%, 0) scale(1.12); }
+}
+
+/* giant outlined wordmark in the footer */
+.wordmark {
+  -webkit-text-stroke: 1px rgba(227, 197, 129, 0.28);
+  color: transparent;
+  background: linear-gradient(180deg, rgba(227, 197, 129, 0.12), rgba(227, 197, 129, 0));
+  -webkit-background-clip: text; background-clip: text;
+}
 
 /* ============================================================
    RETAINED BLOCKS — shared widgets (verbatim from the pre-Tailwind stylesheet)
@@ -347,9 +403,6 @@
   .cs-ticker-item + .cs-ticker-item::before{font-size:17px;}
   .cs-ticker-track{animation-duration:36s;}
 }
-@media (prefers-reduced-motion: reduce){
-  .cs-ticker-track{animation:none;}
-}
 
 
 /* ---- retained: chef bio collapsible (626-673) ----
@@ -398,9 +451,7 @@
 .chef-bio-toggle:focus-visible{
   box-shadow:0 0 0 3px rgba(176,141,60,0.25);
 }
-@media(prefers-reduced-motion:reduce){
-  .chef-bio-collapsible{transition:none;}
-}
+
 
 /* ---- retained: nara chat widget (1353-1466) ----
 /* ===== Nara — AI host chat widget ===== */
@@ -516,7 +567,6 @@
 /* NOTE: the file previously ended mid-token ("@media (prefers-reduc") — a
    truncated trailing at-rule that parsers treated as a no-op. Closed off
    here so the rules added below are not swallowed into a dangling prelude. */
-@media (prefers-reduced-motion: reduce){}
 
 /* ---- retained: promo + carousel (1741-1913) ----
 /* ===== PROMO POP-UP (owner-managed, /stats → "ป้ายโปรโมชั่น") =====
@@ -677,11 +727,6 @@
   .promo-title{ font-size:24px; }
   .promo-foot{ margin-top:16px; }
   .promo-cta{ flex:1; justify-content:center; }
-}
-@media (prefers-reduced-motion: reduce){
-  .promo-card, .promo-backdrop{ animation:none; }
-  .pc-track{ scroll-behavior:auto; }
-  .pc-dot i{ transition:none; }
 }
 
 /* /stats — promo editor layout + inline preview of the same card */

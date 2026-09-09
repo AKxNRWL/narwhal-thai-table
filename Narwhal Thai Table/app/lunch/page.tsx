@@ -164,7 +164,7 @@ export default function LunchPage() {
 
           {/* Hours pill — the one line a weekday office crowd is scanning for. */}
           <p className="mx-auto mt-8 w-fit max-w-full rounded-full border border-brass/25 bg-white/[0.035] px-5 py-3 text-center font-sans text-[13.5px] leading-relaxed text-cream/75 shadow-card backdrop-blur-md sm:px-6">
-            <span aria-hidden="true" className="mr-2.5 inline-block size-1.5 rounded-full bg-brass-light align-middle motion-safe:animate-pulse-dot" />
+            <span aria-hidden="true" className="mr-2.5 inline-block size-1.5 rounded-full bg-brass-light align-middle animate-pulse-dot" />
             Mon–Fri 11:30 AM – 3:00 PM · dine in or take it to go ·{' '}
             <a href={DIRECTIONS_URL} target="_blank" rel="noopener" className={inlineLink}>
               {RESTAURANT.address.street}, {RESTAURANT.address.city} →

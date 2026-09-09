@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import LunchSpecials from '@/components/LunchSpecials';
+import PhotoMarquee from '@/components/PhotoMarquee';
 import { getHeroMedia } from '@/lib/media';
 import { SHOW_CHEF } from '@/lib/site';
 import {
@@ -21,7 +22,10 @@ export default function HomePage() {
   return (
     <>
       <Hero media={heroMedia} />
-      {/* Signature dishes straight after the hero — owner, 7 Sep 2026: "เอาเมนูมาอยู่รองจาก hero". */}
+      {/* "From the kitchen" — the running menu straight after the hero (owner, 8 Sep 2026:
+          "เอาเมนูที่วิ่งได้ขึ้นไปรองจาก Hero"). */}
+      <PhotoMarquee />
+      {/* Recommended plates — owner-curated grid (7 Sep: "เอาเมนูมาอยู่รองจาก hero"). */}
       <MenuPreviewSection />
       <StorySection />
       {SHOW_CHEF && <ChefSection />}

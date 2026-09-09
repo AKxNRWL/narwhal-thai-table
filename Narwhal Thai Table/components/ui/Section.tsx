@@ -22,7 +22,7 @@ export function Container({
 /* ------------------------------------------------------------------ */
 type SectionProps<T extends ElementType = 'section'> = {
   as?: T;
-  tone?: 'deep' | 'navy' | 'glow';
+  tone?: 'deep' | 'navy' | 'glow' | 'aurora';
   /** first section under the fixed nav needs top clearance */
   first?: boolean;
   className?: string;
@@ -44,13 +44,15 @@ export function Section<T extends ElementType = 'section'>({
         'relative isolate py-20 sm:py-24 lg:py-32',
         first && 'pt-[calc(var(--cs-ticker-h)+112px)] sm:pt-[calc(var(--cs-ticker-h)+128px)]',
         tone === 'navy' && 'bg-navy',
-        tone === 'glow' &&
+        (tone === 'glow' || tone === 'aurora') &&
           'before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-[420px] ' +
           'before:bg-[radial-gradient(60%_60%_at_50%_0%,rgba(200,162,78,0.14),transparent_70%)]',
+        tone === 'aurora' && 'overflow-hidden',
         className,
       )}
       {...rest}
     >
+      {tone === 'aurora' && <div aria-hidden="true" className="aurora pointer-events-none absolute -inset-[10%] -z-10 opacity-80" />}
       {children}
     </Tag>
   );
@@ -69,7 +71,7 @@ export function Eyebrow({ className, children, ...rest }: ComponentPropsWithoutR
       )}
       {...rest}
     >
-      {children}
+      <span className="shiny-text">{children}</span>
     </span>
   );
 }
@@ -98,7 +100,7 @@ export function Heading({
   return (
     <Tag
       className={cn(
-        'font-display font-medium text-cream text-balance',
+        'heading-gold font-display font-medium text-cream text-balance',
         sizes[size],
         '[&_em]:font-serif [&_em]:font-normal [&_em]:italic [&_em]:text-brass-light',
         className,
