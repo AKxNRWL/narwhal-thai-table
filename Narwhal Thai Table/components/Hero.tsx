@@ -169,7 +169,9 @@ export default function Hero({
 
       {/* z2 — content */}
       <div className="relative z-[2] mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-24 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:px-12 lg:pb-28 lg:pt-6">
-        <div className="max-w-2xl">
+        {/* min-w-0: a grid item defaults to min-width:auto, so a wide inline
+            chip would stretch the column past the phone's viewport */}
+        <div className="min-w-0 max-w-2xl">
           <span
             className="inline-flex items-center gap-3 font-sans text-[11px] font-medium uppercase tracking-[0.34em] text-brass-light"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) both' }}
@@ -202,7 +204,7 @@ export default function Hero({
                 )}
                 <span className="flex min-w-0 flex-col leading-tight">
                   <span className="font-sans text-[10px] font-medium uppercase tracking-[0.22em] text-brass-light">Signature · Poseidon</span>
-                  <span className="truncate font-display text-[14px] font-medium tracking-[-0.01em] sm:text-[15px]">
+                  <span className="font-display text-[14px] font-medium tracking-[-0.01em] text-balance sm:text-[15px]">
                     {featured.name}
                     {featured.price && <b className="ml-2 font-sans text-[12px] font-semibold text-brass-light">{featured.price}</b>}
                   </span>
