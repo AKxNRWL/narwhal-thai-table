@@ -31,6 +31,8 @@ export default function PhotoMarquee() {
   return (
     <section aria-labelledby="kitchen-marquee-title" className="relative isolate overflow-hidden border-y border-cream/[0.06] bg-navy py-14 sm:py-20">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-[radial-gradient(50%_60%_at_50%_0%,rgba(200,162,78,0.14),transparent_70%)]" />
+      {/* the placemat pattern, whispered behind the running plates (art pass) */}
+      <div aria-hidden="true" className="art-texture" />
       <Container className="mb-10 flex flex-col items-center gap-4 text-center">
         <Eyebrow>From the kitchen</Eyebrow>
         <Heading as="h2" size="md" id="kitchen-marquee-title">
