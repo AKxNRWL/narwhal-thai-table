@@ -186,21 +186,23 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             id="hero-title"
             className="mt-7 font-display text-[clamp(44px,8.2vw,96px)] font-medium leading-[0.96] tracking-[-0.025em] text-cream text-balance [text-shadow:0_2px_24px_rgba(6,18,31,0.6)]"
           >
-            <Words text="Thai cooking is an art." />
+            {/* Owner (9 Sep 2026): keep the original headline; the "food as art"
+                idea lives in the paragraph as figurative language, never stated
+                outright. */}
+            <Words text="From Siam’s royal court" />
             <br />
             <em className="text-gold font-serif font-normal italic [text-shadow:none]">
-              <Words text="Come see the exhibition" start={4} />
+              <Words text="to Huntington Beach" start={4} />
             </em>
-            <span className="word-in" style={{ animationDelay: '0.62s' }}>.</span>
           </h1>
 
           <p
             className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.24s both' }}
           >
-            Every plate leaves our kitchen the way a painting leaves a studio — composed by hand, in the moment, never quite the same twice. Royal-court Thai recipes, carried by three siblings with thirty years of restaurant life, brushed onto the plate on Beach Boulevard.{' '}
-            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">The gallery is open, Huntington Beach.</strong>{' '}
-            Every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
+            Some kitchens cook. Ours paints — in chili, lime and coconut cream, one plate at a time. Recipes that once graced palace tables, carried across an ocean by three siblings with thirty years of restaurant life, now hung, still warm, on Beach Boulevard.{' '}
+            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">The table is set, Huntington Beach.</strong>{' '}
+            Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
