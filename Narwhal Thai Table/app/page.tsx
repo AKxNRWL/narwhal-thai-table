@@ -2,8 +2,18 @@ import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import LunchSpecials from '@/components/LunchSpecials';
 import PhotoMarquee from '@/components/PhotoMarquee';
-import { getHeroMedia } from '@/lib/media';
+import { getDishImage, getHeroMedia } from '@/lib/media';
+import { DISHES } from '@/lib/dishes';
 import { SHOW_CHEF } from '@/lib/site';
+
+/**
+ * The dish pinned at the very top of the hero (the chip above the headline).
+ * Owner, 9 Sep 2026: "เลิกเอา Lunch Special ขึ้นข้างหน้าสุด ให้เอาปลาราดพริกขึ้นแทน" —
+ * the weekday-lunch chip is retired; the whole fried pompano takes its place.
+ * Change the slug here to feature something else. Lunch Specials still have
+ * their own section further down.
+ */
+const HERO_FEATURED_SLUG = 'fried-whole-pompano';
 import {
   StorySection,
   ChefSection,
@@ -19,9 +29,13 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   const heroMedia = getHeroMedia();
+  const featuredDish = DISHES.find((d) => d.slug === HERO_FEATURED_SLUG);
+  const featured = featuredDish
+    ? { slug: featuredDish.slug, name: featuredDish.name, price: featuredDish.price, image: getDishImage(featuredDish.slug) }
+    : null;
   return (
     <>
-      <Hero media={heroMedia} />
+      <Hero media={heroMedia} featured={featured} />
       {/* "From the kitchen" — the running menu straight after the hero (owner, 8 Sep 2026:
           "เอาเมนูที่วิ่งได้ขึ้นไปรองจาก Hero"). */}
       <PhotoMarquee />

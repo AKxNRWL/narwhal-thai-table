@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
 import { ORDER_ONLINE_URL } from '@/lib/site';
-import { LUNCH } from '@/lib/lunchPhotos';
 import Button, { Arrow } from '@/components/ui/Button';
 import Particles from '@/components/fx/Particles';
 import Ripple from '@/components/fx/Ripple';
@@ -24,7 +24,16 @@ const ART = '/images/art';
 
 const mediaCls = 'absolute inset-0 z-0 h-full w-full object-cover';
 
-export default function Hero({ media = { video: null, image: null } }: { media?: HeroMedia }) {
+/** The dish pinned above the headline — resolved server-side in app/page.tsx. */
+export type HeroFeatured = { slug: string; name: string; price?: string; image: string | null };
+
+export default function Hero({
+  media = { video: null, image: null },
+  featured = null,
+}: {
+  media?: HeroMedia;
+  featured?: HeroFeatured | null;
+}) {
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
@@ -169,18 +178,39 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             <span className="shiny-text">Now Open · Every Day</span>
           </span>
 
-          {/* Lunch Specials pill — owner (2 Sep 2026): the weekday deal must be on
-              screen the moment the site opens, on every device. */}
-          <div className="mt-5" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.06s both' }}>
-            <a
-              href="#lunch-specials"
-              className="group inline-flex items-center gap-2.5 rounded-full border border-brass/40 bg-navy-deep/55 py-2 pl-3 pr-4 font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-cream backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/75"
-            >
-              <span aria-hidden="true" className="size-2 rounded-full bg-brass animate-pulse-dot" />
-              Weekday Lunch Specials <b className="font-semibold text-brass-light">from {LUNCH.fromPrice}</b>
-              <Arrow className="text-brass-light" />
-            </a>
-          </div>
+          {/* Featured-dish chip — owner (9 Sep 2026): the weekday-lunch pill that
+              sat here since 2 Sep is retired; the whole fried pompano takes the
+              spot (slug set in app/page.tsx). Photo thumb + name + price, links
+              to the dish story. */}
+          {featured && (
+            <div className="mt-5" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.06s both' }}>
+              <Link
+                href={`/menu/${featured.slug}`}
+                className="group inline-flex max-w-full items-center gap-3 rounded-full border border-brass/40 bg-navy-deep/55 py-1.5 pl-1.5 pr-4 text-cream backdrop-blur-md transition-[border-color,background-color,transform] duration-300 hover:border-brass-light hover:bg-navy-deep/75"
+              >
+                {featured.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- tiny decorative thumb, art-directed
+                  <img
+                    src={featured.image}
+                    alt=""
+                    width={44}
+                    height={44}
+                    className="size-11 shrink-0 rounded-full object-cover ring-1 ring-brass/60 shadow-[0_0_18px_rgba(200,162,78,0.35)] transition-transform duration-500 group-hover:scale-[1.06]"
+                  />
+                ) : (
+                  <span aria-hidden="true" className="ml-2 size-2 shrink-0 rounded-full bg-brass animate-pulse-dot" />
+                )}
+                <span className="flex min-w-0 flex-col leading-tight">
+                  <span className="font-sans text-[10px] font-medium uppercase tracking-[0.22em] text-brass-light">Signature · Poseidon</span>
+                  <span className="truncate font-display text-[14px] font-medium tracking-[-0.01em] sm:text-[15px]">
+                    {featured.name}
+                    {featured.price && <b className="ml-2 font-sans text-[12px] font-semibold text-brass-light">{featured.price}</b>}
+                  </span>
+                </span>
+                <Arrow className="shrink-0 text-brass-light" />
+              </Link>
+            </div>
+          )}
 
           <h1
             id="hero-title"
@@ -223,8 +253,8 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
           >
             — Aileen, Annie &amp; AK
           </p>
-          {/* Hours stay in the hero copy for search engines; the top ticker and
-              the lunch pill already carry them on phones, so hide there. */}
+          {/* Hours stay in the hero copy for search engines; the top ticker
+              already carries them on phones, so hide there. */}
           <p
             className="mt-3 max-w-xl font-sans text-[13px] leading-relaxed text-cream/65 max-[760px]:hidden"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.33s both' }}
