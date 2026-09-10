@@ -365,12 +365,13 @@ export function ExperienceSection() {
             the three pillars scroll past it (Aceternity "sticky scroll" feel). */}
         <div className="mt-12 grid gap-8 lg:mt-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
           <FadeUp className="lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)] lg:self-start">
+            {/* owner (9 Sep): "ไม่ค่อยชอบรูปครก" → the wok over open flame instead */}
             <ArtPanel
-              base="/images/art/spices"
+              base="/images/art/wok-fire"
               widths={[700, 1100]}
               ratio="3 / 4"
-              alt="Gold line-art still life of a Thai kitchen — granite mortar and pestle, lemongrass, galangal, makrut lime, chilies and coconut"
-              caption={<>Whole ingredients &middot; one mortar</>}
+              alt="Gold line-art of a Thai wok mid-toss over an open flame — shrimp, holy basil and chilies caught in the air"
+              caption={<>The wok isn&apos;t lit until you order</>}
               sizes="(max-width: 1024px) 100vw, 45vw"
             />
           </FadeUp>
