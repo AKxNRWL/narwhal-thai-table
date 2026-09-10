@@ -52,7 +52,7 @@ export default function HomePage() {
       <ThaiWaveDivider />
       <ArtBand base="/images/art/siam-to-hb" widths={[1400, 2400]} position="50% 55%" speed={0.16} height="h-[58vh] min-h-[380px] max-h-[760px]">
         <div className="flex flex-col items-center gap-4 px-6 text-center">
-          <Eyebrow>Our Story</Eyebrow>
+          <Eyebrow>Narwhal Thai Table</Eyebrow>
           <p className="max-w-2xl font-serif text-[clamp(20px,2.6vw,30px)] italic leading-snug text-cream [text-shadow:0_2px_24px_rgba(6,18,31,0.9)]">
             Three siblings, thirty years of restaurant life, one table on Beach Boulevard.
           </p>
