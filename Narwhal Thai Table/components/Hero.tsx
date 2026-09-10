@@ -191,8 +191,17 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
                 outright. */}
             <Words text="From Siam’s royal court" />
             <br />
-            <em className="text-gold font-serif font-normal italic [text-shadow:none]">
-              <Words text="to Huntington Beach" start={4} />
+            {/* The gold line animates as ONE block, not word by word: a
+                background-clip:text parent goes invisible in Chromium when its
+                children carry a filter/transform (the finished .word-in spans
+                keep `filter: blur(0px)`), which silently hid this line from
+                8–9 Sep 2026. Both animations must be declared together here —
+                .text-gold and .word-in each set the `animation` shorthand. */}
+            <em
+              className="text-gold word-in font-serif font-normal italic [text-shadow:none]"
+              style={{ animation: 'word-in 0.9s var(--ease-out-soft) 0.42s forwards, shine-text 7s linear infinite' }}
+            >
+              to Huntington Beach
             </em>
           </h1>
 
