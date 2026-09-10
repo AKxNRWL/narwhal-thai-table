@@ -10,8 +10,56 @@ import { Section, Container, SectionHead, Eyebrow, Heading, Tag, cardSurface } f
 import { cn } from '@/lib/cn';
 import NumberTicker from '@/components/fx/NumberTicker';
 import DotPattern from '@/components/fx/DotPattern';
+import GoldCorners from '@/components/fx/GoldCorners';
+import TextReveal from '@/components/fx/TextReveal';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
+
+/* Art pass (9 Sep 2026) — placemat-style artwork generated for the site
+   (public/images/art, Higgsfield, owner's placemat as the style reference).
+   Each ArtPanel is a framed painting: <picture> with webp + jpg renditions. */
+function ArtPanel({
+  base,
+  widths,
+  ratio,
+  alt,
+  className,
+  caption,
+  sizes = '(max-width: 1024px) 100vw, 40vw',
+}: {
+  base: string;
+  widths: [number, number];
+  ratio: string;
+  alt: string;
+  className?: string;
+  caption?: ReactNode;
+  sizes?: string;
+}) {
+  const [w0, w1] = widths;
+  return (
+    <figure className={cn('art-frame m-0 bg-navy-deep', className)} style={{ aspectRatio: ratio }}>
+      <picture>
+        <source type="image/webp" srcSet={`${base}-${w0}.webp ${w0}w, ${base}-${w1}.webp ${w1}w`} sizes={sizes} />
+        {/* eslint-disable-next-line @next/next/no-img-element -- multi-format artwork */}
+        <img
+          src={`${base}-${w1}.jpg`}
+          srcSet={`${base}-${w0}.jpg ${w0}w, ${base}-${w1}.jpg ${w1}w`}
+          sizes={sizes}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-out-soft hover:scale-[1.04]"
+        />
+      </picture>
+      <GoldCorners size={40} inset={14} />
+      {caption && (
+        <figcaption className="absolute inset-x-0 bottom-0 z-[1] bg-gradient-to-t from-navy-deep/95 via-navy-deep/60 to-transparent px-6 pb-5 pt-14 text-center font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
 
 /* Shared type ramp for the long-form paragraphs on this page. */
 const bodyText = 'text-[16.5px] leading-[1.75] text-cream/75';
@@ -50,7 +98,11 @@ export function StorySection() {
                 the old name (27 clicks / 216 impressions last quarter) and tells
                 Google the two entities at this address are one continuous story. */}
             <p>If this address feels familiar, it should. For years it was Thai Gulf — a neighborhood standby. Our family bought the business, hung a new name on the door, and made it our own: our recipes, our mortar, our welcome. If you got here looking for Thai Gulf — welcome back. The table is still here. <Link href="/about" className={cn('whitespace-nowrap', inlineLink)}>Read the whole story &rarr;</Link></p>
-            <p className="font-serif text-[18px] italic leading-relaxed text-brass">Because what we serve isn&apos;t just dinner. It&apos;s everything around it — the warmth, the welcome, the wanting you back.</p>
+            {/* scroll-linked word reveal (Magic UI "text reveal") on the closing line */}
+            <TextReveal
+              className="font-serif text-[19px] italic leading-relaxed text-brass-light sm:text-[21px]"
+              text="Because what we serve isn’t just dinner. It’s everything around it — the warmth, the welcome, the wanting you back."
+            />
           </div>
           <div className="mt-4 grid w-full grid-cols-3 gap-4 sm:gap-6">
             {STORY_STATS.map((s) => (
@@ -64,16 +116,17 @@ export function StorySection() {
           </div>
         </FadeUp>
 
-        {/* Monogram "seal" — sits left on wide screens, after the story on phones */}
-        <FadeUp className="lg:order-first">
-          <div className={cn(sealCard, 'min-h-[380px] lg:min-h-[560px]')}>
-            <div aria-hidden="true" className="pointer-events-none absolute inset-3 rounded-[calc(var(--radius-card)-8px)] border border-brass/15" />
-            <Eyebrow>Established</Eyebrow>
-            <div className="mt-6 font-display text-[clamp(40px,5vw,64px)] font-medium leading-none tracking-[0.08em] text-brass-light">MMXXVI</div>
-            <div className="mt-4 font-serif text-[120px] italic leading-none text-cream">N</div>
-            <div aria-hidden="true" className="my-7 h-px w-12 bg-brass" />
-            <div className="font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">Huntington Beach · CA</div>
-          </div>
+        {/* The royal-court painting — sits left on wide screens, after the story
+            on phones (art pass, 9 Sep 2026: replaces the MMXXVI monogram seal). */}
+        <FadeUp className="lg:order-first lg:self-start lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)]">
+          <ArtPanel
+            base="/images/art/royal-court"
+            widths={[1000, 1800]}
+            ratio="4 / 5"
+            alt="Gold line-art of a Thai royal-court banquet — tiered pedestal trays, lotus blossoms and candles under a palace gable"
+            caption={<>Established MMXXVI &middot; Huntington Beach</>}
+            className="[&_img]:object-[50%_40%]"
+          />
         </FadeUp>
       </Container>
     </Section>
@@ -308,7 +361,21 @@ export function ExperienceSection() {
             lede="Three things hold this house together. Thirty years of restaurant life taught them to us, and we'd rather stay small forever than compromise a single one."
           />
         </FadeUp>
-        <FadeUp stagger className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-3 lg:gap-8">
+        {/* Art pass: the mortar-and-herbs painting stays pinned on the left while
+            the three pillars scroll past it (Aceternity "sticky scroll" feel). */}
+        <div className="mt-12 grid gap-8 lg:mt-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+          <FadeUp className="lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)] lg:self-start">
+            {/* owner (9 Sep): "ไม่ค่อยชอบรูปครก" → the wok over open flame instead */}
+            <ArtPanel
+              base="/images/art/wok-fire"
+              widths={[700, 1100]}
+              ratio="3 / 4"
+              alt="Gold line-art of a Thai wok mid-toss over an open flame — shrimp, holy basil and chilies caught in the air"
+              caption={<>The wok isn&apos;t lit until you order</>}
+              sizes="(max-width: 1024px) 100vw, 45vw"
+            />
+          </FadeUp>
+        <FadeUp stagger className="grid gap-6 lg:gap-8">
           <div>
             <Pillar
               numeral="I."
@@ -358,6 +425,7 @@ export function ExperienceSection() {
             </Pillar>
           </div>
         </FadeUp>
+        </div>
       </Container>
     </Section>
   );

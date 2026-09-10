@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MediaFrame from '@/components/MediaFrame';
 import Lens from '@/components/fx/Lens';
+import ArtBand from '@/components/fx/ArtBand';
+import GoldCorners from '@/components/fx/GoldCorners';
 import Button from '@/components/ui/Button';
 import { Section, Container, Eyebrow, Heading, Tag } from '@/components/ui/Section';
 import { cn } from '@/lib/cn';
@@ -155,7 +157,9 @@ function DishDetail({ dish }: { dish: Dish }) {
               <MediaFrame ratio="4/5" ornament="inset"
                 src={`/images/dishes/${dish.slug}.jpg`} alt={dish.name} priority />
           */}
-          <div className="lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)] lg:self-start">
+          <div className="relative lg:sticky lg:top-[calc(var(--cs-ticker-h)+96px)] lg:self-start">
+            {/* brass kanok corners — the plate hangs like a framed painting (art pass) */}
+            <GoldCorners size={38} inset={10} opacity={0.9} />
             {/* Lens = hover magnifier on desktop (Magic UI-style); it only wraps real photos. */}
             <LensIf enabled={Boolean(photo)}>
               <MediaFrame
@@ -317,6 +321,17 @@ function DishDetail({ dish }: { dish: Dish }) {
           </div>
         </div>
       </Container>
+      {/* Poseidon plates close on the painted pompano (art pass, 9 Sep 2026). */}
+      {dish.category === 'seafood' && (
+        <ArtBand
+          base="/images/art/pompano"
+          widths={[900, 1600]}
+          position="50% 50%"
+          speed={0.12}
+          fade="both"
+          height="mt-16 h-[46vh] min-h-[300px] max-h-[560px] lg:mt-24"
+        />
+      )}
     </Section>
   );
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import MediaFrame from '@/components/MediaFrame';
+import ArtBand from '@/components/fx/ArtBand';
 import Button from '@/components/ui/Button';
 import { Section, Container, SectionHead } from '@/components/ui/Section';
 import { cn } from '@/lib/cn';
@@ -107,7 +108,19 @@ const timelineItem =
 
 export default function AboutPage() {
   return (
-    <Section first tone="glow">
+    <>
+    {/* Art pass (9 Sep 2026): the story opens on the Siam → Huntington Beach panorama. */}
+    <ArtBand
+      first
+      eager
+      base="/images/art/siam-to-hb"
+      widths={[1400, 2400]}
+      position="50% 60%"
+      speed={0.12}
+      fade="bottom"
+      height="h-[48vh] min-h-[320px] max-h-[620px]"
+    />
+    <Section tone="glow" className="pt-6 sm:pt-8 lg:pt-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }} />
 
       <Container narrow>
@@ -244,5 +257,6 @@ export default function AboutPage() {
         </div>
       </Container>
     </Section>
+    </>
   );
 }

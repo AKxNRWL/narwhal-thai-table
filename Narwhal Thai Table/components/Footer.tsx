@@ -26,6 +26,8 @@ export default function Footer() {
   return (
     <footer className="relative isolate overflow-hidden border-t border-brass/15 bg-navy-deep">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(200,162,78,0.12),transparent_70%)]" />
+      {/* placemat pattern behind the wordmark (art pass) */}
+      <div aria-hidden="true" className="art-texture [mask-image:linear-gradient(180deg,#000,transparent_70%)] [-webkit-mask-image:linear-gradient(180deg,#000,transparent_70%)]" />
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
         {/* Giant outlined wordmark — pure decoration, the real brand line is below. */}
         <div

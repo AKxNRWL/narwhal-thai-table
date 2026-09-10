@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import MenuTabs from '@/components/MenuTabs';
-import { Section, Container, SectionHead, Heading } from '@/components/ui/Section';
+import ArtBand from '@/components/fx/ArtBand';
+import { Section, Container, Eyebrow, Heading } from '@/components/ui/Section';
 import { cn } from '@/lib/cn';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
@@ -135,18 +136,36 @@ export default function MenuPage() {
     if (src) photos[d.slug] = src;
   }
   return (
-    <Section first tone="aurora">
+    <>
+      {/* Art pass (9 Sep 2026): the menu opens on the painted banquet table —
+          the placemat style, seen from above — with the page title set on it. */}
+      <ArtBand
+        first
+        eager
+        base="/images/art/banquet"
+        widths={[1400, 2400]}
+        position="50% 50%"
+        speed={0.12}
+        fade="bottom"
+        dim={0.18}
+        height="h-[64vh] min-h-[440px] max-h-[760px]"
+      >
+        <div className="flex max-w-3xl flex-col items-center gap-5 px-6 text-center">
+          <Eyebrow>The Menu</Eyebrow>
+          <Heading as="h1" size="lg" className="[text-shadow:0_2px_28px_rgba(6,18,31,0.95)]">
+            The full menu — <em className="[text-shadow:none]">tap a plate to hear its story</em>.
+          </Heading>
+        </div>
+      </ArtBand>
+    <Section tone="aurora" className="pt-10 sm:pt-12 lg:pt-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd()) }}
       />
       <Container>
-        <SectionHead
-          as="h1"
-          eyebrow="The Menu"
-          title={<>The full menu — <em>tap a plate to hear its story</em>.</>}
-          lede={<>Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe&apos;s history, how to eat it well, and what belongs beside it.</>}
-        />
+        <p className="mx-auto max-w-2xl text-center text-[16.5px] leading-[1.75] text-cream/75">
+          Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe&apos;s history, how to eat it well, and what belongs beside it.
+        </p>
         {/* Weekday lunch specials (launched late Aug 2026) live on their own page —
             this strip is the pointer for the 11:45-on-a-Tuesday visitor. */}
         <Link
@@ -173,5 +192,6 @@ export default function MenuPage() {
         <DishIndex />
       </Container>
     </Section>
+    </>
   );
 }
