@@ -196,16 +196,34 @@ export default function Hero({ media = { video: null, image: null } }: { media?:
             </em>
           </h1>
 
+          {/* A signed note from the siblings — owner-approved wording, 9 Sep 2026
+              ("เอาอันนี้ 1"): greeting first, the art is on the plate and in the
+              room around it, every guest loved and respected; SEO terms kept
+              (Thai restaurant · Beach Boulevard · Huntington Beach · royal-court
+              Thai recipes · made fresh). Do not paraphrase without the owner. */}
           <p
             className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.24s both' }}
           >
-            Some kitchens cook. Ours paints — in chili, lime and coconut cream, one plate at a time. Recipes that once graced palace tables, carried across an ocean by three siblings with thirty years of restaurant life, now hung, still warm, on Beach Boulevard.{' '}
-            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">The table is set, Huntington Beach.</strong>{' '}
+            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">Sawasdee, Huntington Beach — welcome to our table.</strong>{' '}
+            We’re Aileen, Annie and AK, three siblings who came to open a Thai restaurant on Beach Boulevard because cooking is the one art we never wanted to put down. Here, the art is on the plate — royal-court Thai recipes, made fresh for every order — and in everything around it: the string lights, the hum of the wok, the welcome at the door. And whoever you are, however you found us, you’re not a table number to us. You’re the reason the art exists.
+          </p>
+          <p
+            className="mt-4 font-sans text-[12px] font-medium uppercase tracking-[0.28em] text-brass-light"
+            style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.3s both' }}
+          >
+            — Aileen, Annie &amp; AK
+          </p>
+          {/* Hours stay in the hero copy for search engines; the top ticker and
+              the lunch pill already carry them on phones, so hide there. */}
+          <p
+            className="mt-3 max-w-xl font-sans text-[13px] leading-relaxed text-cream/65 max-[760px]:hidden"
+            style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.33s both' }}
+          >
             Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
+          <div className="mt-8 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
             {ORDER_ONLINE_URL && (
               <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow data-magnetic>
                 Order Online

@@ -37,7 +37,7 @@ export default function PhotoMarquee() {
           {tiles.length} plates, <em>one wok at a time</em>.
         </Heading>
         <p className="max-w-xl font-serif text-[16px] italic text-cream/65">
-          Tap a plate for the story behind it. Each one wears its course on its sleeve — Over Rice, À La Carte, Curry, Noodles — so what you picture is what lands on the table.
+          Every plate here travels with its papers — Over Rice, À La Carte, Curry, Noodles — so the dish you picture is the dish that arrives. Tap one for the story behind it.
         </p>
       </Container>
 
