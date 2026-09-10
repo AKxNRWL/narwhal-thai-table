@@ -11,13 +11,13 @@ import { DISHES } from '@/lib/dishes';
 import { SHOW_CHEF } from '@/lib/site';
 
 /**
- * The dish pinned at the very top of the hero (the chip above the headline).
- * Owner, 9 Sep 2026: "เลิกเอา Lunch Special ขึ้นข้างหน้าสุด ให้เอาปลาราดพริกขึ้นแทน" —
- * the weekday-lunch chip is retired; the whole fried pompano takes its place.
- * Change the slug here to feature something else. Lunch Specials still have
- * their own section further down.
+ * Optional dish chip above the hero headline. The weekday-lunch pill that sat
+ * here (2–9 Sep 2026) is retired; the owner then tried the whole pompano and
+ * decided to leave the spot empty (9 Sep: "เอาออก") — the September special
+ * lives in the promo pop-up (/stats) instead. Set a slug here to bring the
+ * chip back for a featured plate.
  */
-const HERO_FEATURED_SLUG = 'fried-whole-pompano';
+const HERO_FEATURED_SLUG: string | null = null;
 import {
   StorySection,
   ChefSection,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   const heroMedia = getHeroMedia();
-  const featuredDish = DISHES.find((d) => d.slug === HERO_FEATURED_SLUG);
+  const featuredDish = HERO_FEATURED_SLUG ? DISHES.find((d) => d.slug === HERO_FEATURED_SLUG) : undefined;
   const featured = featuredDish
     ? { slug: featuredDish.slug, name: featuredDish.name, price: featuredDish.price, image: getDishImage(featuredDish.slug) }
     : null;
