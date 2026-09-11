@@ -332,12 +332,24 @@ export default function ChatWidget() {
         </div>
 
         <div className="nara-msgs" data-lenis-prevent ref={scrollRef}>
-          {msgs.map((m, i) => (
-            <div key={i} className={`nara-msg nara-${m.role}`}>{m.content}</div>
-          ))}
+          {/* Messaging-app layout (owner, 11 Sep 2026): Aileen's bubbles carry a
+              small avatar on the left, the guest's sit on the right. */}
+          {msgs.map((m, i) =>
+            m.role === 'assistant' ? (
+              <div key={i} className="nara-row">
+                <span className="nara-ava" aria-hidden="true"><NarwhalIcon /></span>
+                <div className="nara-msg nara-assistant">{m.content}</div>
+              </div>
+            ) : (
+              <div key={i} className="nara-msg nara-user">{m.content}</div>
+            ),
+          )}
           {loading && (
-            <div className="nara-msg nara-assistant nara-typing" aria-label="Aileen is typing">
-              <span /><span /><span />
+            <div className="nara-row">
+              <span className="nara-ava" aria-hidden="true"><NarwhalIcon /></span>
+              <div className="nara-msg nara-assistant nara-typing" aria-label="Aileen is typing">
+                <span /><span /><span />
+              </div>
             </div>
           )}
         </div>

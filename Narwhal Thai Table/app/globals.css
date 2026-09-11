@@ -815,3 +815,39 @@ html[lang="th"] :is(h1, h2, h3) { line-height: 1.25; }
 /* CJK glyphs are square: no synthetic italic, no negative tracking. */
 html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(h1, h2, h3) { line-height: 1.22; letter-spacing: 0; }
 html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(em, .italic, .font-serif) { font-style: normal; }
+
+/* ==========================================================================
+   AILEEN CHAT — plain messaging-app look (owner, 11 Sep 2026: "ตัว AI chat
+   เอาเป็นรูปเหมือนข้อความปกติ" → light panel, white bubbles for Aileen with a
+   small avatar, navy bubbles for the guest, white header/composer). These
+   override the navy chat rules above; structure and behaviour (desktop dock,
+   phone bottom sheet, minimise, keyboard tracking) are unchanged.
+   ========================================================================== */
+.nara-panel{ background:#F1ECE3; color:var(--navy); border-left:1px solid rgba(11,31,51,0.08); }
+.nara-head{ background:#FFFFFF; border-bottom:1px solid rgba(11,31,51,0.08); }
+.nara-head-name{ color:var(--navy); }
+.nara-head-sub{ color:rgba(11,31,51,0.55); }
+.nara-close, .nara-mini{ color:rgba(11,31,51,0.5); }
+.nara-close:hover, .nara-mini:hover{ color:var(--navy); }
+.nara-msgs{ gap:8px; padding:16px 14px; }
+.nara-row{ display:flex; align-items:flex-end; gap:8px; max-width:88%; align-self:flex-start; }
+.nara-row .nara-msg{ max-width:none; min-width:0; }
+.nara-ava{ flex-shrink:0; width:26px; height:26px; border-radius:50%; background:var(--brass); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; margin-bottom:2px; }
+.nara-ava svg{ width:16px; height:16px; }
+.nara-msg{ border-radius:18px; padding:10px 14px; font-size:15px; line-height:1.45; }
+.nara-assistant{ background:#FFFFFF; color:var(--ink); border:none; border-bottom-left-radius:5px;
+  box-shadow:0 1px 1.5px rgba(11,31,51,0.08); }
+.nara-user{ background:var(--navy); color:#FFFFFF; font-weight:400; border-bottom-right-radius:5px; }
+.nara-typing span{ background:rgba(11,31,51,0.4); }
+.nara-input-row{ background:#FFFFFF; border-top:1px solid rgba(11,31,51,0.08); }
+.nara-input{ background:#F1ECE3; border:1px solid rgba(11,31,51,0.1); color:var(--navy); }
+.nara-input:focus{ border-color:var(--navy); }
+.nara-input::placeholder{ color:rgba(11,31,51,0.45); }
+.nara-send{ background:var(--navy); color:#FFFFFF; }
+.nara-send:hover:not(:disabled){ background:var(--navy-soft); }
+.nara-send:disabled{ opacity:.35; }
+.nara-foot{ background:#FFFFFF; color:rgba(11,31,51,0.5); }
+@media (max-width:760px){
+  .nara-panel{ border-top:1px solid rgba(11,31,51,0.12); box-shadow:0 -16px 48px rgba(0,0,0,0.35); }
+}
