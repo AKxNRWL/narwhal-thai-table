@@ -181,35 +181,40 @@ export default function Nav() {
             <LanguageSwitch />
           </div>
 
-          <button
-            type="button"
-            aria-expanded={open}
-            aria-controls="nav-drawer"
-            aria-label={open ? t.close : t.open}
-            onClick={() => setOpen((v) => !v)}
-            className="relative grid size-11 place-items-center rounded-full border border-cream/15 bg-white/[0.04] text-cream lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light"
-          >
-            <span aria-hidden="true" className="relative block h-[14px] w-5">
-              <span
-                className={cn(
-                  'absolute left-0 top-0 h-px w-5 bg-current transition-transform duration-300',
-                  open && 'translate-y-[6.5px] rotate-45',
-                )}
-              />
-              <span
-                className={cn(
-                  'absolute left-0 top-1/2 h-px w-5 -translate-y-1/2 bg-current transition-opacity duration-200',
-                  open && 'opacity-0',
-                )}
-              />
-              <span
-                className={cn(
-                  'absolute bottom-0 left-0 h-px w-5 bg-current transition-transform duration-300',
-                  open && '-translate-y-[6.5px] -rotate-45',
-                )}
-              />
-            </span>
-          </button>
+          {/* Phone header: flag button (language menu) right beside the hamburger —
+              owner, 11 Sep 2026: the switcher must be visible without opening the menu. */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <LanguageSwitch variant="icon" />
+            <button
+              type="button"
+              aria-expanded={open}
+              aria-controls="nav-drawer"
+              aria-label={open ? t.close : t.open}
+              onClick={() => setOpen((v) => !v)}
+              className="relative grid size-11 place-items-center rounded-full border border-cream/15 bg-white/[0.04] text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light"
+            >
+              <span aria-hidden="true" className="relative block h-[14px] w-5">
+                <span
+                  className={cn(
+                    'absolute left-0 top-0 h-px w-5 bg-current transition-transform duration-300',
+                    open && 'translate-y-[6.5px] rotate-45',
+                  )}
+                />
+                <span
+                  className={cn(
+                    'absolute left-0 top-1/2 h-px w-5 -translate-y-1/2 bg-current transition-opacity duration-200',
+                    open && 'opacity-0',
+                  )}
+                />
+                <span
+                  className={cn(
+                    'absolute bottom-0 left-0 h-px w-5 bg-current transition-transform duration-300',
+                    open && '-translate-y-[6.5px] -rotate-45',
+                  )}
+                />
+              </span>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -220,7 +225,7 @@ export default function Nav() {
         aria-hidden={!open}
         className={cn(
           // overflow-y-auto: on short phones (or the taller Thai/CJK line boxes) the
-          // drawer scrolls instead of clipping the language grid at the fold.
+          // drawer scrolls instead of clipping its bottom buttons at the fold.
           'fixed inset-0 z-[90] flex flex-col overflow-y-auto overscroll-contain bg-navy-deep/95 px-6 pb-10 pt-[calc(var(--cs-ticker-h)+96px)] backdrop-blur-2xl transition-[opacity,visibility] duration-300 lg:hidden',
           open ? 'visible opacity-100' : 'invisible opacity-0',
         )}
@@ -267,7 +272,6 @@ export default function Nav() {
           >
             {t.reserve}
           </Link>
-          <LanguageSwitch variant="grid" className="mt-3" />
           <p className="mt-2 text-center font-serif text-[13px] italic text-cream/50">{t.address}</p>
         </div>
       </div>
