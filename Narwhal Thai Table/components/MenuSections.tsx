@@ -42,14 +42,24 @@ export default function MenuSections({
   }, []);
 
   // Jump to a course: unfold it if needed, then scroll it under the sticky bar.
+  // Lenis drives the page scroll; `force` scrolls even while Lenis is paused
+  // (e.g. right after the promo pop-up closes). If nothing has moved after a
+  // beat (Lenis loop throttled in a background tab), fall back to the
+  // browser's own smooth scroll.
   const jump = useCallback((id: CategoryId) => {
     setOpen((o) => (o[id] ? o : { ...o, [id]: true }));
     const el = sectionRefs.current[id];
     if (!el) return;
     const barBottom = barRef.current?.getBoundingClientRect().bottom ?? 118;
-    const offset = -(barBottom + 12);
-    if (lenis) lenis.scrollTo(el, { offset, duration: 1.1 });
-    else window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + offset, behavior: 'smooth' });
+    const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - (barBottom + 12));
+    const startY = window.scrollY;
+    const native = () => window.scrollTo({ top, behavior: 'smooth' });
+    if (lenis) {
+      lenis.scrollTo(top, { duration: 1.1, force: true });
+      window.setTimeout(() => { if (Math.abs(window.scrollY - startY) < 4 && Math.abs(top - startY) >= 4) native(); }, 260);
+    } else {
+      native();
+    }
   }, [lenis]);
 
   // Scroll-spy: the pill of the course currently under the bar lights up.
@@ -76,9 +86,14 @@ export default function MenuSections({
     };
   }, []);
 
-  // Keep the active pill visible in the horizontal scroller.
+  // Keep the active pill visible in the horizontal scroller — scroll the bar
+  // itself, never scrollIntoView (that can nudge the page and interrupt Lenis).
   useEffect(() => {
-    pillRefs.current[active]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    const pill = pillRefs.current[active];
+    const strip = pill?.parentElement;
+    if (!pill || !strip) return;
+    const left = pill.offsetLeft - strip.clientWidth / 2 + pill.offsetWidth / 2;
+    strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
   }, [active]);
 
   return (
