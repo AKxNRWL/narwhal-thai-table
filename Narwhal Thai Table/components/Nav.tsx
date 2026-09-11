@@ -36,6 +36,9 @@ export default function Nav() {
   const t = chrome(locale).nav;
   const NAV_LINKS = navLinks(t);
   const href = (p: string) => localePath(locale, p);
+  // Vietnamese labels run ~15% wider than English; tighten the desktop row so
+  // the six links + two CTAs + switcher still fit the 1184px content box at 1280.
+  const tight = locale === 'vi';
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -99,7 +102,8 @@ export default function Nav() {
 
   const linkCls = (current: boolean) =>
     cn(
-      'relative font-sans text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-300',
+      'relative font-sans font-medium uppercase transition-colors duration-300',
+      tight ? 'text-[10.5px] tracking-[0.16em]' : 'text-[11px] tracking-[0.2em]',
       'after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brass-light after:transition-transform after:duration-300 after:content-[""]',
       'hover:text-brass-light hover:after:scale-x-100',
       current ? 'text-brass-light after:scale-x-100' : 'text-cream/80',
@@ -138,7 +142,7 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-6 lg:flex xl:gap-8">
+          <div className={cn('hidden items-center lg:flex', tight ? 'gap-5 xl:gap-6' : 'gap-6 xl:gap-8')}>
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}
