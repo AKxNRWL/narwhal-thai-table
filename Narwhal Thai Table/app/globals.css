@@ -848,6 +848,8 @@ html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(em, .italic, .font-serif) 
 .nara-send:hover:not(:disabled){ background:var(--navy-soft); }
 .nara-send:disabled{ opacity:.35; }
 .nara-foot{ background:#FFFFFF; color:rgba(11,31,51,0.5); }
+/* launcher: the speech-bubble icon (ChatWidget ChatBubbleIcon) sits a little larger than the old mark */
+.nara-fab svg{ width:28px; height:28px; }
 @media (max-width:760px){
   .nara-panel{ border-top:1px solid rgba(11,31,51,0.12); box-shadow:0 -16px 48px rgba(0,0,0,0.35); }
 }

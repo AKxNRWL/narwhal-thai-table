@@ -115,6 +115,18 @@ function NarwhalIcon({ className, style }: { className?: string; style?: React.C
   );
 }
 
+// Launcher icon: a plain speech bubble with three dots — the universal "chat"
+// sign (owner, 11 Sep 2026: "ปุ่ม… เอาเป็นรูปเหมือนข้อความปกติ"). The narwhal
+// stays inside the panel as Aileen's avatar. Dots are cut out (evenodd) so the
+// brass button shows through them.
+function ChatBubbleIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" aria-hidden="true" className={className} style={style}>
+      <path d="M12 2.8C6.3 2.8 1.8 6.6 1.8 11.3c0 2.4 1.2 4.6 3.1 6.2L3.9 21.4l4.9-2.2c1 .3 2.1.4 3.2.4 5.7 0 10.2-3.8 10.2-8.4S17.7 2.8 12 2.8zM6.7 11.3a1.35 1.35 0 1 0 2.7 0 1.35 1.35 0 1 0-2.7 0zm3.95 0a1.35 1.35 0 1 0 2.7 0 1.35 1.35 0 1 0-2.7 0zm3.95 0a1.35 1.35 0 1 0 2.7 0 1.35 1.35 0 1 0-2.7 0z" />
+    </svg>
+  );
+}
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   // Mobile only: minimized = half-height bottom sheet so the menu shows behind.
@@ -297,7 +309,7 @@ export default function ChatWidget() {
         {open ? (
           <span aria-hidden="true" className="nara-fab-x">&times;</span>
         ) : (
-          <NarwhalIcon />
+          <ChatBubbleIcon />
         )}
       </button>
 
