@@ -1,0 +1,171 @@
+import type { Locale } from './locales';
+
+/**
+ * Strings for the three forms (client components — this file ships in the
+ * client bundle, so it holds only form text). Option *values* — what the
+ * restaurant receives by email — stay English in both languages; only the
+ * visible labels change, so the team reads every request the same way.
+ */
+const en = {
+  common: {
+    select: 'Select',
+    sending: 'Sending…',
+    leaveBlank: 'Leave blank',
+  },
+  reserve: {
+    title: 'Book a *seat* at the table',
+    sub: 'We’ll text or email you to confirm — usually within a few hours.',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    email: 'Email',
+    phone: 'Phone',
+    date: 'Date',
+    time: 'Time',
+    party: 'Party Size',
+    guests: '{n} Guests',
+    guestsMore: '7+ (please specify)',
+    notes: 'Anything we should know?',
+    notesPlaceholder: 'Allergies, spice level, occasion, seating preference...',
+    submit: 'Request Reservation',
+    sent: 'Request Sent',
+    thanks: 'Thank you — we will confirm your reservation within a few hours.',
+    error: 'Something went wrong — please call us or email welcome@narwhalthaihb.com.',
+  },
+  contact: {
+    title: 'Send us a *message*',
+    sub: 'Questions, suppliers, press — anything. We’ll get back to you.',
+    name: 'Name',
+    email: 'Email',
+    phone: 'Phone (optional)',
+    topic: 'What’s this about?',
+    topics: {
+      general: 'General question',
+      reservation: 'Reservation',
+      catering: 'Catering & private events',
+      supplier: 'Supplier / vendor',
+      press: 'Press / media',
+      careers: 'Careers',
+      other: 'Other',
+    },
+    message: 'Message',
+    messagePlaceholder: 'How can we help?',
+    submit: 'Send Message',
+    sent: 'Message Sent',
+    thanks: 'Thank you — we will reply soon.',
+    error: 'Something went wrong — please email welcome@narwhalthaihb.com.',
+  },
+  catering: {
+    title: 'Catering & *private events*',
+    sub: 'Buyouts, family-style tastings, off-site catering — tell us about your event.',
+    name: 'Name',
+    email: 'Email',
+    phone: 'Phone',
+    date: 'Event date',
+    guests: 'Guests',
+    guestOptions: { upTo10: 'Up to 10', g10: '10–25', g25: '25–50', g50: '50–100', g100: '100+' },
+    type: 'Event type',
+    types: {
+      dinner: 'Private dinner',
+      corporate: 'Corporate event',
+      buyout: 'Full restaurant buyout',
+      offsite: 'Off-site catering',
+      other: 'Other',
+    },
+    where: 'Where?',
+    wheres: { restaurant: 'At the restaurant', offsite: 'Off-site (we come to you)' },
+    budget: 'Budget (per head or total)',
+    budgetPlaceholder: 'e.g. $60 per head, or $3,000 total',
+    more: 'Tell us more',
+    morePlaceholder: 'Occasion, dietary needs, must-have dishes, timing...',
+    submit: 'Request Catering',
+    sent: 'Request Sent',
+    thanks: 'Thank you — we will be in touch about your event shortly.',
+    error: 'Something went wrong — please email catering@narwhalthaihb.com.',
+  },
+};
+
+export type FormsDict = typeof en;
+
+const vi: FormsDict = {
+  common: {
+    select: 'Chọn',
+    sending: 'Đang gửi…',
+    leaveBlank: 'Để trống',
+  },
+  reserve: {
+    title: 'Giữ một *chỗ* ở bàn ăn',
+    sub: 'Chúng tôi sẽ nhắn tin hoặc email để xác nhận — thường trong vài giờ.',
+    firstName: 'Tên',
+    lastName: 'Họ',
+    email: 'Email',
+    phone: 'Điện thoại',
+    date: 'Ngày',
+    time: 'Giờ',
+    party: 'Số người',
+    guests: '{n} người',
+    guestsMore: '7+ (vui lòng ghi rõ)',
+    notes: 'Có gì chúng tôi nên biết không?',
+    notesPlaceholder: 'Dị ứng, độ cay, dịp đặc biệt, chỗ ngồi mong muốn...',
+    submit: 'Gửi yêu cầu đặt bàn',
+    sent: 'Đã gửi yêu cầu',
+    thanks: 'Cảm ơn bạn — chúng tôi sẽ xác nhận bàn trong vài giờ.',
+    error: 'Có lỗi xảy ra — vui lòng gọi cho chúng tôi hoặc email welcome@narwhalthaihb.com.',
+  },
+  contact: {
+    title: 'Gửi chúng tôi *một lời nhắn*',
+    sub: 'Thắc mắc, nhà cung cấp, báo chí — gì cũng được. Chúng tôi sẽ hồi âm.',
+    name: 'Họ tên',
+    email: 'Email',
+    phone: 'Điện thoại (không bắt buộc)',
+    topic: 'Về việc gì?',
+    topics: {
+      general: 'Câu hỏi chung',
+      reservation: 'Đặt bàn',
+      catering: 'Đặt tiệc & sự kiện riêng',
+      supplier: 'Nhà cung cấp',
+      press: 'Báo chí / truyền thông',
+      careers: 'Tuyển dụng',
+      other: 'Khác',
+    },
+    message: 'Lời nhắn',
+    messagePlaceholder: 'Chúng tôi có thể giúp gì cho bạn?',
+    submit: 'Gửi lời nhắn',
+    sent: 'Đã gửi lời nhắn',
+    thanks: 'Cảm ơn bạn — chúng tôi sẽ sớm trả lời.',
+    error: 'Có lỗi xảy ra — vui lòng email welcome@narwhalthaihb.com.',
+  },
+  catering: {
+    title: 'Đặt tiệc & *sự kiện riêng*',
+    sub: 'Bao trọn nhà hàng, tiệc nếm thử kiểu gia đình, nấu tiệc tận nơi — kể chúng tôi nghe về sự kiện của bạn.',
+    name: 'Họ tên',
+    email: 'Email',
+    phone: 'Điện thoại',
+    date: 'Ngày tổ chức',
+    guests: 'Số khách',
+    guestOptions: { upTo10: 'Dưới 10', g10: '10–25', g25: '25–50', g50: '50–100', g100: '100+' },
+    type: 'Loại sự kiện',
+    types: {
+      dinner: 'Tiệc tối riêng',
+      corporate: 'Sự kiện công ty',
+      buyout: 'Bao trọn nhà hàng',
+      offsite: 'Nấu tiệc tận nơi',
+      other: 'Khác',
+    },
+    where: 'Ở đâu?',
+    wheres: { restaurant: 'Tại nhà hàng', offsite: 'Tận nơi (chúng tôi đến chỗ bạn)' },
+    budget: 'Ngân sách (mỗi người hoặc tổng)',
+    budgetPlaceholder: 'ví dụ: $60 mỗi người, hoặc $3,000 tổng',
+    more: 'Kể thêm cho chúng tôi',
+    morePlaceholder: 'Dịp gì, yêu cầu ăn uống, món nhất định phải có, giờ giấc...',
+    submit: 'Gửi yêu cầu đặt tiệc',
+    sent: 'Đã gửi yêu cầu',
+    thanks: 'Cảm ơn bạn — chúng tôi sẽ sớm liên hệ về sự kiện của bạn.',
+    error: 'Có lỗi xảy ra — vui lòng email catering@narwhalthaihb.com.',
+  },
+};
+
+const DICTS: Record<Locale, FormsDict> = { en, vi };
+
+export function forms(locale: Locale): FormsDict {
+  return DICTS[locale] ?? en;
+}

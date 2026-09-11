@@ -5,10 +5,14 @@ import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLenis } from 'lenis/react';
 import { CATEGORIES, type CategoryId } from '@/lib/categories';
-import { DISHES } from '@/lib/dishes';
 import { Arrow } from '@/components/ui/Button';
 import { Tag, cardSurface } from '@/components/ui/Section';
 import { cn } from '@/lib/cn';
+import { chrome, categoryLabel } from '@/lib/i18n/chrome';
+import { localePath, type Locale } from '@/lib/i18n/locales';
+import { fmt } from '@/lib/i18n/rich';
+
+import type { MenuCard } from '@/lib/menuCard';
 
 /**
  * The whole menu on one scroll — owner, 11 Sep 2026: "เลื่อนลงมาเรื่อยๆ แล้วเจอทุกเมนูเลย
@@ -21,13 +25,22 @@ import { cn } from '@/lib/cn';
  * keeps a crawlable link from /menu — which is why the old "Every dish" index
  * at the foot of the page could go. The sticky pill bar that used to switch
  * tabs now jumps to a course and follows the scroll.
+ *
+ * Copy (labels, tags, the sides list) comes from lib/i18n/chrome.ts so the same
+ * component serves /menu and /vi/menu; the dish cards arrive already localised.
  */
 export default function MenuSections({
+  dishes,
   photos = {},
+  locale = 'en',
 }: {
+  /** every dish, in menu order, already localised (see components/pages/MenuPage.tsx) */
+  dishes: MenuCard[];
   /** slug → public image URL, built server-side in app/menu/page.tsx */
   photos?: Record<string, string>;
+  locale?: Locale;
 }) {
+  const t = chrome(locale).menuList;
   const [open, setOpen] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(CATEGORIES.map((c) => [c.id, true])),
   );
@@ -105,7 +118,7 @@ export default function MenuSections({
         className="sticky top-[calc(var(--cs-ticker-h)+var(--nav-offset,72px))] z-30 -mx-5 mt-12 border-y border-cream/10 bg-navy-deep/80 backdrop-blur-xl transition-[top] duration-500 sm:-mx-8 lg:-mx-12 lg:mt-16"
       >
         <nav
-          aria-label="Jump to a course"
+          aria-label={t.jump}
           className="flex snap-x gap-2 overflow-x-auto px-5 py-3 scroll-px-5 [scrollbar-width:none] sm:px-8 sm:scroll-px-8 lg:px-12 lg:scroll-px-12 [&::-webkit-scrollbar]:hidden"
         >
           {CATEGORIES.map((cat) => {
@@ -126,7 +139,7 @@ export default function MenuSections({
                     : 'border-cream/10 bg-white/[0.03] text-cream/70 hover:border-brass/50 hover:bg-white/[0.06] hover:text-cream',
                 )}
               >
-                {cat.label}
+                {categoryLabel(locale, cat.id)}
               </button>
             );
           })}
@@ -134,10 +147,11 @@ export default function MenuSections({
       </div>
 
       {CATEGORIES.map((cat) => {
-        const dishes = DISHES.filter((d) => d.category === cat.id);
+        const inCourse = dishes.filter((d) => d.category === cat.id);
+        const label = categoryLabel(locale, cat.id);
         const isSides = cat.id === 'sides';
         const isOpen = open[cat.id] !== false;
-        const count = isSides ? 'Proteins & sides' : `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`;
+        const count = isSides ? t.proteinsSides : `${inCourse.length} ${inCourse.length === 1 ? t.dish : t.dishes}`;
         return (
           <section
             key={cat.id}
@@ -159,7 +173,7 @@ export default function MenuSections({
                 )}
               >
                 <span className={cn('font-display text-[24px] font-medium leading-none transition-colors duration-300 sm:text-[30px]', isOpen ? 'text-cream' : 'text-cream/70 group-hover:text-cream')}>
-                  {cat.label}
+                  {label}
                 </span>
                 <span className="mt-1 font-sans text-[10.5px] font-medium uppercase tracking-[0.2em] text-cream/40">
                   {count}
@@ -189,21 +203,21 @@ export default function MenuSections({
             >
               <div className="min-h-0 overflow-hidden" inert={!isOpen}>
                 <div className="pb-10 sm:pb-12">
-                  {isSides ? <SidesPanel /> : (
+                  {isSides ? <SidesPanel locale={locale} /> : (
                     <div className="grid gap-4 md:grid-cols-2 lg:gap-5">
-                      {dishes.map((d) => {
-                        const photo = d.image?.src ?? photos[d.slug];
+                      {inCourse.map((d) => {
+                        const photo = photos[d.slug];
                         return (
                           <Link
                             key={d.slug}
-                            href={`/menu/${d.slug}`}
+                            href={localePath(locale, `/menu/${d.slug}`)}
                             className={cardSurface('flex-row items-start gap-4 p-4 hover:-translate-y-1 sm:gap-5 sm:p-5')}
                           >
                             {photo && (
                               <span className="relative size-[84px] shrink-0 overflow-hidden rounded-[14px] bg-navy sm:size-[104px]">
                                 <Image
                                   src={photo}
-                                  alt={`${d.name}${d.thai ? ` (${d.thai})` : ''} — Thai ${cat.label.toLowerCase()} at Narwhal Thai Table, Huntington Beach`}
+                                  alt={fmt(t.alt, { name: `${d.name}${d.thai ? ` (${d.thai})` : ''}`, category: locale === 'en' ? label.toLowerCase() : label })}
                                   fill
                                   sizes="(max-width: 640px) 84px, 104px"
                                   className="object-cover transition-transform duration-700 ease-out-soft group-hover:scale-[1.06]"
@@ -227,14 +241,14 @@ export default function MenuSections({
                               {d.variants && (
                                 <p className="font-serif text-[13px] italic leading-snug text-cream/50">{d.variants.join(' · ')}</p>
                               )}
-                              {(d.signature || d.spicy || d.protein || d.story) && (
+                              {(d.signature || d.spicy || d.protein || d.hasStory) && (
                                 <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
-                                  {d.signature && <Tag>Signature</Tag>}
-                                  {d.spicy && <Tag tone="spicy">Spicy</Tag>}
-                                  {d.protein && <Tag tone="muted">Choice of Protein</Tag>}
-                                  {d.story && (
+                                  {d.signature && <Tag>{t.signature}</Tag>}
+                                  {d.spicy && <Tag tone="spicy">{t.spicy}</Tag>}
+                                  {d.protein && <Tag tone="muted">{t.protein}</Tag>}
+                                  {d.hasStory && (
                                     <span className="ml-auto inline-flex items-center gap-1.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-brass-light">
-                                      Read the story <Arrow />
+                                      {t.readStory} <Arrow />
                                     </span>
                                   )}
                                 </div>
@@ -252,42 +266,50 @@ export default function MenuSections({
         );
       })}
 
-      <p className="mt-6 max-w-3xl border-t border-cream/[0.08] pt-8 text-[14px] leading-relaxed text-cream/55 lg:mt-8">★ are the house signature creations. Dishes marked &ldquo;Choice of Protein&rdquo; are priced before protein — pick yours under Sides &amp; Protein (from +$2). Tell us about your allergies or spice level when you order — we&apos;ll cook it just for you.</p>
+      <p className="mt-6 max-w-3xl border-t border-cream/[0.08] pt-8 text-[14px] leading-relaxed text-cream/55 lg:mt-8">{t.footnote}</p>
     </div>
   );
 }
 
-/* The "Sides & Protein" section is a list, not dish cards. */
+/* The "Sides & Protein" section is a list, not dish cards. Prices are the
+   facts (Toast is the source of truth); the names come from lib/i18n/chrome.ts. */
 type SideRow = { name: string; price: string; note?: string };
 
-const PROTEINS: SideRow[] = [
-  { name: 'Chicken', price: '+$2' },
-  { name: 'Chicken & Shrimp (2 pc)', price: '+$3' },
-  { name: 'Pork', price: '+$2' },
-  { name: 'Fried Tofu', price: '+$2' },
-  { name: 'Soft Tofu', price: '+$2' },
-  { name: 'Ground Pork', price: '+$2' },
-  { name: 'Ground Chicken', price: '+$2' },
-  { name: 'Ground Beef', price: '+$5' },
-  { name: 'Beef', price: '+$5' },
-  { name: 'Shrimp', price: '+$6' },
-  { name: 'Combination — Chicken, Pork & Beef', price: '+$6' },
-  { name: 'Seafood', price: '+$9' },
-];
+function proteinRows(locale: Locale): SideRow[] {
+  const n = chrome(locale).menuList.proteins;
+  return [
+    { name: n.chicken, price: '+$2' },
+    { name: n.chickenShrimp, price: '+$3' },
+    { name: n.pork, price: '+$2' },
+    { name: n.friedTofu, price: '+$2' },
+    { name: n.softTofu, price: '+$2' },
+    { name: n.groundPork, price: '+$2' },
+    { name: n.groundChicken, price: '+$2' },
+    { name: n.groundBeef, price: '+$5' },
+    { name: n.beef, price: '+$5' },
+    { name: n.shrimp, price: '+$6' },
+    { name: n.combo, price: '+$6' },
+    { name: n.seafood, price: '+$9' },
+  ];
+}
 
-const SIDES: SideRow[] = [
-  { name: 'Jasmine Rice', price: '$3' },
-  { name: 'Brown Rice', price: '$4' },
-  { name: 'Sticky Rice', price: '$4' },
-  { name: 'Fried Egg', price: '$3' },
-  { name: 'Omelet', price: '$13', note: '— add ground pork or chicken +$2, ground shrimp +$3' },
-];
+function sideRows(locale: Locale): SideRow[] {
+  const n = chrome(locale).menuList.sides;
+  return [
+    { name: n.jasmine, price: '$3' },
+    { name: n.brown, price: '$4' },
+    { name: n.sticky, price: '$4' },
+    { name: n.friedEgg, price: '$3' },
+    { name: n.omelet, price: '$13', note: n.omeletNote },
+  ];
+}
 
-function SidesPanel() {
+function SidesPanel({ locale }: { locale: Locale }) {
+  const t = chrome(locale).menuList;
   return (
     <div className="grid gap-5 md:grid-cols-2 lg:gap-6">
-      <SideList title="— Choose Your Protein" rows={PROTEINS} />
-      <SideList title="— On the Side" rows={SIDES} />
+      <SideList title={t.chooseProtein} rows={proteinRows(locale)} />
+      <SideList title={t.onTheSide} rows={sideRows(locale)} />
     </div>
   );
 }

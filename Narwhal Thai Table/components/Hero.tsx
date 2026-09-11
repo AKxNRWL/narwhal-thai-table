@@ -10,6 +10,8 @@ import Ripple from '@/components/fx/Ripple';
 import Tilt from '@/components/fx/Tilt';
 import CircularText from '@/components/fx/CircularText';
 import { cn } from '@/lib/cn';
+import { localePath, type Locale } from '@/lib/i18n/locales';
+import type { UiDict } from '@/lib/i18n/ui.en';
 
 /**
  * Placemat art in the hero — owner, 7 Sep 2026 ("อยากให้ในเว็บเป็นงานอาร์ตแบบนี้"):
@@ -30,10 +32,17 @@ export type HeroFeatured = { slug: string; name: string; price?: string; image: 
 export default function Hero({
   media = { video: null, image: null },
   featured = null,
+  locale = 'en',
+  t,
 }: {
   media?: HeroMedia;
   featured?: HeroFeatured | null;
+  /** page locale — internal links are prefixed for /vi */
+  locale?: Locale;
+  /** hero copy for that locale (ui(locale).hero) — supplied by the server page so the dictionary stays out of the client bundle */
+  t: UiDict['hero'];
 }) {
+  const href = (p: string) => localePath(locale, p);
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
@@ -177,7 +186,7 @@ export default function Hero({
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) both' }}
           >
             <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light shadow-[0_0_12px_rgba(227,197,129,0.9)] animate-pulse-dot" />
-            <span className="shiny-text">Now Open · Every Day</span>
+            <span className="shiny-text">{t.eyebrow}</span>
           </span>
 
           {/* Featured-dish chip — owner (9 Sep 2026): the weekday-lunch pill that
@@ -187,7 +196,7 @@ export default function Hero({
           {featured && (
             <div className="mt-5" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.06s both' }}>
               <Link
-                href={`/menu/${featured.slug}`}
+                href={href(`/menu/${featured.slug}`)}
                 className="group inline-flex max-w-full items-center gap-3 rounded-full border border-brass/40 bg-navy-deep/55 py-1.5 pl-1.5 pr-4 text-cream backdrop-blur-md transition-[border-color,background-color,transform] duration-300 hover:border-brass-light hover:bg-navy-deep/75"
               >
                 {featured.image ? (
@@ -203,7 +212,7 @@ export default function Hero({
                   <span aria-hidden="true" className="ml-2 size-2 shrink-0 rounded-full bg-brass animate-pulse-dot" />
                 )}
                 <span className="flex min-w-0 flex-col leading-tight">
-                  <span className="font-sans text-[10px] font-medium uppercase tracking-[0.22em] text-brass-light">Signature · Poseidon</span>
+                  <span className="font-sans text-[10px] font-medium uppercase tracking-[0.22em] text-brass-light">{t.featuredKicker}</span>
                   <span className="font-display text-[14px] font-medium tracking-[-0.01em] text-balance sm:text-[15px]">
                     {featured.name}
                     {featured.price && <b className="ml-2 font-sans text-[12px] font-semibold text-brass-light">{featured.price}</b>}
@@ -221,7 +230,7 @@ export default function Hero({
             {/* Owner (9 Sep 2026): keep the original headline; the "food as art"
                 idea lives in the paragraph as figurative language, never stated
                 outright. */}
-            <Words text="From Siam’s royal court" />
+            <Words text={t.h1a} />
             <br />
             {/* The gold line animates as ONE block, not word by word: a
                 background-clip:text parent goes invisible in Chromium when its
@@ -233,7 +242,7 @@ export default function Hero({
               className="text-gold word-in font-serif font-normal italic [text-shadow:none]"
               style={{ animation: 'word-in 0.9s var(--ease-out-soft) 0.42s forwards, shine-text 7s linear infinite' }}
             >
-              to Huntington Beach
+              {t.h1b}
             </em>
           </h1>
 
@@ -246,14 +255,14 @@ export default function Hero({
             className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.24s both' }}
           >
-            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">Sawasdee, Huntington Beach — welcome to our table.</strong>{' '}
-            We’re Aileen, Annie and AK, three siblings who came to open a Thai restaurant on Beach Boulevard because cooking is the one art we never wanted to put down. Here, the art is on the plate — royal-court Thai recipes, made fresh for every order — and in everything around it: the string lights, the hum of the wok, the welcome at the door. And whoever you are, however you found us, you’re not a table number to us. You’re the reason the art exists.
+            <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">{t.noteLead}</strong>{' '}
+            {t.note}
           </p>
           <p
             className="mt-4 font-sans text-[12px] font-medium uppercase tracking-[0.28em] text-brass-light"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.3s both' }}
           >
-            — Aileen, Annie &amp; AK
+            {t.signed}
           </p>
           {/* Hours stay in the hero copy for search engines; the top ticker
               already carries them on phones, so hide there. */}
@@ -261,21 +270,21 @@ export default function Hero({
             className="mt-3 max-w-xl font-sans text-[13px] leading-relaxed text-cream/65 max-[760px]:hidden"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.33s both' }}
           >
-            Open every day — Mon&ndash;Fri 11:30 AM &ndash; 10 PM &middot; Sat&ndash;Sun 12 &ndash; 10 PM. Walk in, order online, or save a seat.
+            {t.hours}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
             {ORDER_ONLINE_URL && (
               <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow data-magnetic>
-                Order Online
+                {t.order}
               </Button>
             )}
-            <Button href="/menu" variant={ORDER_ONLINE_URL ? 'secondary' : 'primary'} size="lg" arrow data-magnetic>
-              Explore the Menu
+            <Button href={href('/menu')} variant={ORDER_ONLINE_URL ? 'secondary' : 'primary'} size="lg" arrow data-magnetic>
+              {t.explore}
             </Button>
             {/* Hidden on phones — the MobileActionBar carries Reserve there. */}
-            <Button href="/contact/reservation" variant="secondary" size="lg" arrow className="max-[760px]:hidden">
-              Save a Seat
+            <Button href={href('/contact/reservation')} variant="secondary" size="lg" arrow className="max-[760px]:hidden">
+              {t.reserve}
             </Button>
           </div>
         </div>
@@ -291,7 +300,7 @@ export default function Hero({
             <button
               type="button"
               className="ornament-narwhal relative z-[1] mx-auto mb-6 block size-[220px] cursor-pointer rounded-full border border-brass/90 bg-[radial-gradient(circle_at_50%_42%,#FBF6EA_0%,#F7F0E1_72%)] p-0 shadow-[0_0_0_8px_rgba(247,240,225,0.06),0_30px_60px_-30px_rgba(0,0,0,0.8)] transition-transform duration-500 hover:scale-[1.04] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-brass xl:size-[240px]"
-              aria-label="Tap to see the narwhal jump"
+              aria-label={t.narwhalTap}
               onClick={(e) => playNarwhal(e.currentTarget)}
             >
               <span className="nm-stack" aria-hidden="true">
@@ -304,9 +313,9 @@ export default function Hero({
               </span>
             </button>
             </div>
-            <div className="font-serif text-[38px] italic leading-none tracking-[0.02em] text-cream">Narwhal</div>
+            <div className="font-serif text-[38px] italic leading-none tracking-[0.02em] text-cream">{t.medallionName}</div>
             <div aria-hidden="true" className="mx-auto my-4 h-px w-12 bg-brass" />
-            <div className="font-sans text-[10px] font-medium uppercase tracking-[0.34em] text-brass-light">Thai Table · Est. 2026</div>
+            <div className="font-sans text-[10px] font-medium uppercase tracking-[0.34em] text-brass-light">{t.medallionSub}</div>
           </div>
           </Tilt>
         </div>
@@ -317,7 +326,7 @@ export default function Hero({
         aria-hidden="true"
         className="absolute bottom-7 left-1/2 z-[2] hidden -translate-x-1/2 flex-col items-center gap-3 font-sans text-[10px] uppercase tracking-[0.32em] text-cream/55 lg:flex"
       >
-        Scroll
+        {t.scroll}
         <span className="block h-10 w-px origin-top bg-brass animate-scroll-cue" />
       </div>
     </section>

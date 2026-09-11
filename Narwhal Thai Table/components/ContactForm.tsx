@@ -5,6 +5,9 @@ import { submitNetlifyForm } from '@/lib/netlifyForm';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import { fireConfetti } from '@/components/fx/confetti';
+import { forms } from '@/lib/i18n/forms';
+import type { Locale } from '@/lib/i18n/locales';
+import Rich from '@/lib/i18n/rich';
 
 /* ---- field styling (kept local so each form stays self-contained) ---- */
 const field =
@@ -45,7 +48,9 @@ function SelectShell({ children }: { children: ReactNode }) {
 }
 
 /** General contact form (questions, suppliers, press, etc.) → Netlify "contact" form. */
-export default function ContactForm() {
+export default function ContactForm({ locale = 'en' }: { locale?: Locale }) {
+  const t = forms(locale).contact;
+  const c = forms(locale).common;
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +74,7 @@ export default function ContactForm() {
       .then(() => { setSending(false); setSubmitted(true); fireConfetti(); })
       .catch(() => {
         setSending(false);
-        setError('Something went wrong — please email welcome@narwhalthaihb.com.');
+        setError(t.error);
       });
   }
 
@@ -84,51 +89,52 @@ export default function ContactForm() {
     >
       <input type="hidden" name="form-name" value="contact" />
       <div className="font-display text-[clamp(26px,3vw,34px)] font-medium leading-tight tracking-[-0.01em] text-cream [&_em]:font-serif [&_em]:font-normal [&_em]:italic [&_em]:text-brass-light">
-        Send us a <em>message</em>
+        <Rich text={t.title} />
       </div>
-      <div className="mt-2 font-serif text-[16px] italic leading-relaxed text-cream/70">Questions, suppliers, press — anything. We&apos;ll get back to you.</div>
+      <div className="mt-2 font-serif text-[16px] italic leading-relaxed text-cream/70">{t.sub}</div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
-        <Field id="ct-name" label="Name" required full>
+        <Field id="ct-name" label={t.name} required full>
           <input id="ct-name" name="name" type="text" autoComplete="name" required className={field} />
         </Field>
 
-        <Field id="ct-email" label="Email" required>
+        <Field id="ct-email" label={t.email} required>
           <input id="ct-email" name="email" type="email" autoComplete="email" required className={field} />
         </Field>
-        <Field id="ct-phone" label="Phone (optional)">
+        <Field id="ct-phone" label={t.phone}>
           <input id="ct-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" className={field} />
         </Field>
 
-        <Field id="ct-topic" label="What's this about?" required full>
+        <Field id="ct-topic" label={t.topic} required full>
           <SelectShell>
+            {/* option values stay English — that is what the team reads in the request */}
             <select id="ct-topic" name="topic" required defaultValue="" className={selectField}>
-              <option value="">Select</option>
-              <option>General question</option>
-              <option>Reservation</option>
-              <option>Catering &amp; private events</option>
-              <option>Supplier / vendor</option>
-              <option>Press / media</option>
-              <option>Careers</option>
-              <option>Other</option>
+              <option value="">{c.select}</option>
+              <option value="General question">{t.topics.general}</option>
+              <option value="Reservation">{t.topics.reservation}</option>
+              <option value="Catering & private events">{t.topics.catering}</option>
+              <option value="Supplier / vendor">{t.topics.supplier}</option>
+              <option value="Press / media">{t.topics.press}</option>
+              <option value="Careers">{t.topics.careers}</option>
+              <option value="Other">{t.topics.other}</option>
             </select>
           </SelectShell>
         </Field>
 
-        <Field id="ct-message" label="Message" required full>
-          <textarea id="ct-message" name="message" required rows={5} placeholder="How can we help?" className={textareaField}></textarea>
+        <Field id="ct-message" label={t.message} required full>
+          <textarea id="ct-message" name="message" required rows={5} placeholder={t.messagePlaceholder} className={textareaField}></textarea>
         </Field>
       </div>
 
       {/* Honeypot for spam bots — never visible/focusable for real users */}
       <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
-        <label htmlFor="ct-hp">Leave blank</label>
+        <label htmlFor="ct-hp">{c.leaveBlank}</label>
         <input id="ct-hp" name="bot-field" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div className="mt-8">
         <Button type="submit" variant="primary" size="lg" arrow={!sending && !submitted} disabled={sending || submitted} className="w-full sm:w-auto">
-          {submitted ? 'Message Sent' : sending ? 'Sending…' : 'Send Message'}
+          {submitted ? t.sent : sending ? c.sending : t.submit}
         </Button>
         <p
           id="contact-form-status"
@@ -136,7 +142,7 @@ export default function ContactForm() {
           aria-live="polite"
           className="mt-4 min-h-[1em] font-serif text-[16px] italic leading-relaxed text-brass-light"
         >
-          {submitted && 'Thank you — we will reply soon.'}
+          {submitted && t.thanks}
           {error && error}
         </p>
       </div>

@@ -13,6 +13,8 @@ import NotoTickerFonts from '@/components/NotoTickerFonts';
 import CardGlow from '@/components/fx/CardGlow';
 import SmoothScroll from '@/components/fx/SmoothScroll';
 import Ambience from '@/components/fx/Ambience';
+import LangSync from '@/components/i18n/LangSync';
+import ViSuggestBar from '@/components/i18n/ViSuggestBar';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 
 /* Self-hosted webfonts (next/font).
@@ -22,10 +24,13 @@ import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONL
    1-year immutable cache, injects @font-face directly, and sets size-adjust
    fallback metrics so the swap doesn't shift layout.
    Each exposes a CSS variable that globals.css maps onto --font-display /
-   --font-serif / --font-sans. */
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], display: 'swap', variable: '--f-display' });
-const fraunces = Fraunces({ subsets: ['latin'], style: ['normal', 'italic'], axes: ['SOFT', 'WONK', 'opsz'], display: 'swap', variable: '--f-serif' });
-const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--f-sans' });
+   --font-serif / --font-sans.
+   The 'vietnamese' subset (Sep 2026) serves the /vi edition — a separate
+   unicode-range file the browser only fetches when a page uses those glyphs,
+   so English pages pay nothing for it. */
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin', 'vietnamese'], display: 'swap', variable: '--f-display' });
+const fraunces = Fraunces({ subsets: ['latin', 'vietnamese'], style: ['normal', 'italic'], axes: ['SOFT', 'WONK', 'opsz'], display: 'swap', variable: '--f-serif' });
+const inter = Inter({ subsets: ['latin', 'vietnamese'], display: 'swap', variable: '--f-sans' });
 const fontVars = `${spaceGrotesk.variable} ${fraunces.variable} ${inter.variable}`;
 
 export const metadata: Metadata = {
@@ -65,8 +70,10 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // suppressHydrationWarning: app/vi/layout.tsx flips `lang` to "vi" before
+  // hydration (and LangSync keeps it in step on client navigation).
   return (
-    <html lang="en" className={fontVars}>
+    <html lang="en" className={fontVars} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -112,7 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               alternateName: ['Narwhal Thai', 'Narwhal Thai Table HB'],
               foundingDate: '2026-07',
               parentOrganization: { '@type': 'Organization', name: 'Narwhal Hospitality LLC' },
-              knowsLanguage: ['en', 'th'],
+              knowsLanguage: ['en', 'th', 'vi'],
               amenityFeature: [
                 { '@type': 'LocationFeatureSpecification', name: 'Outdoor patio seating', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Dog-friendly patio', value: true },
@@ -204,6 +211,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <Footer />
         <MobileActionBar />
+        {/* Vietnamese edition helpers: keep <html lang> in step with /vi, and offer
+            "Xem trang tiếng Việt?" to Vietnamese browsers on English pages. */}
+        <LangSync />
+        <ViSuggestBar />
         <ChatWidget />
         {/* Owner-managed promo pop-up (content from /api/promo; edited in /stats). */}
         <PromoCard />

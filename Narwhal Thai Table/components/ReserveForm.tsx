@@ -5,6 +5,9 @@ import { submitNetlifyForm } from '@/lib/netlifyForm';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import { fireConfetti } from '@/components/fx/confetti';
+import { forms } from '@/lib/i18n/forms';
+import type { Locale } from '@/lib/i18n/locales';
+import Rich, { fmt } from '@/lib/i18n/rich';
 
 /** Reservation time slots: 11:00 AM → 10:00 PM, every 30 minutes
  *  (last seating about an hour before the 11:00 PM close). */
@@ -69,7 +72,9 @@ function SelectShell({ children }: { children: ReactNode }) {
  * directly — the old behaviour. The guest then gets no email, but the booking
  * still reaches the restaurant, which is the part that must never fail.
  */
-export default function ReserveForm() {
+export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
+  const t = forms(locale).reserve;
+  const c = forms(locale).common;
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +116,7 @@ export default function ReserveForm() {
           .then(() => { setSending(false); setSubmitted(true); fireConfetti(); })
           .catch(() => {
             setSending(false);
-            setError('Something went wrong — please call us or email welcome@narwhalthaihb.com.');
+            setError(t.error);
           }),
       );
   }
@@ -128,62 +133,64 @@ export default function ReserveForm() {
     >
       <input type="hidden" name="form-name" value="reservation" />
       <div className="font-display text-[clamp(26px,3vw,34px)] font-medium leading-tight tracking-[-0.01em] text-cream [&_em]:font-serif [&_em]:font-normal [&_em]:italic [&_em]:text-brass-light">
-        Book a <em>seat</em> at the table
+        <Rich text={t.title} />
       </div>
-      <div className="mt-2 font-serif text-[16px] italic leading-relaxed text-cream/70">We&apos;ll text or email you to confirm — usually within a few hours.</div>
+      <div className="mt-2 font-serif text-[16px] italic leading-relaxed text-cream/70">{t.sub}</div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
-        <Field id="rsv-first" label="First Name" required>
+        <Field id="rsv-first" label={t.firstName} required>
           <input id="rsv-first" name="first_name" type="text" autoComplete="given-name" required className={field} />
         </Field>
-        <Field id="rsv-last" label="Last Name" required>
+        <Field id="rsv-last" label={t.lastName} required>
           <input id="rsv-last" name="last_name" type="text" autoComplete="family-name" required className={field} />
         </Field>
 
-        <Field id="rsv-email" label="Email" required>
+        <Field id="rsv-email" label={t.email} required>
           <input id="rsv-email" name="email" type="email" autoComplete="email" required className={field} />
         </Field>
-        <Field id="rsv-phone" label="Phone" required>
+        <Field id="rsv-phone" label={t.phone} required>
           <input id="rsv-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required className={field} />
         </Field>
 
-        <Field id="rsv-date" label="Date" required>
+        <Field id="rsv-date" label={t.date} required>
           <input id="rsv-date" name="date" type="date" required className={field} />
         </Field>
-        <Field id="rsv-time" label="Time" required>
+        <Field id="rsv-time" label={t.time} required>
           <SelectShell>
             <select id="rsv-time" name="time" required defaultValue="" className={selectField}>
-              <option value="">Select</option>
+              <option value="">{c.select}</option>
               {TIME_SLOTS.map(t => <option key={t}>{t}</option>)}
             </select>
           </SelectShell>
         </Field>
 
-        <Field id="rsv-party" label="Party Size" required full>
+        <Field id="rsv-party" label={t.party} required full>
           <SelectShell>
+            {/* option values stay English — that is what the team reads in the request */}
             <select id="rsv-party" name="party_size" required defaultValue="" className={selectField}>
-              <option value="">Select</option>
-              <option>2 Guests</option><option>3 Guests</option>
-              <option>4 Guests</option><option>5 Guests</option>
-              <option>6 Guests</option><option>7+ (please specify)</option>
+              <option value="">{c.select}</option>
+              {[2, 3, 4, 5, 6].map((n) => (
+                <option key={n} value={`${n} Guests`}>{fmt(t.guests, { n })}</option>
+              ))}
+              <option value="7+ (please specify)">{t.guestsMore}</option>
             </select>
           </SelectShell>
         </Field>
 
-        <Field id="rsv-notes" label="Anything we should know?" full>
-          <textarea id="rsv-notes" name="notes" rows={4} placeholder="Allergies, spice level, occasion, seating preference..." className={textareaField}></textarea>
+        <Field id="rsv-notes" label={t.notes} full>
+          <textarea id="rsv-notes" name="notes" rows={4} placeholder={t.notesPlaceholder} className={textareaField}></textarea>
         </Field>
       </div>
 
       {/* Honeypot for spam bots — never visible/focusable for real users */}
       <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
-        <label htmlFor="rsv-hp">Leave blank</label>
+        <label htmlFor="rsv-hp">{c.leaveBlank}</label>
         <input id="rsv-hp" name="bot-field" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div className="mt-8">
         <Button type="submit" variant="primary" size="lg" arrow={!sending && !submitted} disabled={sending || submitted} className="w-full sm:w-auto">
-          {submitted ? 'Request Sent' : sending ? 'Sending…' : 'Request Reservation'}
+          {submitted ? t.sent : sending ? c.sending : t.submit}
         </Button>
         <p
           id="reserve-form-status"
@@ -191,7 +198,7 @@ export default function ReserveForm() {
           aria-live="polite"
           className="mt-4 min-h-[1em] font-serif text-[16px] italic leading-relaxed text-brass-light"
         >
-          {submitted && 'Thank you — we will confirm your reservation within a few hours.'}
+          {submitted && t.thanks}
           {error && error}
         </p>
       </div>

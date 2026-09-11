@@ -5,16 +5,25 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SHOW_CHEF, ORDER_ONLINE_URL } from '@/lib/site';
 import { cn } from '@/lib/cn';
+import { chrome, type ChromeDict } from '@/lib/i18n/chrome';
+import { localePath, stripLocale } from '@/lib/i18n/locales';
+import { useLocale } from '@/lib/i18n/useLocale';
+import LocaleSwitch from '@/components/i18n/LocaleSwitch';
 
-const NAV_LINKS = [
-  { href: '/#story', label: 'Our Story' },
-  ...(SHOW_CHEF ? [{ href: '/#chef', label: 'The Chef' }] : []),
-  { href: '/menu', label: 'Menu' },
-  { href: '/lunch', label: 'Lunch' },
-  { href: '/#experience', label: 'Experience' },
-  { href: '/play', label: 'Play' },
-  { href: '/#contact', label: 'Contact' },
-];
+/* Labels come from lib/i18n/chrome.ts (EN / VI); hrefs are English paths and
+   are localised per page (/vi/menu …) — English-only pages such as /play stay
+   English from either side. */
+function navLinks(t: ChromeDict['nav']) {
+  return [
+    { href: '/#story', label: t.story },
+    ...(SHOW_CHEF ? [{ href: '/#chef', label: t.chef }] : []),
+    { href: '/menu', label: t.menu },
+    { href: '/lunch', label: t.lunch },
+    { href: '/#experience', label: t.experience },
+    { href: '/play', label: t.play },
+    { href: '/#contact', label: t.contact },
+  ];
+}
 
 /**
  * Primary navigation — a glass bar docked directly under the multilingual
@@ -23,6 +32,10 @@ const NAV_LINKS = [
  */
 export default function Nav() {
   const pathname = usePathname();
+  const locale = useLocale();
+  const t = chrome(locale).nav;
+  const NAV_LINKS = navLinks(t);
+  const href = (p: string) => localePath(locale, p);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -76,10 +89,11 @@ export default function Nav() {
   }, []);
 
   const isCurrent = (href: string) => {
-    if (href === '/menu') return pathname === '/menu' || pathname?.startsWith('/menu/');
-    if (href === '/lunch') return pathname === '/lunch';
-    if (href === '/play') return pathname === '/play';
-    if (href === '/contact') return pathname === '/contact' || pathname?.startsWith('/contact/');
+    const p = stripLocale(pathname ?? '/');
+    if (href === '/menu') return p === '/menu' || p.startsWith('/menu/');
+    if (href === '/lunch') return p === '/lunch';
+    if (href === '/play') return p === '/play';
+    if (href === '/contact') return p === '/contact' || p.startsWith('/contact/');
     return false;
   };
 
@@ -93,10 +107,10 @@ export default function Nav() {
 
   return (
     <>
-      <a href="#main" className="skip-link">Skip to content</a>
+      <a href="#main" className="skip-link">{t.skip}</a>
 
       <nav
-        aria-label="Primary"
+        aria-label={t.primary}
         className={cn(
           'fixed inset-x-0 z-[100] top-[var(--cs-ticker-h)] transition-[background-color,box-shadow,border-color,backdrop-filter,transform] duration-500',
           'border-b',
@@ -108,8 +122,8 @@ export default function Nav() {
       >
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
           <Link
-            href="/"
-            aria-label="Narwhal Thai Table home"
+            href={href('/')}
+            aria-label={t.home}
             className="group flex items-center gap-3 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light"
           >
             <span
@@ -124,11 +138,11 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-8 lg:flex">
+          <div className="hidden items-center gap-6 lg:flex xl:gap-8">
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}
-                href={l.href}
+                href={href(l.href)}
                 aria-current={isCurrent(l.href) ? 'page' : undefined}
                 className={linkCls(isCurrent(l.href))}
               >
@@ -146,11 +160,11 @@ export default function Nav() {
                 data-magnetic
                 className="btn-shine inline-flex items-center rounded-full bg-brass px-5 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-brass-light hover:shadow-[0_14px_30px_-12px_rgba(200,162,78,0.8)]"
               >
-                Order Online
+                {t.order}
               </a>
             )}
             <Link
-              href="/contact/reservation"
+              href={href('/contact/reservation')}
               className={cn(
                 'inline-flex items-center rounded-full px-5 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] transition-[background-color,border-color,color,transform] duration-300 hover:-translate-y-0.5',
                 ORDER_ONLINE_URL
@@ -158,15 +172,16 @@ export default function Nav() {
                   : 'bg-brass text-navy hover:bg-brass-light',
               )}
             >
-              Save a Seat
+              {t.reserve}
             </Link>
+            <LocaleSwitch />
           </div>
 
           <button
             type="button"
             aria-expanded={open}
             aria-controls="nav-drawer"
-            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-label={open ? t.close : t.open}
             onClick={() => setOpen((v) => !v)}
             className="relative grid size-11 place-items-center rounded-full border border-cream/15 bg-white/[0.04] text-cream lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light"
           >
@@ -205,11 +220,11 @@ export default function Nav() {
         )}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(200,162,78,0.16),transparent_70%)]" />
-        <nav aria-label="Mobile" className="relative flex flex-col gap-1">
+        <nav aria-label={t.mobile} className="relative flex flex-col gap-1">
           {NAV_LINKS.map((l, i) => (
             <Link
               key={l.href}
-              href={l.href}
+              href={href(l.href)}
               onClick={() => setOpen(false)}
               aria-current={isCurrent(l.href) ? 'page' : undefined}
               style={{ transitionDelay: open ? `${80 + i * 45}ms` : '0ms' }}
@@ -233,20 +248,23 @@ export default function Nav() {
               onClick={() => setOpen(false)}
               className="inline-flex items-center justify-center rounded-full bg-brass px-6 py-4 font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-navy"
             >
-              Order Online
+              {t.orderDrawer}
             </a>
           )}
           <Link
-            href="/contact/reservation"
+            href={href('/contact/reservation')}
             onClick={() => setOpen(false)}
             className={cn(
               'inline-flex items-center justify-center rounded-full px-6 py-4 font-sans text-[11px] font-medium uppercase tracking-[0.18em]',
               ORDER_ONLINE_URL ? 'border border-cream/25 text-cream' : 'bg-brass text-navy',
             )}
           >
-            Save a Seat
+            {t.reserve}
           </Link>
-          <p className="mt-2 text-center font-serif text-[13px] italic text-cream/50">19072 Beach Blvd · Huntington Beach</p>
+          <div className="mt-2 flex items-center justify-center gap-4">
+            <LocaleSwitch size="lg" />
+          </div>
+          <p className="mt-2 text-center font-serif text-[13px] italic text-cream/50">{t.address}</p>
         </div>
       </div>
     </>

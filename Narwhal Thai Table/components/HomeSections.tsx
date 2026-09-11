@@ -14,6 +14,14 @@ import GoldCorners from '@/components/fx/GoldCorners';
 import TextReveal from '@/components/fx/TextReveal';
 import { DISHES } from '@/lib/dishes';
 import { getDishImage } from '@/lib/media';
+import { ui } from '@/lib/i18n';
+import { localizeDish } from '@/lib/i18n/dish';
+import { localePath, type Locale } from '@/lib/i18n/locales';
+import Rich from '@/lib/i18n/rich';
+
+/* Every section takes the page's locale (default English) and reads its copy
+   from lib/i18n — the same component renders / and /vi. */
+type LocaleProp = { locale?: Locale };
 
 /* Art pass (9 Sep 2026) — placemat-style artwork generated for the site
    (public/images/art, Higgsfield, owner's placemat as the style reference).
@@ -74,38 +82,33 @@ const sealCard =
 /* ============================================================
    STORY / ABOUT
    ============================================================ */
-const STORY_STATS = [
-  { num: '3', label: 'Siblings, One Table' },
-  { num: '30', label: 'Years of Restaurant Life' },
-  { num: 'HB', label: 'Our Hometown' },
-];
-
-export function StorySection() {
+export function StorySection({ locale = 'en' }: LocaleProp) {
+  const t = ui(locale).story;
   return (
     <Section id="story" tone="navy">
       <Container className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
         {/* Future: <MediaFrame ratio="4/5" ornament="inset" src="/images/story.jpg" alt="..." /> */}
         <FadeUp className="flex flex-col items-start gap-6">
-          <Eyebrow>Our Story</Eyebrow>
+          <Eyebrow>{t.eyebrow}</Eyebrow>
           <Heading as="h2" size="lg">
-            Some families build houses. <em>Ours builds tables</em>.
+            <Rich text={t.title} locale={locale} />
           </Heading>
           <div className={cn('flex flex-col gap-5', bodyText)}>
-            <p>We are three siblings — Aileen, Annie, and AK — with thirty years of restaurant life between us: opening rooms, running kitchens, learning what makes a stranger relax into a chair. Somewhere along the way, Huntington Beach won us over — the salt air, the long gold light down PCH, the way this town waves at itself on the walk to the pier.</p>
-            <p>So we did what our family has always done with the places we love: we cooked for it. Narwhal Thai Table is the promise we&apos;ve been keeping our whole working lives — Thai recipes rooted in the royal-court tradition, made fresh for every single plate, from ingredients we choose the slow, stubborn way. No shortcuts, no almost.</p>
+            <p>{t.p1}</p>
+            <p>{t.p2}</p>
             {/* Succession, stated plainly. The owner bought the Thai Gulf business
                 and renamed it — saying so out loud serves the people still searching
                 the old name (27 clicks / 216 impressions last quarter) and tells
                 Google the two entities at this address are one continuous story. */}
-            <p>If this address feels familiar, it should. For years it was Thai Gulf — a neighborhood standby. Our family bought the business, hung a new name on the door, and made it our own: our recipes, our mortar, our welcome. If you got here looking for Thai Gulf — welcome back. The table is still here. <Link href="/about" className={cn('whitespace-nowrap', inlineLink)}>Read the whole story &rarr;</Link></p>
+            <p>{t.p3} <Link href={localePath(locale, '/about')} className={cn('whitespace-nowrap', inlineLink)}>{t.readMore}</Link></p>
             {/* scroll-linked word reveal (Magic UI "text reveal") on the closing line */}
             <TextReveal
               className="font-serif text-[19px] italic leading-relaxed text-brass-light sm:text-[21px]"
-              text="Because what we serve isn’t just dinner. It’s everything around it — the warmth, the welcome, the wanting you back."
+              text={t.closing}
             />
           </div>
           <div className="mt-4 grid w-full grid-cols-3 gap-4 sm:gap-6">
-            {STORY_STATS.map((s) => (
+            {t.stats.map((s) => (
               <div key={s.label} className="border-t border-cream/10 pt-5">
                 <div className="font-display text-[clamp(32px,4vw,48px)] font-medium leading-none text-brass-light">
                   {/^\d+$/.test(s.num) ? <NumberTicker value={Number(s.num)} duration={1600} /> : s.num}
@@ -123,8 +126,8 @@ export function StorySection() {
             base="/images/art/royal-court"
             widths={[1000, 1800]}
             ratio="4 / 5"
-            alt="Gold line-art of a Thai royal-court banquet — tiered pedestal trays, lotus blossoms and candles under a palace gable"
-            caption={<>Established MMXXVI &middot; Huntington Beach</>}
+            alt={t.artAlt}
+            caption={t.artCaption}
             className="[&_img]:object-[50%_40%]"
           />
         </FadeUp>
@@ -235,7 +238,8 @@ export function ChefSection() {
    MENU PREVIEW (on the home page) — shows signature dishes only
    with a CTA pointing to the full /menu page.
    ============================================================ */
-export function MenuPreviewSection() {
+export function MenuPreviewSection({ locale = 'en' }: LocaleProp) {
+  const t = ui(locale).menuPreview;
   // Prefer signature dishes we actually have photography for, so the preview
   // grid is all real plates (never a wall of placeholders). Falls back to the
   // plain signature list if fewer than six have photos yet.
@@ -253,15 +257,15 @@ export function MenuPreviewSection() {
   ];
   const picked = HOME_PICKS.map(slug => DISHES.find(d => d.slug === slug)).filter((d): d is (typeof DISHES)[number] => Boolean(d));
   const photographed = DISHES.filter(d => d.signature && (d.image?.src ?? getDishImage(d.slug)) && !picked.includes(d));
-  const signatures = [...picked, ...photographed].slice(0, 6);
+  const signatures = [...picked, ...photographed].slice(0, 6).map((d) => localizeDish(d, locale));
   return (
     <Section id="menu">
       <Container>
         <FadeUp>
           <SectionHead
-            eyebrow="What's Cooking"
-            title={<>Fresh isn&apos;t a claim here. <em>It&apos;s a schedule</em>.</>}
-            lede="Nothing at this table is made ahead and nothing waits under a lamp — every plate begins when you ask for it. These are the plates we'd point you to first; the full menu, thirteen categories deep, has a page of its own."
+            eyebrow={t.eyebrow}
+            title={<Rich text={t.title} locale={locale} />}
+            lede={t.lede}
           />
         </FadeUp>
 
@@ -275,7 +279,7 @@ export function MenuPreviewSection() {
             const feature = i === 0;
             return (
               <div key={d.slug} className={cn(feature && 'lg:col-span-2 lg:row-span-2')}>
-                <Link href={`/menu/${d.slug}`} className={cardSurface('h-full')}>
+                <Link href={localePath(locale, `/menu/${d.slug}`)} className={cardSurface('h-full')}>
                   <MediaFrame
                     ratio="4/3"
                     flush
@@ -306,10 +310,10 @@ export function MenuPreviewSection() {
                     </div>
                     <p className={cn('line-clamp-2 text-[14.5px] leading-relaxed text-cream/70', feature && 'lg:line-clamp-3 lg:text-[16px]')}>{d.description}</p>
                     <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-cream/10 pt-4">
-                      <Tag>Signature</Tag>
-                      {d.spicy && <Tag tone="spicy">Spicy</Tag>}
+                      <Tag>{t.signature}</Tag>
+                      {d.spicy && <Tag tone="spicy">{t.spicy}</Tag>}
                       <span className="ml-auto inline-flex items-center gap-1.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-brass-light">
-                        Read the story <Arrow />
+                        {t.readStory} <Arrow />
                       </span>
                     </div>
                   </div>
@@ -320,8 +324,8 @@ export function MenuPreviewSection() {
         </FadeUp>
 
         <div className="mt-12 flex justify-center lg:mt-16">
-          <Button href="/menu" variant="primary" size="lg" arrow>
-            See the full menu
+          <Button href={localePath(locale, '/menu')} variant="primary" size="lg" arrow>
+            {t.seeMenu}
           </Button>
         </div>
       </Container>
@@ -349,16 +353,38 @@ function Pillar({ numeral, icon, title, children }: { numeral: string; icon: Rea
 
 const pillarIcon = 'size-9';
 
-export function ExperienceSection() {
+const PILLAR_ICONS = [
+  <svg key="i" className={pillarIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
+    <path d="M24 4c-2 4-6 8-6 14a6 6 0 0012 0c0-6-4-10-6-14z" />
+    <circle cx="24" cy="34" r="10" />
+    <path d="M16 38c2-2 14-2 16 0" />
+  </svg>,
+  <svg key="ii" className={pillarIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
+    <path d="M6 26c0 8 8 16 18 16s18-8 18-16" />
+    <path d="M14 18a10 10 0 0120 0" />
+    <path d="M24 8v6" />
+    <circle cx="24" cy="26" r="3" fill="currentColor" />
+  </svg>,
+  <svg key="iii" className={pillarIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
+    <path d="M12 36c0-8 6-14 12-14s12 6 12 14" />
+    <path d="M16 36h16" />
+    <circle cx="18" cy="14" r="2" fill="currentColor" />
+    <circle cx="30" cy="14" r="2" fill="currentColor" />
+    <path d="M20 18c1 2 3 3 4 3s3-1 4-3" />
+  </svg>,
+];
+
+export function ExperienceSection({ locale = 'en' }: LocaleProp) {
+  const t = ui(locale).experience;
   return (
     <Section id="experience" className="border-t border-cream/[0.06]">
       <DotPattern className="[mask-image:radial-gradient(70%_70%_at_50%_30%,#000,transparent)]" />
       <Container>
         <FadeUp>
           <SectionHead
-            eyebrow="The Experience"
-            title={<>You come for dinner. <em>You leave with more</em>.</>}
-            lede="Three things hold this house together. Thirty years of restaurant life taught them to us, and we'd rather stay small forever than compromise a single one."
+            eyebrow={t.eyebrow}
+            title={<Rich text={t.title} locale={locale} />}
+            lede={t.lede}
           />
         </FadeUp>
         {/* Art pass: the mortar-and-herbs painting stays pinned on the left while
@@ -370,60 +396,19 @@ export function ExperienceSection() {
               base="/images/art/wok-fire"
               widths={[700, 1100]}
               ratio="3 / 4"
-              alt="Gold line-art of a Thai wok mid-toss over an open flame — shrimp, holy basil and chilies caught in the air"
-              caption={<>The wok isn&apos;t lit until you order</>}
+              alt={t.artAlt}
+              caption={t.artCaption}
               sizes="(max-width: 1024px) 100vw, 45vw"
             />
           </FadeUp>
         <FadeUp stagger className="grid gap-6 lg:gap-8">
-          <div>
-            <Pillar
-              numeral="I."
-              title="Fresh, Every Plate"
-              icon={
-                <svg className={pillarIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
-                  <path d="M24 4c-2 4-6 8-6 14a6 6 0 0012 0c0-6-4-10-6-14z" />
-                  <circle cx="24" cy="34" r="10" />
-                  <path d="M16 38c2-2 14-2 16 0" />
-                </svg>
-              }
-            >
-              The wok isn&apos;t lit until your order reaches the kitchen. Vegetables go in raw and come out with a bite; herbs are cut the same hour you taste them. Nothing waits under a heat lamp — if it isn&apos;t fresh, it doesn&apos;t leave our kitchen.
-            </Pillar>
-          </div>
-          <div>
-            <Pillar
-              numeral="II."
-              title="Chosen by Hand"
-              icon={
-                <svg className={pillarIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
-                  <path d="M6 26c0 8 8 16 18 16s18-8 18-16" />
-                  <path d="M14 18a10 10 0 0120 0" />
-                  <path d="M24 8v6" />
-                  <circle cx="24" cy="26" r="3" fill="currentColor" />
-                </svg>
-              }
-            >
-              Lemongrass, galangal, makrut lime, coriander root, bird&apos;s-eye chilies — cut fresh, never from a jar. The dry spices are toasted and ground here, in small amounts, because ground spice loses its smell in weeks. Every curry paste in this kitchen starts as whole ingredients and a mortar. <Link href="/thai-food-orange-county" className={cn('xl:whitespace-nowrap', inlineLink)}>How to spot a real Thai kitchen &rarr;</Link>
-            </Pillar>
-          </div>
-          <div>
-            <Pillar
-              numeral="III."
-              title="From Our Family"
-              icon={
-                <svg className={pillarIcon} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden="true" focusable="false">
-                  <path d="M12 36c0-8 6-14 12-14s12 6 12 14" />
-                  <path d="M16 36h16" />
-                  <circle cx="18" cy="14" r="2" fill="currentColor" />
-                  <circle cx="30" cy="14" r="2" fill="currentColor" />
-                  <path d="M20 18c1 2 3 3 4 3s3-1 4-3" />
-                </svg>
-              }
-            >
-              Aileen, Annie, and AK — three siblings who grew up in dining rooms and never wanted to leave. We still believe the finest thing a restaurant can serve is the feeling of being expected.
-            </Pillar>
-          </div>
+          {t.pillars.map((p, i) => (
+            <div key={p.numeral}>
+              <Pillar numeral={p.numeral} title={p.title} icon={PILLAR_ICONS[i]}>
+                <Rich text={p.body} locale={locale} linkClassName={cn('xl:whitespace-nowrap', inlineLink)} />
+              </Pillar>
+            </div>
+          ))}
         </FadeUp>
         </div>
       </Container>
@@ -465,15 +450,16 @@ export function ReserveSection() {
 /* ============================================================
    THE ROOM — real photography from the dining room & patio
    ============================================================ */
-export function RoomSection() {
+export function RoomSection({ locale = 'en' }: LocaleProp) {
+  const t = ui(locale).room;
   return (
     <Section id="room" tone="navy">
       <Container>
         <FadeUp>
           <SectionHead
-            eyebrow="The Room"
-            title={<>A little room with <em>a lot of heart</em>.</>}
-            lede="String lights over the patio, orchids at the counter, a good glass of wine while the kitchen hums. Bring everyone — save room for the mango sticky rice, and we'll happily squeeze in one more chair."
+            eyebrow={t.eyebrow}
+            title={<Rich text={t.title} locale={locale} />}
+            lede={t.lede}
           />
         </FadeUp>
         <FadeUp className="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:mt-16 lg:grid-cols-[1.6fr_1fr]">
@@ -481,7 +467,7 @@ export function RoomSection() {
               Poster = the clip's own first frame, so the swap-in is seamless.
               Spans both rows on desktop and stretches to the two photos' height. */}
           <figure
-            aria-label="Inside Narwhal Thai Table — the dining room on opening night"
+            aria-label={t.videoLabel}
             className="relative isolate m-0 aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-frame)] border border-brass/20 bg-navy shadow-card sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:h-full lg:aspect-auto"
           >
             <video
@@ -500,14 +486,14 @@ export function RoomSection() {
           <MediaFrame
             ratio="16/10"
             src="/images/room/storefront.jpg"
-            alt="The Narwhal Thai Table storefront at dusk, string lights glowing over the patio"
+            alt={t.storefrontAlt}
             sizes="(max-width: 900px) 100vw, 40vw"
             className="border border-brass/20 shadow-card"
           />
           <MediaFrame
             ratio="16/10"
             src="/images/room/family-spread.jpg"
-            alt="A family-style spread — tom yum seafood hot pot, crying tiger, orange chicken, morning glory and Thai iced tea"
+            alt={t.spreadAlt}
             sizes="(max-width: 900px) 100vw, 40vw"
             className="border border-brass/20 shadow-card"
           />
@@ -534,43 +520,45 @@ function ContactCard({ href, num, title, email, go, children }: { href: string; 
   );
 }
 
-export function ContactSection() {
+export function ContactSection({ locale = 'en' }: LocaleProp) {
+  const t = ui(locale).contactHome;
+  const c = t.cards;
   return (
     <Section id="contact" tone="aurora">
       <DotPattern className="[mask-image:radial-gradient(60%_50%_at_50%_100%,#000,transparent)]" />
       <Container>
         <FadeUp>
           <SectionHead
-            eyebrow="Come See Us"
-            title={<>Tell us you&apos;re coming — <em>we&apos;ll do the rest</em>.</>}
+            eyebrow={t.eyebrow}
+            title={<Rich text={t.title} locale={locale} />}
           />
         </FadeUp>
 
         <FadeUp stagger className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-3 lg:gap-8">
           <div>
-            <ContactCard href="/contact/reservation" num="01" title="Reservations" email="reservations@narwhalthaihb.com" go="Book a table">
-              Ask for a table and consider it held &mdash; we confirm within a few hours.
+            <ContactCard href={localePath(locale, '/contact/reservation')} num="01" title={c.reservation.title} email="reservations@narwhalthaihb.com" go={c.reservation.go}>
+              {c.reservation.body}
             </ContactCard>
           </div>
           <div>
-            <ContactCard href="/contact/catering" num="02" title={<>Catering &amp; Events</>} email="catering@narwhalthaihb.com" go="Plan an event">
-              Buyouts, family-style feasts, catering that travels well &mdash; your occasion, our table.
+            <ContactCard href={localePath(locale, '/contact/catering')} num="02" title={c.catering.title} email="catering@narwhalthaihb.com" go={c.catering.go}>
+              {c.catering.body}
             </ContactCard>
           </div>
           <div>
-            <ContactCard href="/contact/message" num="03" title="Say Hello" email="welcome@narwhalthaihb.com" go="Send a message">
-              Questions, ideas, a hello from down the street &mdash; every note reaches one of us three.
+            <ContactCard href={localePath(locale, '/contact/message')} num="03" title={c.message.title} email="welcome@narwhalthaihb.com" go={c.message.go}>
+              {c.message.body}
             </ContactCard>
           </div>
         </FadeUp>
 
         <FadeUp className="mt-16 grid gap-10 border-t border-cream/10 pt-14 lg:mt-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:pt-16">
           <div className="flex flex-col items-start gap-5">
-            <Eyebrow>Find us</Eyebrow>
-            <Heading as="h3" size="md">Visit the table</Heading>
-            <p className="text-[16.5px] leading-[1.8] text-cream/75">19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" className="text-cream transition-colors duration-300 hover:text-brass-light">(714) 378-6003</a><br/>Open every day &middot; Mon&ndash;Fri 11:30 AM &ndash; 10:00 PM &middot; Sat&ndash;Sun 12:00 PM &ndash; 10:00 PM</p>
+            <Eyebrow>{t.findEyebrow}</Eyebrow>
+            <Heading as="h3" size="md">{t.findTitle}</Heading>
+            <p className="text-[16.5px] leading-[1.8] text-cream/75">19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" className="text-cream transition-colors duration-300 hover:text-brass-light">(714) 378-6003</a><br/>{t.findHours}</p>
           </div>
-          <MapEmbed />
+          <MapEmbed title={t.mapTitle} label={t.mapLink} />
         </FadeUp>
       </Container>
     </Section>

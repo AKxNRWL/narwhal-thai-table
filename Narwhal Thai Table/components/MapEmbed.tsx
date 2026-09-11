@@ -21,7 +21,15 @@ const CID = '6790489916821266867';
 const EMBED_SRC = `https://www.google.com/maps/embed?pb=!1m4!3m2!1m1!4s${CID}!6i16`;
 const DIRECTIONS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(PLACE)}`;
 
-export default function MapEmbed() {
+export default function MapEmbed({
+  title = 'Narwhal Thai Table on Google Maps — 19072 Beach Blvd, Huntington Beach',
+  label = 'Get directions',
+}: {
+  /** iframe title (EN / VI) */
+  title?: string;
+  /** caption button text (EN / VI) */
+  label?: string;
+}) {
   return (
     /* min-w-0: the aspect-ratio + min-height pair would otherwise transfer a
        512px min-content width into a 1fr grid column and overflow on phones. */
@@ -29,7 +37,7 @@ export default function MapEmbed() {
       <div className="relative aspect-[16/10] min-h-[320px] w-full min-w-0 overflow-hidden rounded-[var(--radius-frame)] border border-brass/25 bg-navy shadow-card">
         <iframe
           src={EMBED_SRC}
-          title="Narwhal Thai Table on Google Maps — 19072 Beach Blvd, Huntington Beach"
+          title={title}
           loading="lazy"
           allowFullScreen
           referrerPolicy="no-referrer-when-downgrade"
@@ -38,7 +46,7 @@ export default function MapEmbed() {
       </div>
       <div className="mt-4">
         <Button href={DIRECTIONS_LINK} target="_blank" rel="noopener" variant="ghost" arrow className="text-[11px]">
-          Get directions
+          {label}
         </Button>
       </div>
     </div>
