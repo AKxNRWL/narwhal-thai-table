@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import MenuTabs from '@/components/MenuTabs';
+import MenuSections from '@/components/MenuSections';
 import ArtBand from '@/components/fx/ArtBand';
 import { Section, Container, Eyebrow, Heading } from '@/components/ui/Section';
 import { cn } from '@/lib/cn';
@@ -72,64 +72,9 @@ function menuJsonLd() {
   };
 }
 
-/**
- * Plain, always-visible index of every dish.
- *
- * WHY THIS EXISTS — the tab panels above are the nice way to browse, but the
- * twelve non-active panels carry the `hidden` attribute. Crawlers reach links
- * inside hidden containers with far less weight, and as of 24 Aug 2026 a
- * `site:` check showed Google had indexed only ~8 of the 67 dish pages: all
- * the per-dish titles, MenuItem schema and stories were sitting on pages
- * Google had never fetched. This block is ordinary, always-rendered HTML —
- * one link per dish under a real heading per course — so every dish page has
- * a crawlable path from a page that IS indexed.
- *
- * It earns its place for people too: a returning guest who already knows
- * what they want gets the whole menu in one scan instead of hunting tabs.
- */
-function DishIndex() {
-  return (
-    <nav aria-labelledby="dish-index-title" className="mt-20 border-t border-cream/[0.06] pt-14 lg:mt-28 lg:pt-16">
-      <Heading as="h2" size="md" id="dish-index-title">Every dish, <em>by course</em></Heading>
-      <p className="mt-4 max-w-xl font-serif text-[15.5px] italic leading-relaxed text-cream/55">
-        Tap any name to read where the recipe comes from, what goes in it, and how to eat it well.
-      </p>
-      <div className="mt-10 columns-2 gap-x-8 md:columns-3 xl:columns-4">
-        {CATEGORIES.map((cat) => {
-          const items = DISHES.filter((d) => d.category === cat.id);
-          if (!items.length) return null;
-          return (
-            <div className="mb-8 break-inside-avoid" key={cat.id}>
-              <h3 className="font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{getCategoryLabel(cat.id)}</h3>
-              <ul className="mt-3 flex flex-col gap-1.5">
-                {items.map((d) => (
-                  <li key={d.slug}>
-                    <Link
-                      href={`/menu/${d.slug}`}
-                      className="group inline-block text-[13.5px] leading-snug text-cream/70 transition-colors duration-300 hover:text-brass-light"
-                    >
-                      {d.name}
-                      {d.thai && (
-                        <>
-                          {' '}
-                          <span lang="th" className="font-serif text-[12px] italic text-cream/40 transition-colors duration-300 group-hover:text-brass-light/70">{d.thai}</span>
-                        </>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
 export default function MenuPage() {
   // Photo lookup built server-side at build time (getDishImage checks the
-  // filesystem, so the client-side MenuTabs can't call it directly).
+  // filesystem, so the client-side MenuSections can't call it directly).
   const photos: Record<string, string> = {};
   for (const d of DISHES) {
     const src = d.image?.src ?? getDishImage(d.slug);
@@ -188,8 +133,7 @@ export default function MenuPage() {
             See lunch <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
           </span>
         </Link>
-        <MenuTabs photos={photos} />
-        <DishIndex />
+        <MenuSections photos={photos} />
       </Container>
     </Section>
     </>
