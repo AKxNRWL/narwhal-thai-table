@@ -102,7 +102,9 @@ export default function MenuPage() {
           </Heading>
         </div>
       </ArtBand>
-    <Section tone="aurora" className="pt-10 sm:pt-12 lg:pt-16">
+    {/* overflow-clip (not hidden): the aurora layer still clips, but the section no longer
+        becomes a scroll container — which is what kept the sticky course bar from sticking. */}
+    <Section tone="aurora" className="overflow-clip pt-10 sm:pt-12 lg:pt-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd()) }}
