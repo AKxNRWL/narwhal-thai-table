@@ -778,3 +778,40 @@
 @media (max-width: 760px) {
   .nara-fab { bottom: calc(16px + var(--mab-h)); }
 }
+/* While the full-screen phone menu is open the chat launcher (z 1200) would sit
+   on top of the drawer's language grid — hide it until the menu closes. */
+body[data-nav-open="true"] .nara-fab { display: none; }
+
+/* ==========================================================================
+   TRANSLATED EDITIONS — script-appropriate type (11 Sep 2026)
+   /th, /zh, /ko, /ja set <html lang> (lib/i18n/locales.ts htmlLangScript);
+   the Latin faces stay first so brand words and dish names keep their look,
+   and every Thai / CJK glyph falls through to Noto Sans (hoisted into <head>
+   by app/[locale]/layout.tsx) or the platform's own font. Vietnamese is
+   Latin and needs nothing here.
+   ========================================================================== */
+html[lang="th"] {
+  --font-display: var(--f-display), "Noto Sans Thai", "Leelawadee UI", "Thonburi", system-ui, sans-serif;
+  --font-serif: var(--f-serif), "Noto Sans Thai", "Leelawadee UI", "Thonburi", Georgia, serif;
+  --font-sans: var(--f-sans), "Noto Sans Thai", "Leelawadee UI", "Thonburi", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+html[lang="zh-CN"] {
+  --font-display: var(--f-display), "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-serif: var(--f-serif), "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Georgia, serif;
+  --font-sans: var(--f-sans), "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+html[lang="ko"] {
+  --font-display: var(--f-display), "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-serif: var(--f-serif), "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Georgia, serif;
+  --font-sans: var(--f-sans), "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+html[lang="ja"] {
+  --font-display: var(--f-display), "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  --font-serif: var(--f-serif), "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", Georgia, serif;
+  --font-sans: var(--f-sans), "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+/* Thai vowel marks need air above and below; the tight Latin heading leading clips them. */
+html[lang="th"] :is(h1, h2, h3) { line-height: 1.25; }
+/* CJK glyphs are square: no synthetic italic, no negative tracking. */
+html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(h1, h2, h3) { line-height: 1.22; letter-spacing: 0; }
+html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(em, .italic, .font-serif) { font-style: normal; }

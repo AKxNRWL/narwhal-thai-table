@@ -1,4 +1,4 @@
-import type { Pairing } from '@/lib/dishes';
+import type { DishL10n } from './dish';
 
 /**
  * Vietnamese prose for every dish on the menu — descriptions, ledes, histories
@@ -13,15 +13,7 @@ import type { Pairing } from '@/lib/dishes';
  * Translated 11 Sep 2026 from the English copy (owner: ship first, refine
  * from feedback — "ขึ้นก่อนแล้วแก้ตามทีหลัง"). Edit freely; keep the facts.
  */
-export type DishVi = {
-  description?: string;
-  variants?: string[];
-  ingredients?: string[];
-  pairing?: Pairing;
-  story?: { lede?: string; history?: string; howToEat?: string; chefNote?: string };
-};
-
-export const DISHES_VI: Record<string, DishVi> = {
+export const DISHES_VI: Record<string, DishL10n> = {
   "narwhal-chicken-wings": {
     description: "Cánh gà giòn rụm, trộn nóng với gia vị Thái nhà làm — thơm tỏi, dậy tiêu, mọng nước tới tận xương.",
     story: {

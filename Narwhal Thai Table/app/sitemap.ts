@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { DISHES } from '@/lib/dishes';
 import { SITE_URL } from '@/lib/site';
-import { hasViTwin, localePath } from '@/lib/i18n/locales';
+import { LOCALES, LOCALE_TAG, hasTwin, localePath } from '@/lib/i18n/locales';
 
 /**
  * sitemap.xml (served at /sitemap.xml by Next.js).
@@ -9,9 +9,9 @@ import { hasViTwin, localePath } from '@/lib/i18n/locales';
  * (lib/dishes.ts), which is exactly the long-tail Google food searches hit
  * ("pad thai huntington beach", "khao soi near me", …).
  *
- * Vietnamese edition (Sep 2026): every page that has a /vi twin is listed
- * twice, each entry carrying both language alternates (hreflang in the
- * sitemap) plus the Vietnamese-only Little Saigon page.
+ * Translated editions (Sep 2026): every page that has twins is listed once
+ * per language (/, /vi, /th, /zh, /ko, /ja), each entry carrying all the
+ * hreflang alternates, plus the Vietnamese-only Little Saigon page.
  */
 // Stable content-update date — bump this when pages/menu meaningfully change.
 // Using a fixed date (not `new Date()`) keeps <lastmod> meaningful to Google
@@ -20,16 +20,15 @@ const LAST_CONTENT_UPDATE = new Date('2026-09-11T00:00:00Z');
 
 type Entry = MetadataRoute.Sitemap[number];
 
-/** One English page → its sitemap entries (itself, and its /vi twin when one exists). */
+/** One English page → its sitemap entries (itself, and every translated twin when it has them). */
 function pages(path: string, base: Omit<Entry, 'url' | 'alternates'>): Entry[] {
   const en = `${SITE_URL}${path}`;
-  if (!hasViTwin(path)) return [{ url: en, ...base }];
-  const vi = `${SITE_URL}${localePath('vi', path)}`;
-  const alternates = { languages: { 'en-US': en, 'vi-VN': vi, 'x-default': en } };
-  return [
-    { url: en, ...base, alternates },
-    { url: vi, ...base, alternates },
-  ];
+  if (!hasTwin(path)) return [{ url: en, ...base }];
+  const languages: Record<string, string> = {};
+  for (const l of LOCALES) languages[LOCALE_TAG[l]] = `${SITE_URL}${localePath(l, path)}`;
+  languages['x-default'] = en;
+  const alternates = { languages };
+  return LOCALES.map((l) => ({ url: `${SITE_URL}${localePath(l, path)}`, ...base, alternates }));
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {

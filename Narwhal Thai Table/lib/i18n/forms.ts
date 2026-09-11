@@ -1,3 +1,5 @@
+import { FORMS_LOCALES } from './forms.locales';
+import { deepMerge } from './merge';
 import type { Locale } from './locales';
 
 /**
@@ -86,85 +88,14 @@ const en = {
 
 export type FormsDict = typeof en;
 
-const vi: FormsDict = {
-  common: {
-    select: 'Chọn',
-    sending: 'Đang gửi…',
-    leaveBlank: 'Để trống',
-  },
-  reserve: {
-    title: 'Giữ một *chỗ* ở bàn ăn',
-    sub: 'Chúng tôi sẽ nhắn tin hoặc email để xác nhận — thường trong vài giờ.',
-    firstName: 'Tên',
-    lastName: 'Họ',
-    email: 'Email',
-    phone: 'Điện thoại',
-    date: 'Ngày',
-    time: 'Giờ',
-    party: 'Số người',
-    guests: '{n} người',
-    guestsMore: '7+ (vui lòng ghi rõ)',
-    notes: 'Có gì chúng tôi nên biết không?',
-    notesPlaceholder: 'Dị ứng, độ cay, dịp đặc biệt, chỗ ngồi mong muốn...',
-    submit: 'Gửi yêu cầu đặt bàn',
-    sent: 'Đã gửi yêu cầu',
-    thanks: 'Cảm ơn bạn — chúng tôi sẽ xác nhận bàn trong vài giờ.',
-    error: 'Có lỗi xảy ra — vui lòng gọi cho chúng tôi hoặc email welcome@narwhalthaihb.com.',
-  },
-  contact: {
-    title: 'Gửi chúng tôi *một lời nhắn*',
-    sub: 'Thắc mắc, nhà cung cấp, báo chí — gì cũng được. Chúng tôi sẽ hồi âm.',
-    name: 'Họ tên',
-    email: 'Email',
-    phone: 'Điện thoại (không bắt buộc)',
-    topic: 'Về việc gì?',
-    topics: {
-      general: 'Câu hỏi chung',
-      reservation: 'Đặt bàn',
-      catering: 'Đặt tiệc & sự kiện riêng',
-      supplier: 'Nhà cung cấp',
-      press: 'Báo chí / truyền thông',
-      careers: 'Tuyển dụng',
-      other: 'Khác',
-    },
-    message: 'Lời nhắn',
-    messagePlaceholder: 'Chúng tôi có thể giúp gì cho bạn?',
-    submit: 'Gửi lời nhắn',
-    sent: 'Đã gửi lời nhắn',
-    thanks: 'Cảm ơn bạn — chúng tôi sẽ sớm trả lời.',
-    error: 'Có lỗi xảy ra — vui lòng email welcome@narwhalthaihb.com.',
-  },
-  catering: {
-    title: 'Đặt tiệc & *sự kiện riêng*',
-    sub: 'Bao trọn nhà hàng, tiệc nếm thử kiểu gia đình, nấu tiệc tận nơi — kể chúng tôi nghe về sự kiện của bạn.',
-    name: 'Họ tên',
-    email: 'Email',
-    phone: 'Điện thoại',
-    date: 'Ngày tổ chức',
-    guests: 'Số khách',
-    guestOptions: { upTo10: 'Dưới 10', g10: '10–25', g25: '25–50', g50: '50–100', g100: '100+' },
-    type: 'Loại sự kiện',
-    types: {
-      dinner: 'Tiệc tối riêng',
-      corporate: 'Sự kiện công ty',
-      buyout: 'Bao trọn nhà hàng',
-      offsite: 'Nấu tiệc tận nơi',
-      other: 'Khác',
-    },
-    where: 'Ở đâu?',
-    wheres: { restaurant: 'Tại nhà hàng', offsite: 'Tận nơi (chúng tôi đến chỗ bạn)' },
-    budget: 'Ngân sách (mỗi người hoặc tổng)',
-    budgetPlaceholder: 'ví dụ: $60 mỗi người, hoặc $3,000 tổng',
-    more: 'Kể thêm cho chúng tôi',
-    morePlaceholder: 'Dịp gì, yêu cầu ăn uống, món nhất định phải có, giờ giấc...',
-    submit: 'Gửi yêu cầu đặt tiệc',
-    sent: 'Đã gửi yêu cầu',
-    thanks: 'Cảm ơn bạn — chúng tôi sẽ sớm liên hệ về sự kiện của bạn.',
-    error: 'Có lỗi xảy ra — vui lòng email catering@narwhalthaihb.com.',
-  },
+const DICTS: Record<Locale, FormsDict> = {
+  en,
+  vi: deepMerge(en, FORMS_LOCALES.vi),
+  th: deepMerge(en, FORMS_LOCALES.th),
+  zh: deepMerge(en, FORMS_LOCALES.zh),
+  ko: deepMerge(en, FORMS_LOCALES.ko),
+  ja: deepMerge(en, FORMS_LOCALES.ja),
 };
-
-const DICTS: Record<Locale, FormsDict> = { en, vi };
 
 export function forms(locale: Locale): FormsDict {
   return DICTS[locale] ?? en;

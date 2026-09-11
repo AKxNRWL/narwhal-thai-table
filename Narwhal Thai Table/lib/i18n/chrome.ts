@@ -1,4 +1,6 @@
 import type { CategoryId } from '@/lib/categories';
+import { CHROME_LOCALES } from './chrome.locales';
+import { deepMerge } from './merge';
 import type { Locale } from './locales';
 
 /**
@@ -10,8 +12,9 @@ import type { Locale } from './locales';
  * Kept deliberately small: this file ships in the client bundle. Page copy
  * lives in ui.en.ts / ui.vi.ts and is only ever read on the server.
  *
- * Vietnamese: Southern (Sài Gòn) register — "dĩa", "heo", "ba"/"má" — the
- * way Little Saigon speaks. Dish names stay in English + Thai everywhere.
+ * The translated editions live in chrome.locales.ts (vi · th · zh · ko · ja)
+ * and are merged over `en` at load, so a missing key shows English.
+ * Dish names stay in English + Thai everywhere.
  */
 const en = {
   nav: {
@@ -36,12 +39,10 @@ const en = {
   },
   locale: {
     switch: 'Language',
-    en: 'English',
-    vi: 'Tiếng Việt',
-    /** the "this page exists in Vietnamese" bar shown on English pages */
-    suggest: 'Trang này có bản tiếng Việt.',
-    suggestCta: 'Xem tiếng Việt',
-    suggestDismiss: 'Đóng',
+    /** the "this page exists in your language" pill — always shown in the language it offers */
+    suggest: 'This page is available in English.',
+    suggestCta: 'Read in English',
+    suggestDismiss: 'Close',
   },
   footer: {
     brandLine: 'Three siblings, thirty years of restaurant life, one table on Beach Boulevard — royal-court Thai, cooked fresh for every plate.',
@@ -95,6 +96,13 @@ const en = {
     drinks: 'Drinks',
     sides: 'Sides & Protein',
   } satisfies Record<CategoryId, string>,
+  /** the dish 404 (also in ui.en.ts for the server-rendered English page) */
+  notFound: {
+    back: 'Back to menu',
+    title: 'That plate isn’t on *this table*.',
+    body: 'Maybe the link is old, or we’ve renamed the dish. Take a look at the full menu — our kitchen probably has something even better for you.',
+    cta: 'See the full menu',
+  },
   menuList: {
     jump: 'Jump to a course',
     dish: 'dish',
@@ -136,126 +144,14 @@ const en = {
 
 export type ChromeDict = typeof en;
 
-const vi: ChromeDict = {
-  nav: {
-    skip: 'Đến nội dung chính',
-    home: 'Trang chủ Narwhal Thai Table',
-    story: 'Câu chuyện',
-    chef: 'Đầu bếp',
-    menu: 'Thực đơn',
-    lunch: 'Bữa trưa',
-    experience: 'Trải nghiệm',
-    play: 'Trò chơi',
-    contact: 'Liên hệ',
-    order: 'Đặt món',
-    orderDrawer: 'Đặt món online',
-    reserve: 'Đặt bàn',
-    open: 'Mở menu',
-    close: 'Đóng menu',
-    primary: 'Chính',
-    mobile: 'Di động',
-    address: '19072 Beach Blvd · Huntington Beach',
-  },
-  locale: {
-    switch: 'Ngôn ngữ',
-    en: 'English',
-    vi: 'Tiếng Việt',
-    suggest: 'Trang này có bản tiếng Việt.',
-    suggestCta: 'Xem tiếng Việt',
-    suggestDismiss: 'Đóng',
-  },
-  footer: {
-    brandLine: 'Ba anh chị em, ba mươi năm trong nghề nhà hàng, một bàn ăn trên đường Beach — món Thái cung đình, nấu tươi cho từng dĩa.',
-    order: 'Đặt món online',
-    reserve: 'Đặt bàn',
-    visit: 'Địa chỉ',
-    hours: 'Giờ mở cửa',
-    explore: 'Khám phá',
-    directions: 'Chỉ đường →',
-    weekdays: 'Thứ Hai – Thứ Sáu',
-    weekend: 'Thứ Bảy – Chủ Nhật',
-    lunch: 'Bữa trưa',
-    weekdayHours: '11:30 AM – 10:00 PM',
-    weekendHours: '12:00 – 10:00 PM',
-    lunchHours: 'Thứ Hai – Thứ Sáu, 11:30 – 3:00 PM',
-    siteMap: 'Sơ đồ trang',
-    social: 'Mạng xã hội',
-    on: 'Narwhal Thai Table trên {label}',
-    copyright: '© 2026 Narwhal Hospitality LLC · Huntington Beach, CA',
-    links: {
-      menu: 'Thực đơn đầy đủ',
-      lunch: 'Món trưa đặc biệt',
-      order: 'Đặt món online',
-      reservation: 'Đặt bàn',
-      catering: 'Đặt tiệc & sự kiện',
-      about: 'Câu chuyện của chúng tôi',
-      guide: 'Cẩm nang món Thái (English)',
-      press: 'Báo chí',
-      play: 'Bubble Glide',
-      littleSaigon: 'Món Thái gần Little Saigon',
-    },
-  },
-  mobileBar: {
-    label: 'Thao tác nhanh',
-    order: 'Đặt món',
-    directions: 'Chỉ đường',
-    reserve: 'Đặt bàn',
-  },
-  categories: {
-    appetizers: 'Khai vị',
-    salad: 'Gỏi & salad',
-    grill: 'Đồ nướng',
-    soup: 'Súp',
-    curry: 'Cà ri',
-    rice: 'Cơm chiên',
-    overrice: 'Cơm dĩa',
-    noodles: 'Mì & hủ tiếu',
-    alacarte: 'Món xào',
-    seafood: 'Poseidon · Hải sản',
-    dessert: 'Tráng miệng',
-    drinks: 'Thức uống',
-    sides: 'Món kèm & chọn thịt',
-  },
-  menuList: {
-    jump: 'Đi tới một phần thực đơn',
-    dish: 'món',
-    dishes: 'món',
-    proteinsSides: 'Chọn thịt & món kèm',
-    signature: 'Đặc trưng',
-    spicy: 'Cay',
-    protein: 'Chọn thịt',
-    readStory: 'Đọc câu chuyện',
-    alt: '{name} — món {category} kiểu Thái tại Narwhal Thai Table, Huntington Beach',
-    footnote:
-      '★ là những món đặc trưng của quán. Món ghi “Chọn thịt” là giá chưa gồm thịt — bạn chọn ở mục Món kèm & chọn thịt (từ +$2). Khi gọi món, cứ cho chúng tôi biết bạn dị ứng gì hay muốn cay cỡ nào — bếp sẽ nấu riêng cho bạn.',
-    chooseProtein: '— Chọn thịt',
-    onTheSide: '— Món kèm',
-    proteins: {
-      chicken: 'Gà',
-      chickenShrimp: 'Gà & tôm (2 con)',
-      pork: 'Heo',
-      friedTofu: 'Đậu hũ chiên',
-      softTofu: 'Đậu hũ non',
-      groundPork: 'Heo bằm',
-      groundChicken: 'Gà bằm',
-      groundBeef: 'Bò bằm',
-      beef: 'Bò',
-      shrimp: 'Tôm',
-      combo: 'Thập cẩm — gà, heo & bò',
-      seafood: 'Hải sản',
-    },
-    sides: {
-      jasmine: 'Cơm trắng (gạo thơm)',
-      brown: 'Cơm gạo lứt',
-      sticky: 'Cơm nếp (xôi)',
-      friedEgg: 'Trứng ốp la',
-      omelet: 'Trứng chiên kiểu Thái',
-      omeletNote: '— thêm heo bằm hoặc gà bằm +$2, tôm bằm +$3',
-    },
-  },
+const DICTS: Record<Locale, ChromeDict> = {
+  en,
+  vi: deepMerge(en, CHROME_LOCALES.vi),
+  th: deepMerge(en, CHROME_LOCALES.th),
+  zh: deepMerge(en, CHROME_LOCALES.zh),
+  ko: deepMerge(en, CHROME_LOCALES.ko),
+  ja: deepMerge(en, CHROME_LOCALES.ja),
 };
-
-const DICTS: Record<Locale, ChromeDict> = { en, vi };
 
 export function chrome(locale: Locale): ChromeDict {
   return DICTS[locale] ?? en;

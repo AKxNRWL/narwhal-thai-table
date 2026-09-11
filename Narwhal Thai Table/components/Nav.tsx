@@ -8,7 +8,7 @@ import { cn } from '@/lib/cn';
 import { chrome, type ChromeDict } from '@/lib/i18n/chrome';
 import { localePath, stripLocale } from '@/lib/i18n/locales';
 import { useLocale } from '@/lib/i18n/useLocale';
-import LocaleSwitch from '@/components/i18n/LocaleSwitch';
+import LanguageSwitch from '@/components/i18n/LanguageSwitch';
 
 /* Labels come from lib/i18n/chrome.ts (EN / VI); hrefs are English paths and
    are localised per page (/vi/menu …) — English-only pages such as /play stay
@@ -36,9 +36,9 @@ export default function Nav() {
   const t = chrome(locale).nav;
   const NAV_LINKS = navLinks(t);
   const href = (p: string) => localePath(locale, p);
-  // Vietnamese labels run ~15% wider than English; tighten the desktop row so
-  // the six links + two CTAs + switcher still fit the 1184px content box at 1280.
-  const tight = locale === 'vi';
+  // Translated labels run wider than English; tighten the desktop row so the
+  // six links + two CTAs + language switcher still fit the 1184px content box at 1280.
+  const tight = locale !== 'en';
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -178,7 +178,7 @@ export default function Nav() {
             >
               {t.reserve}
             </Link>
-            <LocaleSwitch />
+            <LanguageSwitch />
           </div>
 
           <button
@@ -219,7 +219,9 @@ export default function Nav() {
         data-open={open}
         aria-hidden={!open}
         className={cn(
-          'fixed inset-0 z-[90] flex flex-col bg-navy-deep/95 px-6 pb-10 pt-[calc(var(--cs-ticker-h)+96px)] backdrop-blur-2xl transition-[opacity,visibility] duration-300 lg:hidden',
+          // overflow-y-auto: on short phones (or the taller Thai/CJK line boxes) the
+          // drawer scrolls instead of clipping the language grid at the fold.
+          'fixed inset-0 z-[90] flex flex-col overflow-y-auto overscroll-contain bg-navy-deep/95 px-6 pb-10 pt-[calc(var(--cs-ticker-h)+96px)] backdrop-blur-2xl transition-[opacity,visibility] duration-300 lg:hidden',
           open ? 'visible opacity-100' : 'invisible opacity-0',
         )}
       >
@@ -233,7 +235,7 @@ export default function Nav() {
               aria-current={isCurrent(l.href) ? 'page' : undefined}
               style={{ transitionDelay: open ? `${80 + i * 45}ms` : '0ms' }}
               className={cn(
-                'flex items-baseline justify-between border-b border-cream/10 py-4 font-display text-[28px] font-medium text-cream transition-[opacity,transform,color] duration-500',
+                'flex items-baseline justify-between border-b border-cream/10 py-3 font-display text-[28px] font-medium leading-tight text-cream transition-[opacity,transform,color] duration-500',
                 open ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
                 isCurrent(l.href) && 'text-brass-light',
               )}
@@ -265,9 +267,7 @@ export default function Nav() {
           >
             {t.reserve}
           </Link>
-          <div className="mt-2 flex items-center justify-center gap-4">
-            <LocaleSwitch size="lg" />
-          </div>
+          <LanguageSwitch variant="grid" className="mt-3" />
           <p className="mt-2 text-center font-serif text-[13px] italic text-cream/50">{t.address}</p>
         </div>
       </div>

@@ -14,7 +14,8 @@ import CardGlow from '@/components/fx/CardGlow';
 import SmoothScroll from '@/components/fx/SmoothScroll';
 import Ambience from '@/components/fx/Ambience';
 import LangSync from '@/components/i18n/LangSync';
-import ViSuggestBar from '@/components/i18n/ViSuggestBar';
+import LangSuggestBar from '@/components/i18n/LangSuggestBar';
+import { htmlLangScript } from '@/lib/i18n/locales';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 
 /* Self-hosted webfonts (next/font).
@@ -70,11 +71,13 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // suppressHydrationWarning: app/vi/layout.tsx flips `lang` to "vi" before
-  // hydration (and LangSync keeps it in step on client navigation).
+  // suppressHydrationWarning: the inline script below flips `lang` to the
+  // edition in the URL (/vi, /th, /zh, /ko, /ja) before the first paint, and
+  // LangSync keeps it in step on client navigation.
   return (
     <html lang="en" className={fontVars} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: htmlLangScript() }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Noto Sans family — used by the Coming Soon ticker so every
@@ -119,7 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               alternateName: ['Narwhal Thai', 'Narwhal Thai Table HB'],
               foundingDate: '2026-07',
               parentOrganization: { '@type': 'Organization', name: 'Narwhal Hospitality LLC' },
-              knowsLanguage: ['en', 'th', 'vi'],
+              knowsLanguage: ['en', 'th', 'vi', 'zh', 'ko', 'ja'],
               amenityFeature: [
                 { '@type': 'LocationFeatureSpecification', name: 'Outdoor patio seating', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Dog-friendly patio', value: true },
@@ -211,10 +214,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <Footer />
         <MobileActionBar />
-        {/* Vietnamese edition helpers: keep <html lang> in step with /vi, and offer
-            "Xem trang tiếng Việt?" to Vietnamese browsers on English pages. */}
+        {/* Translated editions: keep <html lang> in step on client navigation, and
+            offer "this page is available in your language" to matching browsers. */}
         <LangSync />
-        <ViSuggestBar />
+        <LangSuggestBar />
         <ChatWidget />
         {/* Owner-managed promo pop-up (content from /api/promo; edited in /stats). */}
         <PromoCard />

@@ -1,12 +1,8 @@
-import type { Metadata } from 'next';
-import HomePage from '@/components/pages/HomePage';
-import { alternatesFor } from '@/lib/i18n/locales';
+import HomePage, { homeMetadata } from '@/components/pages/HomePage';
 
 /* The page itself lives in components/pages/HomePage.tsx, shared with the
-   Vietnamese edition at /vi (app/vi/page.tsx). */
-export const metadata: Metadata = {
-  alternates: alternatesFor('en', '/'),
-};
+   translated editions at /vi, /th, /zh, /ko, /ja (app/[locale]/page.tsx). */
+export const metadata = homeMetadata('en');
 
 export default function Page() {
   return <HomePage locale="en" />;

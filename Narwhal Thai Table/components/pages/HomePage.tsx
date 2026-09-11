@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Hero from '@/components/Hero';
 import LunchSpecials from '@/components/LunchSpecials';
 import PhotoMarquee from '@/components/PhotoMarquee';
@@ -9,7 +10,8 @@ import { getDishImage, getHeroMedia } from '@/lib/media';
 import { DISHES } from '@/lib/dishes';
 import { SHOW_CHEF } from '@/lib/site';
 import { ui } from '@/lib/i18n';
-import type { Locale } from '@/lib/i18n/locales';
+import { OG_LOCALE, alternatesFor, localePath, type Locale } from '@/lib/i18n/locales';
+import { SITE_URL } from '@/lib/site';
 import {
   StorySection,
   ChefSection,
@@ -27,6 +29,18 @@ import {
  * chip back for a featured plate.
  */
 const HERO_FEATURED_SLUG: string | null = null;
+
+/** Metadata for the home page in a translated edition (English keeps the root layout defaults). */
+export function homeMetadata(locale: Locale): Metadata {
+  if (locale === 'en') return { alternates: alternatesFor('en', '/') };
+  const t = ui(locale).meta.home;
+  return {
+    title: { absolute: t.title },
+    description: t.description,
+    alternates: alternatesFor(locale, '/'),
+    openGraph: { locale: OG_LOCALE[locale], title: t.ogTitle, description: t.ogDescription, url: `${SITE_URL}${localePath(locale, '/')}` },
+  };
+}
 
 /**
  * The home page, shared by / (English) and /vi (Vietnamese) — app/page.tsx and

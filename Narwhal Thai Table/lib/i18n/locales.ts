@@ -1,50 +1,67 @@
 /**
- * i18n — locale plumbing for the Vietnamese edition of the site.
+ * i18n — locale plumbing for the translated editions of the site.
  *
- * Design (owner decision, 11 Sep 2026 — "เวียดนามได้ผลกว่า"):
+ * Design (owner decisions, 11 Sep 2026 — Vietnamese first, then "เอาเป็น
+ * ภาษาไทยด้วย และก็จีน เกาหลี และญี่ปุ่น"):
  *   • English stays at the root (/, /menu, …) — nothing moves.
- *   • Vietnamese lives under /vi (/vi, /vi/menu, /vi/menu/[slug], …) as thin
- *     routes that render the SAME page components with `locale="vi"`.
- *   • Copy comes from dictionaries in lib/i18n; a missing Vietnamese string
- *     falls back to English, so a half-translated page never shows a blank.
- *   • No auto-redirect by browser language (Google penalises that). English
- *     pages show a small "Xem trang tiếng Việt?" bar to Vietnamese browsers.
+ *   • Each other language lives under its prefix (/vi, /th, /zh, /ko, /ja) as
+ *     thin routes (app/[locale]/…) that render the SAME page components with a
+ *     `locale` prop.
+ *   • Copy comes from dictionaries in lib/i18n; a missing string falls back to
+ *     English, so a half-translated page never shows a blank.
+ *   • No auto-redirect by browser language (Google penalises that). Pages show
+ *     a small "this page exists in your language" pill instead.
  *
  * Browser-safe: constants + pure functions only.
  */
-export const LOCALES = ['en', 'vi'] as const;
+export const LOCALES = ['en', 'vi', 'th', 'zh', 'ko', 'ja'] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
+/** The translated editions (everything but English). */
+export const SECONDARY_LOCALES = LOCALES.filter((l): l is Exclude<Locale, 'en'> => l !== 'en');
 
-/** BCP-47 tags for <html lang>, Open Graph and JSON-LD `inLanguage`. */
-export const LOCALE_TAG: Record<Locale, string> = { en: 'en-US', vi: 'vi-VN' };
-export const OG_LOCALE: Record<Locale, string> = { en: 'en_US', vi: 'vi_VN' };
+export function isLocale(v: string | undefined | null): v is Locale {
+  return !!v && (LOCALES as readonly string[]).includes(v);
+}
+
+/** BCP-47 tags for hreflang and JSON-LD `inLanguage`. */
+export const LOCALE_TAG: Record<Locale, string> = { en: 'en-US', vi: 'vi-VN', th: 'th-TH', zh: 'zh-CN', ko: 'ko-KR', ja: 'ja-JP' };
+/** <html lang> values. */
+export const HTML_LANG: Record<Locale, string> = { en: 'en', vi: 'vi', th: 'th', zh: 'zh-CN', ko: 'ko', ja: 'ja' };
+/** Open Graph locale values. */
+export const OG_LOCALE: Record<Locale, string> = { en: 'en_US', vi: 'vi_VN', th: 'th_TH', zh: 'zh_CN', ko: 'ko_KR', ja: 'ja_JP' };
+/** The language's own name — what the switcher shows. */
+export const LOCALE_NAME: Record<Locale, string> = { en: 'English', vi: 'Tiếng Việt', th: 'ไทย', zh: '简体中文', ko: '한국어', ja: '日本語' };
+/** Two-letter code shown next to the flag in the compact switcher. */
+export const LOCALE_CODE: Record<Locale, string> = { en: 'EN', vi: 'VI', th: 'TH', zh: 'ZH', ko: 'KO', ja: 'JA' };
+/** Which editions need a non-Latin webfont (loaded only on their pages). */
+export const NON_LATIN: ReadonlySet<Locale> = new Set<Locale>(['th', 'zh', 'ko', 'ja']);
 
 /**
- * English paths that have a Vietnamese twin. Everything else (press, the OC
+ * English paths that have a translated twin. Everything else (press, the OC
  * guide, /order, /play, the city pages) stays English-only, so links to those
  * are never prefixed.
  */
-const VI_ROUTES = ['/', '/menu', '/lunch', '/about', '/contact', '/contact/reservation', '/contact/message', '/contact/catering'];
+const TWIN_ROUTES = ['/', '/menu', '/lunch', '/about', '/contact', '/contact/reservation', '/contact/message', '/contact/catering'];
 
-export function hasViTwin(path: string): boolean {
+export function hasTwin(path: string): boolean {
   const clean = path.split(/[?#]/)[0] || '/';
-  if (VI_ROUTES.includes(clean)) return true;
+  if (TWIN_ROUTES.includes(clean)) return true;
   return clean.startsWith('/menu/');
 }
 
+const PREFIX = new RegExp(`^/(${SECONDARY_LOCALES.join('|')})(?=/|$|[#?])`);
+
 /** Which locale a pathname belongs to. */
 export function pathLocale(pathname: string | null | undefined): Locale {
-  const p = pathname ?? '';
-  return p === '/vi' || p.startsWith('/vi/') || p.startsWith('/vi#') || p.startsWith('/vi?') ? 'vi' : 'en';
+  const m = PREFIX.exec(pathname ?? '');
+  return m && isLocale(m[1]) ? m[1] : 'en';
 }
 
-/** '/vi/menu' → '/menu', '/vi' → '/'. English paths pass through. */
+/** '/vi/menu' → '/menu', '/th' → '/'. English paths pass through. */
 export function stripLocale(pathname: string): string {
-  if (pathname === '/vi') return '/';
-  if (pathname.startsWith('/vi/')) return pathname.slice(3);
-  if (pathname.startsWith('/vi#') || pathname.startsWith('/vi?')) return '/' + pathname.slice(3);
-  return pathname;
+  const rest = pathname.replace(PREFIX, '');
+  return rest === '' || rest.startsWith('#') || rest.startsWith('?') ? '/' + rest : rest;
 }
 
 /**
@@ -55,45 +72,53 @@ export function stripLocale(pathname: string): string {
 export function localePath(locale: Locale, href: string): string {
   if (locale === 'en') return href;
   if (!href.startsWith('/') || href.startsWith('//')) return href;
-  if (pathLocale(href) === 'vi') return href;
-  if (!hasViTwin(href)) return href;
-  if (href === '/') return '/vi';
-  if (href.startsWith('/#') || href.startsWith('/?')) return '/vi' + href.slice(1);
-  return '/vi' + href;
+  if (pathLocale(href) !== 'en') return href;
+  if (!hasTwin(href)) return href;
+  if (href === '/') return `/${locale}`;
+  if (href.startsWith('/#') || href.startsWith('/?')) return `/${locale}` + href.slice(1);
+  return `/${locale}` + href;
 }
 
 /**
- * Vietnamese-only pages and the English page that stands in for them (the
- * switcher and hreflang never point at a URL that does not exist).
+ * Pages that exist in ONE language only, and the English page that stands in
+ * for them (so the switcher and hreflang never point at a URL that does not
+ * exist).
  */
-const VI_ONLY: Record<string, string> = {
+const SINGLE_LANGUAGE_PAGES: Record<string, string> = {
   '/vi/nha-hang-thai-little-saigon': '/thai-food-westminster',
 };
 
 /**
- * The same page in the other language (for the EN | VI switcher). Pages that
- * exist in one language only fall back to the nearest page that does exist.
+ * The same page in another language (for the switcher). Pages that exist in
+ * one language only fall back to the nearest page that does exist.
  */
 export function switchLocalePath(pathname: string, to: Locale): string {
   const clean = pathname.split(/[?#]/)[0] || '/';
-  if (to === 'en') {
-    if (clean in VI_ONLY) return VI_ONLY[clean];
-    return stripLocale(clean);
-  }
-  if (pathLocale(clean) === 'vi') return clean;
-  const viOnly = Object.entries(VI_ONLY).find(([, enPath]) => enPath === clean);
-  if (viOnly) return viOnly[0];
-  return hasViTwin(clean) ? localePath('vi', clean) : '/vi';
+  const enPath = clean in SINGLE_LANGUAGE_PAGES ? SINGLE_LANGUAGE_PAGES[clean] : stripLocale(clean);
+  if (to === 'en') return enPath;
+  if (pathLocale(clean) === to) return clean;
+  const single = Object.entries(SINGLE_LANGUAGE_PAGES).find(([p, en]) => en === enPath && pathLocale(p) === to);
+  if (single) return single[0];
+  return hasTwin(enPath) ? localePath(to, enPath) : `/${to}`;
 }
 
 /**
- * Next.js `metadata.alternates` for a page that exists in both languages.
+ * Next.js `metadata.alternates` for a page that exists in every language.
  * `enPath` is the English path ('/menu'); the canonical is the page's own URL.
  */
 export function alternatesFor(locale: Locale, enPath: string) {
-  const vi = localePath('vi', enPath);
-  return {
-    canonical: locale === 'vi' ? vi : enPath,
-    languages: { 'en-US': enPath, 'vi-VN': vi, 'x-default': enPath },
-  };
+  const languages: Record<string, string> = {};
+  for (const l of LOCALES) languages[LOCALE_TAG[l]] = localePath(l, enPath);
+  languages['x-default'] = enPath;
+  return { canonical: localePath(locale, enPath), languages };
+}
+
+/**
+ * Inline script for <head>: sets <html lang> from the URL before the first
+ * paint, so the locale fonts (globals.css `html[lang=…]`) and screen readers
+ * are right from the start. LangSync keeps it in step on client navigation.
+ */
+export function htmlLangScript(): string {
+  const map = JSON.stringify(Object.fromEntries(SECONDARY_LOCALES.map((l) => [l, HTML_LANG[l]])));
+  return `(function(){var m=location.pathname.match(/^\\/(${SECONDARY_LOCALES.join('|')})(?=\\/|$)/);document.documentElement.lang=m?${map}[m[1]]:'en'})()`;
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import MenuSections from '@/components/MenuSections';
 import { toMenuCard } from '@/lib/menuCard';
@@ -11,8 +12,22 @@ import { SITE_URL, RESTAURANT_ID } from '@/lib/site';
 import { ui } from '@/lib/i18n';
 import { categoryLabel } from '@/lib/i18n/chrome';
 import { localizeDishes } from '@/lib/i18n/dish';
-import { LOCALE_TAG, localePath, type Locale } from '@/lib/i18n/locales';
+import { LOCALE_TAG, OG_LOCALE, alternatesFor, localePath, type Locale } from '@/lib/i18n/locales';
 import Rich from '@/lib/i18n/rich';
+
+export function menuMetadata(locale: Locale): Metadata {
+  const t = ui(locale).meta.menu;
+  return {
+    title: t.title,
+    description: t.description,
+    alternates: alternatesFor(locale, '/menu'),
+    openGraph: {
+      title: t.ogTitle,
+      description: t.ogDescription,
+      ...(locale === 'en' ? {} : { locale: OG_LOCALE[locale], url: `${SITE_URL}${localePath(locale, '/menu')}` }),
+    },
+  };
+}
 
 /** Parse "$12" / "$12.50" → 12 / 12.50; undefined for "MKT"/blank so we omit Offer. */
 function priceNumber(p?: string): number | undefined {
