@@ -15,7 +15,9 @@
  *
  * Browser-safe: constants + pure functions only.
  */
-export const LOCALES = ['en', 'es', 'vi', 'th', 'zh', 'zh-tw', 'ko', 'ja'] as const;
+// Order = the language menu order (owner, 13 Sep 2026: "Eng - thai - viet -
+// จีน1 - จีน2 - เกาหลี - ญี่ปุ่น และก็แม็กซิโก").
+export const LOCALES = ['en', 'th', 'vi', 'zh', 'zh-tw', 'ko', 'ja', 'es'] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 /** The translated editions (everything but English). */
