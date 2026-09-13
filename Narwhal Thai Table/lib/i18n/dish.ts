@@ -5,6 +5,8 @@ import { DISHES_TH } from './dishes.th';
 import { DISHES_ZH } from './dishes.zh';
 import { DISHES_KO } from './dishes.ko';
 import { DISHES_JA } from './dishes.ja';
+import { DISHES_ES } from './dishes.es';
+import { DISHES_ZH_TW } from './dishes.zh-tw';
 
 /** The translatable prose of a dish — everything else stays in lib/dishes.ts. */
 export type DishL10n = {
@@ -21,6 +23,8 @@ const MAPS: Partial<Record<Locale, Record<string, DishL10n>>> = {
   zh: DISHES_ZH,
   ko: DISHES_KO,
   ja: DISHES_JA,
+  es: DISHES_ES,
+  'zh-tw': DISHES_ZH_TW,
 };
 
 /**

@@ -95,6 +95,8 @@ const DICTS: Record<Locale, FormsDict> = {
   zh: deepMerge(en, FORMS_LOCALES.zh),
   ko: deepMerge(en, FORMS_LOCALES.ko),
   ja: deepMerge(en, FORMS_LOCALES.ja),
+  es: deepMerge(en, FORMS_LOCALES.es),
+  'zh-tw': deepMerge(en, FORMS_LOCALES['zh-tw']),
 };
 
 export function forms(locale: Locale): FormsDict {

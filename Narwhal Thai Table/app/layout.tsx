@@ -122,7 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               alternateName: ['Narwhal Thai', 'Narwhal Thai Table HB'],
               foundingDate: '2026-07',
               parentOrganization: { '@type': 'Organization', name: 'Narwhal Hospitality LLC' },
-              knowsLanguage: ['en', 'th', 'vi', 'zh', 'ko', 'ja'],
+              knowsLanguage: ['en', 'es', 'th', 'vi', 'zh', 'zh-TW', 'ko', 'ja'],
               amenityFeature: [
                 { '@type': 'LocationFeatureSpecification', name: 'Outdoor patio seating', value: true },
                 { '@type': 'LocationFeatureSpecification', name: 'Dog-friendly patio', value: true },

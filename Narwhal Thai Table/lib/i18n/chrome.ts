@@ -151,6 +151,8 @@ const DICTS: Record<Locale, ChromeDict> = {
   zh: deepMerge(en, CHROME_LOCALES.zh),
   ko: deepMerge(en, CHROME_LOCALES.ko),
   ja: deepMerge(en, CHROME_LOCALES.ja),
+  es: deepMerge(en, CHROME_LOCALES.es),
+  'zh-tw': deepMerge(en, CHROME_LOCALES['zh-tw']),
 };
 
 export function chrome(locale: Locale): ChromeDict {

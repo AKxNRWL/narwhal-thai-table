@@ -6,8 +6,8 @@ import { cn } from '@/lib/cn';
  * 2026: "ตรงเปลี่ยนภาษาเอามีธงของประเทศนั้นด้วย"). Drawn by hand at 3:2 so
  * they render identically everywhere — emoji flags show as letter codes on
  * Windows. Simplified geometry: at 20px a star is a star, not a survey.
- *   en → US · vi → Vietnam · th → Thailand · zh → China · ko → South Korea ·
- *   ja → Japan
+ *   en → US · es → Mexico · vi → Vietnam · th → Thailand · zh → China ·
+ *   zh-tw → Taiwan · ko → South Korea · ja → Japan
  */
 const STAR5 = 'M0,-1 L0.2245,-0.309 L0.951,-0.309 L0.3633,0.118 L0.5878,0.809 L0,0.382 L-0.5878,0.809 L-0.3633,0.118 L-0.951,-0.309 L-0.2245,-0.309 Z';
 
@@ -105,6 +105,38 @@ export default function Flag({ locale, className }: { locale: Locale; className?
         <svg {...common}>
           <rect width="36" height="24" fill="#fff" />
           <circle cx="18" cy="12" r="7.2" fill="#BC002D" />
+        </svg>
+      );
+    case 'es':
+      // Mexico (owner, 13 Sep 2026: "เอาธงแม็กซิกัน" — the Spanish-speaking
+      // guests here are overwhelmingly Mexican-American). Tricolour with a
+      // simplified eagle-on-cactus mark: at 20px a silhouette reads better than
+      // the full coat of arms.
+      return (
+        <svg {...common}>
+          <rect width="36" height="24" fill="#fff" />
+          <rect width="12" height="24" fill="#006847" />
+          <rect x="24" width="12" height="24" fill="#CE1126" />
+          <g transform="translate(18 12)">
+            <path d="M-2.6,3.4 C-3.6,2.2 -3.2,0.6 -2.2,0.2 C-1.9,-1.2 -0.6,-2 0.6,-1.6 C1.1,-2.4 2,-2.5 2.5,-1.8 L3.2,-2.1 L2.7,-1.1 C3.2,0 2.5,1.2 1.4,1.7 C1.2,2.6 0.6,3.2 -0.4,3.3 Z" fill="#6B4A2B" />
+            <path d="M-3.4,3.6 Q0,5.4 3.4,3.6" fill="none" stroke="#3E7A3A" strokeWidth="0.9" strokeLinecap="round" />
+          </g>
+        </svg>
+      );
+    case 'zh-tw':
+      // Taiwan: red field, blue canton, white sun with twelve rays and the
+      // blue ring between disc and rays, as in the official construction.
+      return (
+        <svg {...common}>
+          <rect width="36" height="24" fill="#FE0000" />
+          <rect width="18" height="12" fill="#000095" />
+          <g transform="translate(9 6)">
+            {Array.from({ length: 12 }, (_, i) => (
+              <path key={i} d="M0,-4.3 L0.9,-2.35 L-0.9,-2.35 Z" fill="#fff" transform={`rotate(${i * 30})`} />
+            ))}
+            <circle r="2.55" fill="#000095" />
+            <circle r="2.05" fill="#fff" />
+          </g>
         </svg>
       );
     default:

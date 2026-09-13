@@ -5,6 +5,8 @@ import { th } from './ui.th';
 import { zh } from './ui.zh';
 import { ko } from './ui.ko';
 import { ja } from './ui.ja';
+import { es } from './ui.es';
+import { zhTW } from './ui.zh-tw';
 import type { Locale } from './locales';
 
 export type { UiDict } from './ui.en';
@@ -18,6 +20,8 @@ const DICTS: Record<Locale, UiDict> = {
   zh: deepMerge(en, zh),
   ko: deepMerge(en, ko),
   ja: deepMerge(en, ja),
+  es: deepMerge(en, es),
+  'zh-tw': deepMerge(en, zhTW),
 };
 
 /**

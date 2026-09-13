@@ -10,13 +10,13 @@ import { LOCALES, LOCALE_TAG, hasTwin, localePath } from '@/lib/i18n/locales';
  * ("pad thai huntington beach", "khao soi near me", …).
  *
  * Translated editions (Sep 2026): every page that has twins is listed once
- * per language (/, /vi, /th, /zh, /ko, /ja), each entry carrying all the
+ * per language (/, /es, /vi, /th, /zh, /zh-tw, /ko, /ja), each entry carrying all the
  * hreflang alternates, plus the Vietnamese-only Little Saigon page.
  */
 // Stable content-update date — bump this when pages/menu meaningfully change.
 // Using a fixed date (not `new Date()`) keeps <lastmod> meaningful to Google
 // instead of resetting to "now" on every deploy.
-const LAST_CONTENT_UPDATE = new Date('2026-09-11T00:00:00Z');
+const LAST_CONTENT_UPDATE = new Date('2026-09-13T00:00:00Z');
 
 type Entry = MetadataRoute.Sitemap[number];
 

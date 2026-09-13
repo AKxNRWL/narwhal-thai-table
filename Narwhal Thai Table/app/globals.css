@@ -787,8 +787,8 @@ body[data-nav-open="true"] .nara-fab { display: none; }
    /th, /zh, /ko, /ja set <html lang> (lib/i18n/locales.ts htmlLangScript);
    the Latin faces stay first so brand words and dish names keep their look,
    and every Thai / CJK glyph falls through to Noto Sans (hoisted into <head>
-   by app/[locale]/layout.tsx) or the platform's own font. Vietnamese is
-   Latin and needs nothing here.
+   by app/[locale]/layout.tsx) or the platform's own font. Vietnamese and
+   Spanish are Latin and need nothing here.
    ========================================================================== */
 html[lang="th"] {
   --font-display: var(--f-display), "Noto Sans Thai", "Leelawadee UI", "Thonburi", system-ui, sans-serif;
@@ -799,6 +799,11 @@ html[lang="zh-CN"] {
   --font-display: var(--f-display), "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --font-serif: var(--f-serif), "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Georgia, serif;
   --font-sans: var(--f-sans), "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+html[lang="zh-TW"] {
+  --font-display: var(--f-display), "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", system-ui, sans-serif;
+  --font-serif: var(--f-serif), "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", Georgia, serif;
+  --font-sans: var(--f-sans), "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 html[lang="ko"] {
   --font-display: var(--f-display), "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
@@ -813,8 +818,8 @@ html[lang="ja"] {
 /* Thai vowel marks need air above and below; the tight Latin heading leading clips them. */
 html[lang="th"] :is(h1, h2, h3) { line-height: 1.25; }
 /* CJK glyphs are square: no synthetic italic, no negative tracking. */
-html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(h1, h2, h3) { line-height: 1.22; letter-spacing: 0; }
-html:is([lang="zh-CN"], [lang="ko"], [lang="ja"]) :is(em, .italic, .font-serif) { font-style: normal; }
+html:is([lang="zh-CN"], [lang="zh-TW"], [lang="ko"], [lang="ja"]) :is(h1, h2, h3) { line-height: 1.22; letter-spacing: 0; }
+html:is([lang="zh-CN"], [lang="zh-TW"], [lang="ko"], [lang="ja"]) :is(em, .italic, .font-serif) { font-style: normal; }
 
 /* ==========================================================================
    AILEEN CHAT — plain messaging-app look (owner, 11 Sep 2026: "ตัว AI chat

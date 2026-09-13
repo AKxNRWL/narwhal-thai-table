@@ -9,16 +9,22 @@ import { HTML_LANG, SECONDARY_LOCALES, hasTwin, pathLocale, stripLocale, switchL
 
 const KEY = 'nt-lang-bar';
 
-/** Map a browser language tag to one of our editions ('zh-TW' → zh, 'th-TH' → th …). */
+/**
+ * Map a browser language tag to one of our editions: 'es-MX' → es, 'th-TH' → th,
+ * 'zh-TW' / 'zh-HK' / 'zh-Hant-*' → zh-tw (Traditional), any other 'zh-*' → zh.
+ */
 function match(tag: string): Locale | null {
-  const base = tag.toLowerCase().split('-')[0];
+  const lower = tag.toLowerCase();
+  const base = lower.split('-')[0];
+  if (base === 'zh') return /\b(tw|hk|mo|hant)\b/.test(lower) ? 'zh-tw' : 'zh';
   return (SECONDARY_LOCALES as readonly string[]).includes(base) ? (base as Locale) : base === 'en' ? 'en' : null;
 }
 
 /**
  * "This page is available in your language" — a quiet, dismissable pill for
- * browsers whose language has an edition on this site (Vietnamese, Thai,
- * Chinese, Korean, Japanese), shown in that language. A suggestion, never a
+ * browsers whose language has an edition on this site (Spanish, Vietnamese,
+ * Thai, Chinese — Simplified or Traditional — Korean, Japanese), shown in that
+ * language. A suggestion, never a
  * redirect (auto-redirecting by Accept-Language hides pages from crawlers and
  * annoys bilingual guests). Dismissal is remembered per browser and language.
  */

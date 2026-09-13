@@ -1,10 +1,11 @@
 /**
  * i18n — locale plumbing for the translated editions of the site.
  *
- * Design (owner decisions, 11 Sep 2026 — Vietnamese first, then "เอาเป็น
- * ภาษาไทยด้วย และก็จีน เกาหลี และญี่ปุ่น"):
+ * Design (owner decisions, 11–13 Sep 2026 — Vietnamese first, then "เอาเป็น
+ * ภาษาไทยด้วย และก็จีน เกาหลี และญี่ปุ่น", then Spanish + Traditional Chinese):
  *   • English stays at the root (/, /menu, …) — nothing moves.
- *   • Each other language lives under its prefix (/vi, /th, /zh, /ko, /ja) as
+ *   • Each other language lives under its prefix (/es, /vi, /th, /zh, /zh-tw,
+ *     /ko, /ja) as
  *     thin routes (app/[locale]/…) that render the SAME page components with a
  *     `locale` prop.
  *   • Copy comes from dictionaries in lib/i18n; a missing string falls back to
@@ -14,7 +15,7 @@
  *
  * Browser-safe: constants + pure functions only.
  */
-export const LOCALES = ['en', 'vi', 'th', 'zh', 'ko', 'ja'] as const;
+export const LOCALES = ['en', 'es', 'vi', 'th', 'zh', 'zh-tw', 'ko', 'ja'] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 /** The translated editions (everything but English). */
@@ -25,17 +26,17 @@ export function isLocale(v: string | undefined | null): v is Locale {
 }
 
 /** BCP-47 tags for hreflang and JSON-LD `inLanguage`. */
-export const LOCALE_TAG: Record<Locale, string> = { en: 'en-US', vi: 'vi-VN', th: 'th-TH', zh: 'zh-CN', ko: 'ko-KR', ja: 'ja-JP' };
+export const LOCALE_TAG: Record<Locale, string> = { en: 'en-US', es: 'es-US', vi: 'vi-VN', th: 'th-TH', zh: 'zh-CN', 'zh-tw': 'zh-TW', ko: 'ko-KR', ja: 'ja-JP' };
 /** <html lang> values. */
-export const HTML_LANG: Record<Locale, string> = { en: 'en', vi: 'vi', th: 'th', zh: 'zh-CN', ko: 'ko', ja: 'ja' };
+export const HTML_LANG: Record<Locale, string> = { en: 'en', es: 'es', vi: 'vi', th: 'th', zh: 'zh-CN', 'zh-tw': 'zh-TW', ko: 'ko', ja: 'ja' };
 /** Open Graph locale values. */
-export const OG_LOCALE: Record<Locale, string> = { en: 'en_US', vi: 'vi_VN', th: 'th_TH', zh: 'zh_CN', ko: 'ko_KR', ja: 'ja_JP' };
+export const OG_LOCALE: Record<Locale, string> = { en: 'en_US', es: 'es_LA', vi: 'vi_VN', th: 'th_TH', zh: 'zh_CN', 'zh-tw': 'zh_TW', ko: 'ko_KR', ja: 'ja_JP' };
 /** The language's own name — what the switcher shows. */
-export const LOCALE_NAME: Record<Locale, string> = { en: 'English', vi: 'Tiếng Việt', th: 'ไทย', zh: '简体中文', ko: '한국어', ja: '日本語' };
+export const LOCALE_NAME: Record<Locale, string> = { en: 'English', es: 'Español', vi: 'Tiếng Việt', th: 'ไทย', zh: '简体中文', 'zh-tw': '繁體中文', ko: '한국어', ja: '日本語' };
 /** Two-letter code shown next to the flag in the compact switcher. */
-export const LOCALE_CODE: Record<Locale, string> = { en: 'EN', vi: 'VI', th: 'TH', zh: 'ZH', ko: 'KO', ja: 'JA' };
+export const LOCALE_CODE: Record<Locale, string> = { en: 'EN', es: 'ES', vi: 'VI', th: 'TH', zh: 'ZH', 'zh-tw': 'TW', ko: 'KO', ja: 'JA' };
 /** Which editions need a non-Latin webfont (loaded only on their pages). */
-export const NON_LATIN: ReadonlySet<Locale> = new Set<Locale>(['th', 'zh', 'ko', 'ja']);
+export const NON_LATIN: ReadonlySet<Locale> = new Set<Locale>(['th', 'zh', 'zh-tw', 'ko', 'ja']);
 
 /**
  * English paths that have a translated twin. Everything else (press, the OC
@@ -50,7 +51,9 @@ export function hasTwin(path: string): boolean {
   return clean.startsWith('/menu/');
 }
 
-const PREFIX = new RegExp(`^/(${SECONDARY_LOCALES.join('|')})(?=/|$|[#?])`);
+/** Locale codes for a regex alternation — longest first ('zh-tw' before 'zh'). */
+const CODES_ALT = [...SECONDARY_LOCALES].sort((a, b) => b.length - a.length).join('|');
+const PREFIX = new RegExp(`^/(${CODES_ALT})(?=/|$|[#?])`);
 
 /** Which locale a pathname belongs to. */
 export function pathLocale(pathname: string | null | undefined): Locale {
@@ -120,5 +123,5 @@ export function alternatesFor(locale: Locale, enPath: string) {
  */
 export function htmlLangScript(): string {
   const map = JSON.stringify(Object.fromEntries(SECONDARY_LOCALES.map((l) => [l, HTML_LANG[l]])));
-  return `(function(){var m=location.pathname.match(/^\\/(${SECONDARY_LOCALES.join('|')})(?=\\/|$)/);document.documentElement.lang=m?${map}[m[1]]:'en'})()`;
+  return `(function(){var m=location.pathname.match(/^\\/(${CODES_ALT})(?=\\/|$)/);document.documentElement.lang=m?${map}[m[1]]:'en'})()`;
 }
