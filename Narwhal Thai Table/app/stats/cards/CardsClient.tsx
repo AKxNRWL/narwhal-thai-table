@@ -214,7 +214,7 @@ export default function CardsClient() {
   const Face = ({ c, back }: { c: Editable; back?: boolean }) => (
     <div className={'nwc-face' + (back ? ' is-back' : ' is-front')}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/logo-mark.png" alt="" className="nwc-mark" />
+      <img src="/images/logo-mark-print.png" alt="" className="nwc-mark" />
       <div className="nwc-rule" />
       <div className="nwc-kicker">Reserved for</div>
       <div className="nwc-name" style={{ fontSize: nameSize(c.name) + 'pt' }}>
@@ -469,7 +469,7 @@ const CSS = `
 
 .nwc-face{
   position:absolute; left:0; width:${TENT_W}in; height:${TENT_H}in;
-  box-sizing:border-box; padding:0.42in 0.45in 0.40in;
+  box-sizing:border-box; padding:0.34in 0.45in 0.56in;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; color:${NAVY}; background:#fff;
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
@@ -478,7 +478,7 @@ const CSS = `
 .nwc-face.is-back{ top:0; transform:rotate(180deg); }
 
 .nwc-mark{ height:0.36in; width:auto; opacity:0.92; }
-.nwc-rule{ width:1.35in; height:1px; background:${BRASS}; opacity:0.75; margin:0.13in 0 0.12in; }
+.nwc-rule{ width:1.35in; height:1px; background:${BRASS}; opacity:0.75; margin:0.19in 0 0.12in; }
 .nwc-kicker{
   font-family:var(--font-sans, sans-serif); font-size:7.5pt; font-weight:600;
   letter-spacing:0.30em; text-transform:uppercase; color:${BRASS_DEEP};
