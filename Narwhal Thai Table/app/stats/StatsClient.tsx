@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import PromoEditor from '@/components/PromoEditor';
 import type { PromoImageOption } from '@/lib/promoShared';
 
@@ -317,7 +318,15 @@ Hi ${name}! Thank you for visiting Narwhal Thai Table 🐋 Show code ${ac.code} 
             </div>
 
             <div style={{ ...card, marginBottom: 22 }}>
-              <div style={{ ...label, marginBottom: 12 }}>📅 การจองโต๊ะล่าสุด</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
+                <div style={label}>📅 การจองโต๊ะล่าสุด</div>
+                <Link
+                  href="/stats/cards"
+                  style={{ padding: '7px 14px', borderRadius: 999, background: 'rgba(200,162,78,0.12)', border: '1px solid ' + LINE, color: BRASSL, fontSize: 12.5, fontWeight: 600, textDecoration: 'none' }}
+                >
+                  🖨️ การ์ดต้อนรับที่โต๊ะ →
+                </Link>
+              </div>
               {data.reservations.length === 0 ? (
                 <div style={{ color: 'rgba(245,240,230,0.5)', fontSize: 14 }}>ยังไม่มีการจอง</div>
               ) : (
