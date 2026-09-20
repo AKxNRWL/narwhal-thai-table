@@ -244,7 +244,7 @@ export default function CardsClient() {
   const sheetNodes = sheets.map((g, i) => <Sheet group={g} k={i} key={i} />);
 
   return (
-    <section style={{ padding: '40px 22px 80px', minHeight: '70vh' }}>
+    <section style={{ padding: 'calc(var(--cs-ticker-h, 0px) + 96px) 22px 80px', minHeight: '70vh' }}>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       <div style={{ maxWidth: 1040, margin: '0 auto' }} className="nwc-ui">

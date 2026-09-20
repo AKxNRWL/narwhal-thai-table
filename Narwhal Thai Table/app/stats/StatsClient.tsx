@@ -264,7 +264,7 @@ Hi ${name}! Thank you for visiting Narwhal Thai Table 🐋 Show code ${ac.code} 
   const maxDish = data ? Math.max(1, ...data.stats.topRecommendedDishes.map((d) => d.count)) : 1;
 
   return (
-    <section style={{ padding: '40px 22px 80px', minHeight: '70vh' }}>
+    <section style={{ padding: 'calc(var(--cs-ticker-h, 0px) + 96px) 22px 80px', minHeight: '70vh' }}>
       <div style={{ maxWidth: 1040, margin: '0 auto' }}>
         <span style={{ ...label, color: BRASSL }}>Owner · Control Room</span>
         <h1 style={{ fontFamily: 'var(--font-display, serif)', color: OFF, fontSize: 30, margin: '6px 0 4px' }}>
