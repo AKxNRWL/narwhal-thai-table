@@ -1,4 +1,5 @@
 import { submitReservation } from '@/lib/reservation';
+import { closureFor } from '@/lib/closures';
 
 /**
  * Website reservation form → the same pipeline as Aileen's bookings.
@@ -53,6 +54,16 @@ export async function POST(req: Request) {
 
   if (!first_name || !phone || !date || !time || !party_size) {
     return Response.json({ ok: false, error: 'missing required fields' }, { status: 422 });
+  }
+
+  // One-off closure (lib/closures.ts): refuse the date outright — 409 so the
+  // form shows the message instead of falling back to the plain Netlify post.
+  const closed = closureFor(date);
+  if (closed) {
+    return Response.json(
+      { ok: false, error: 'closed', message: `${closed.label} — ${closed.reopen}. Please pick another day.` },
+      { status: 409 },
+    );
   }
 
   const result = await submitReservation({

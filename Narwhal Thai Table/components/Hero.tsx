@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
 import { ORDER_ONLINE_URL } from '@/lib/site';
+import { upcomingClosure, type Closure } from '@/lib/closures';
 import Button, { Arrow } from '@/components/ui/Button';
 import Particles from '@/components/fx/Particles';
 import Ripple from '@/components/fx/Ripple';
@@ -43,6 +44,10 @@ export default function Hero({
   t: UiDict['hero'];
 }) {
   const href = (p: string) => localePath(locale, p);
+  // Upcoming one-off closure — resolved after mount so SSR and the first
+  // client paint never disagree about "today".
+  const [closure, setClosure] = useState<Closure | null>(null);
+  useEffect(() => { setClosure(upcomingClosure() ?? null); }, []);
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
@@ -272,6 +277,21 @@ export default function Hero({
           >
             {t.hours}
           </p>
+          {/* One-off closure (lib/closures.ts) — every screen size, every
+              locale (EN + TH), for the days before; removes itself after. */}
+          {closure && (
+            <p
+              role="status"
+              className="mt-4 inline-flex max-w-xl items-start gap-2.5 rounded-2xl border border-[#E3C581]/50 bg-[#2A1F14]/85 px-4 py-2.5 font-sans text-[13px] leading-snug text-[#FFF1C9] backdrop-blur-md"
+              style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}
+            >
+              <span aria-hidden="true" className="mt-px shrink-0">⚠</span>
+              <span>
+                <b className="font-semibold">{closure.label}</b> — {closure.reopen}.
+                <span lang="th" className="block text-[12px] text-[#FFF1C9]/75">{closure.labelTh} — {closure.reopenTh}</span>
+              </span>
+            </p>
+          )}
 
           <div className="mt-8 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
             {ORDER_ONLINE_URL && (

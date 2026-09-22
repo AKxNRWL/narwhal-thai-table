@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { submitNetlifyForm } from '@/lib/netlifyForm';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
@@ -8,6 +8,7 @@ import { fireConfetti } from '@/components/fx/confetti';
 import { forms } from '@/lib/i18n/forms';
 import type { Locale } from '@/lib/i18n/locales';
 import Rich, { fmt } from '@/lib/i18n/rich';
+import { closureFor, upcomingClosure } from '@/lib/closures';
 
 /** Reservation time slots: 11:00 AM → 10:00 PM, every 30 minutes
  *  (last seating about an hour before the 11:00 PM close). */
@@ -78,6 +79,9 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Upcoming one-off closure → hint under the date field (client-only, after mount)
+  const [notice, setNotice] = useState<ReturnType<typeof upcomingClosure> | null>(null);
+  useEffect(() => { setNotice(upcomingClosure(new Date(), 30) ?? null); }, []);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -89,6 +93,16 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
 
     if (!form.checkValidity()) {
       form.reportValidity();
+      return;
+    }
+
+    // One-off closure (lib/closures.ts): say so right on the date field.
+    const dateEl = form.elements.namedItem('date') as HTMLInputElement | null;
+    const closed = dateEl ? closureFor(dateEl.value) : undefined;
+    if (dateEl && closed) {
+      dateEl.setCustomValidity(`${closed.label} — ${closed.reopen}. ${closed.labelTh}`);
+      form.reportValidity();
+      dateEl.setCustomValidity('');
       return;
     }
 
@@ -105,7 +119,15 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload),
     })
-      .then((r) => {
+      .then(async (r) => {
+        if (r.status === 409) {
+          // The restaurant is closed that day — a real answer, not an outage:
+          // show it and do NOT fall back to the plain Netlify post.
+          const j = (await r.json().catch(() => ({}))) as { message?: string };
+          setSending(false);
+          setError(j.message || t.error);
+          return;
+        }
         if (!r.ok) throw new Error(String(r.status));
         setSending(false);
         setSubmitted(true); fireConfetti();
@@ -154,6 +176,11 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
 
         <Field id="rsv-date" label={t.date} required>
           <input id="rsv-date" name="date" type="date" required className={field} />
+          {notice && (
+            <p className="mt-1.5 font-sans text-[12px] leading-snug text-[#FFF1C9]/85">
+              ⚠ {notice.label} — {notice.reopen}. <span lang="th">{notice.labelTh}</span>
+            </p>
+          )}
         </Field>
         <Field id="rsv-time" label={t.time} required>
           <SelectShell>

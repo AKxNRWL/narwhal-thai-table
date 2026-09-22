@@ -17,9 +17,20 @@
  * (WCAG 2.2.2 "Pause, Stop, Hide"). prefers-reduced-motion users already get
  * a static bar via globals.css, so the button hides itself for them.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { upcomingClosure, type Closure } from '@/lib/closures';
 
 type Phrase = { lang: string; text: string };
+
+/* A one-off closure (lib/closures.ts) leads the ticker in EN + TH for the days
+   before it, then disappears by itself. Resolved after mount so the server
+   and the first client paint never disagree about "today". */
+function closurePhrases(c: Closure): Phrase[] {
+  return [
+    { lang: 'en', text: `⚠ ${c.label} — ${c.reopen}` },
+    { lang: 'th', text: `⚠ ${c.labelTh} — ${c.reopenTh}` },
+  ];
+}
 
 const LANGUAGES: Phrase[] = [
   { lang: 'en', text: 'Now Open Every Day — Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM' },
@@ -34,18 +45,25 @@ const LANGUAGES: Phrase[] = [
 
 export default function ComingSoonTicker() {
   const [paused, setPaused] = useState(false);
+  const [closure, setClosure] = useState<Closure | null>(null);
+  useEffect(() => { setClosure(upcomingClosure() ?? null); }, []);
+  const phrases = closure ? [...closurePhrases(closure), ...LANGUAGES] : LANGUAGES;
   return (
     <div
-      className="cs-ticker"
+      className={closure ? 'cs-ticker cs-ticker--notice' : 'cs-ticker'}
       role="status"
-      aria-label="Now open every day — Monday to Friday 11:30 AM to 10 PM, Saturday and Sunday 12 to 10 PM"
+      aria-label={
+        closure
+          ? `${closure.label}, ${closure.reopen}. Otherwise open every day — Monday to Friday 11:30 AM to 10 PM, Saturday and Sunday 12 to 10 PM`
+          : 'Now open every day — Monday to Friday 11:30 AM to 10 PM, Saturday and Sunday 12 to 10 PM'
+      }
     >
       <div className={paused ? 'cs-ticker-track is-paused' : 'cs-ticker-track'}>
-        {LANGUAGES.map((p, i) => (
-          <span key={`a-${i}`} className="cs-ticker-item" lang={p.lang}>{p.text}</span>
+        {phrases.map((p, i) => (
+          <span key={`a-${i}`} className={p.text.startsWith('⚠') ? 'cs-ticker-item cs-ticker-item--notice' : 'cs-ticker-item'} lang={p.lang}>{p.text}</span>
         ))}
-        {LANGUAGES.map((p, i) => (
-          <span key={`b-${i}`} className="cs-ticker-item" lang={p.lang} aria-hidden="true">{p.text}</span>
+        {phrases.map((p, i) => (
+          <span key={`b-${i}`} className={p.text.startsWith('⚠') ? 'cs-ticker-item cs-ticker-item--notice' : 'cs-ticker-item'} lang={p.lang} aria-hidden="true">{p.text}</span>
         ))}
       </div>
       <button

@@ -12,7 +12,7 @@
  *
  * The prompt itself is served (token-protected) at /api/agent-prompt.
  */
-import { RESTAURANT_FACTS, buildMenuText } from './chatKnowledge';
+import { restaurantFacts, buildMenuText } from './chatKnowledge';
 
 const VOICE_PERSONA_AND_RULES = `
 You are "Aileen", the voice of Narwhal Thai Table on the telephone - a warm, bright Thai family restaurant in Huntington Beach, California. You are picking up because the team is away from the phone or busy taking care of guests, so this caller is YOUR guest: make them feel looked after, and never make them feel they got the machine instead of a person. You are an AI host - if the caller asks, say so simply and cheerfully, then carry on helping.
@@ -81,7 +81,7 @@ READING THE FACTS BELOW:
 export function buildVoicePrompt(): string {
   return [
     VOICE_PERSONA_AND_RULES,
-    RESTAURANT_FACTS,
+    restaurantFacts(), // facts + any one-off closure (lib/closures.ts) — re-sync after the date passes
     'FULL MENU (the only dishes, names and prices you may quote - prices are before tax):\n\n' +
       buildMenuText(),
   ].join('\n\n');

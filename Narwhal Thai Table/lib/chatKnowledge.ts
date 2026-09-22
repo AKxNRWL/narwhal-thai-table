@@ -2,6 +2,7 @@ import { DISHES, type Dish } from './dishes';
 import { CATEGORIES, getCategoryLabel } from './categories';
 import { ORDER_ONLINE_URL } from './site';
 import { dishFactsLine } from './dishFacts';
+import { closuresForPrompt } from './closures';
 
 /* Build the live menu text straight from lib/dishes.ts so the bot is
    always in sync with the real menu (names, prices, spice, allergens). */
@@ -130,10 +131,23 @@ LEAVE A MESSAGE FOR THE TEAM - YOU CAN SEND IT FROM THIS CHAT:
 STYLE: Plain, lively, human text that sounds a little different each time - vary your phrasing and don't reuse the same stock greetings or sign-offs. Sprinkle in genuine warmth: a small compliment on a guest's choice, a word of encouragement for spice adventurers, shared excitement before a first visit. Keep compliments short and sincere - one per reply at most, never gushing or fake. An occasional tasteful emoji is fine - don't overdo it. Where helpful, end by gently inviting the next step (a recommendation, a question, "shall I get you booked in?", or "want me to pass that to the team?").
 `.trim();
 
+/**
+ * RESTAURANT_FACTS plus any one-off closure (lib/closures.ts), slotted right
+ * after the official hours so the host never books or invites anyone on a day
+ * the doors are shut. Evaluated per call, so a passed closure drops out on its
+ * own — use this (not the raw constant) wherever a prompt is built.
+ */
+export function restaurantFacts(now: Date = new Date()): string {
+  const closures = closuresForPrompt(now);
+  return closures
+    ? RESTAURANT_FACTS.replace('LUNCH SPECIALS (weekdays):', `SPECIAL CLOSURE: ${closures}\nLUNCH SPECIALS (weekdays):`)
+    : RESTAURANT_FACTS;
+}
+
 export function buildSystemPrompt(): string {
   return [
     PERSONA_AND_RULES,
-    RESTAURANT_FACTS,
+    restaurantFacts(),
     'FULL MENU (the only dishes, names and prices you may quote):\n\n' + buildMenuText(),
   ].join('\n\n');
 }

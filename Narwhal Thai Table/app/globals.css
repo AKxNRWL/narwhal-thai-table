@@ -432,6 +432,10 @@
   from{transform:translateX(0);}
   to{transform:translateX(-50%);}
 }
+/* one-off closure notice (lib/closures.ts): the bar warms up and the closure
+   phrases read in cream so they stand apart from the routine hours */
+.cs-ticker--notice{ background:#2A1F14; border-bottom-color:rgba(227,197,129,0.55); }
+.cs-ticker-item--notice{ color:#FFF1C9; font-weight:600; }
 @media (max-width:768px){
   .cs-ticker-item{font-size:13px;padding:0 22px;}
   .cs-ticker-item + .cs-ticker-item::before{font-size:17px;}

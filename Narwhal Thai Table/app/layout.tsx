@@ -17,6 +17,7 @@ import LangSync from '@/components/i18n/LangSync';
 import LangSuggestBar from '@/components/i18n/LangSuggestBar';
 import { htmlLangScript } from '@/lib/i18n/locales';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
+import { CLOSURES } from '@/lib/closures';
 
 /* Self-hosted webfonts (next/font).
    These used to load from fonts.googleapis.com via a <link> in <head>, which
@@ -160,6 +161,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   closes: '22:00',
                 },
               ],
+              // One-off closures (lib/closures.ts): a specification with a date
+              // range and no opens/closes is how schema.org says "closed that day".
+              ...(CLOSURES.length
+                ? {
+                    specialOpeningHoursSpecification: CLOSURES.map((c) => ({
+                      '@type': 'OpeningHoursSpecification',
+                      validFrom: c.date,
+                      validThrough: c.date,
+                    })),
+                  }
+                : {}),
               // Chef credit returns at the grand-opening reveal (see SHOW_CHEF in lib/site.ts):
               // founder: { '@type': 'Person', name: 'Chef Rainny' },
               // Full menu + the weekday Lunch Specials menu (app/lunch/page.tsx declares

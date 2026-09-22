@@ -15,6 +15,8 @@
  * and components/ChatWidget.tsx (greeting only).
  */
 
+import { isClosedOn, todayPT } from './closures';
+
 type DayWindow = { open: number; close: number }; // minutes since midnight PT
 
 const HOURS: Record<number, DayWindow> = {
@@ -46,6 +48,7 @@ export function serviceWindowNow(now: Date = new Date()): boolean {
     const dow = DOW.indexOf(get('weekday'));
     const mins = Number(get('hour')) * 60 + Number(get('minute'));
     if (dow < 0 || Number.isNaN(mins)) return true;
+    if (isClosedOn(todayPT(now))) return false; // one-off closure (lib/closures.ts)
     const w = HOURS[dow];
     return mins >= w.open - PRE_OPEN_MIN && mins < w.close + GRACE_AFTER_CLOSE_MIN;
   } catch {
