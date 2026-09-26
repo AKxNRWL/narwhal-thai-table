@@ -65,6 +65,7 @@ export async function GET(req: Request) {
   const id = (url.searchParams.get('id') || '').trim();
   const format = url.searchParams.get('format') === 'pdf' ? 'pdf' : 'html';
   const autoPrint = url.searchParams.get('print') === '1';
+  const art = url.searchParams.get('art'); // optional 1-based pick from CARD_ART (testing / owner preference); default = per-reservation
   if (!id) return new Response('missing id', { status: 400 });
 
   // Signed link first (no cookie, no header — a plain URL that expires), then the usual owner auth.
@@ -88,7 +89,7 @@ export async function GET(req: Request) {
   if (format === 'pdf') {
     let pdf: Uint8Array;
     try {
-      pdf = await renderCardPdf(card);
+      pdf = await renderCardPdf(card, { art });
     } catch (e) {
       return new Response('render failed: ' + (e instanceof Error ? e.message : String(e)), { status: 500 });
     }
@@ -106,7 +107,7 @@ export async function GET(req: Request) {
 
   const links = cardUrls(url.origin, id);
   const when = [prettyDate(src.date || ''), src.time ? prettyTime(src.time) : ''].filter(Boolean).join(' · ');
-  const html = cardPageHtml({ card, when, pdfUrl: links.pdf, driveUrl: driveOf(rec)?.url, autoPrint });
+  const html = cardPageHtml({ card, when, pdfUrl: art ? links.pdf + '&art=' + encodeURIComponent(art) : links.pdf, driveUrl: driveOf(rec)?.url, autoPrint, art });
   return new Response(html, {
     status: 200,
     headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' },

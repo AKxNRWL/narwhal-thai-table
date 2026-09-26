@@ -12,6 +12,7 @@ import {
   type CardSource,
   type GuestCard,
 } from '@/lib/guestCards';
+import { CARD_ART, artFor, artIndexFor } from '@/lib/guestCardArt';
 
 /**
  * Owner · Welcome Cards (/stats/cards)
@@ -43,6 +44,10 @@ const BRASS_DEEP = '#9C7A33';
 const OFF = '#F5F0E6';
 const PANEL = 'rgba(255,255,255,0.04)';
 const LINE = 'rgba(200,162,78,0.20)';
+const DNA_NAVY = '#09253B'; // the navy edition's own ground (sampled from the files)
+const DNA_GOLD = '#D4B26A';
+const CREAM = '#F7F0E1';
+const ART_CREAM = '#F6EEDE'; // the cream edition's own ground
 
 const panel: React.CSSProperties = {
   background: PANEL,
@@ -84,7 +89,7 @@ const PER_SHEET = 2;
 const PX_PER_IN = 96;
 
 /** A card as the page holds it — the derived card plus the team's overrides. */
-type Editable = GuestCard & { on: boolean; manual?: boolean };
+type Editable = GuestCard & { on: boolean; manual?: boolean; /** 1-based pick from CARD_ART; 0/undefined = the card's own deterministic pick */ art?: number };
 
 /**
  * Point size for the guest name. Fraunces at 34pt fits roughly 18 characters
@@ -212,11 +217,9 @@ export default function CardsClient() {
 
   /* One card face. Rendered twice per tent: upright below the fold, and
      rotated above it so the far side reads the right way up too. */
-  const Face = ({ c, back }: { c: Editable; back?: boolean }) => (
-    <div className={'nwc-face' + (back ? ' is-back' : ' is-front')}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/images/logo-mark-print.png" alt="" className="nwc-mark" />
-      <div className="nwc-rule" />
+  /* The text block is the same on both designs; only what is around it changes. */
+  const TextBlock = ({ c }: { c: Editable }) => (
+    <>
       <div className="nwc-kicker">Reserved for</div>
       <div className="nwc-name" style={{ fontSize: nameSize(c.name) + 'pt' }}>
         {c.name}
@@ -226,9 +229,40 @@ export default function CardsClient() {
       ) : null}
       {c.occasion.trim() ? <div className="nwc-occasion">{c.occasion}</div> : null}
       <div className="nwc-thanks">{CARD_THANKS}</div>
-      <div className="nwc-foot">Narwhal Thai Table</div>
-    </div>
+    </>
   );
+
+  /* v2 (owner 26 Sep 2026): full-face artwork from the house set, name over a
+     scrim in the picture's own ground colour, inside a 0.2in white frame. The
+     v1 white card with the logo mark is the fallback when the set is empty. */
+  const Face = ({ c, back }: { c: Editable; back?: boolean }) => {
+    const art = artFor(c.id, c.art);
+    if (!art) {
+      return (
+        <div className={'nwc-face nwc-classic' + (back ? ' is-back' : ' is-front')}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/logo-mark-print.png" alt="" className="nwc-mark" />
+          <div className="nwc-rule" />
+          <TextBlock c={c} />
+          <div className="nwc-foot">Narwhal Thai Table</div>
+        </div>
+      );
+    }
+    return (
+      <div className={'nwc-face' + (back ? ' is-back' : ' is-front')}>
+        <div className={'nwc-panel ' + art.tone}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={'/' + art.file} alt="" className="nwc-art" />
+          <div className="nwc-scrim" />
+          <div className="nwc-hair" />
+          <div className="nwc-text">
+            <TextBlock c={c} />
+          </div>
+          <div className="nwc-foot">Narwhal Thai Table</div>
+        </div>
+      </div>
+    );
+  };
 
   const Sheet = ({ group, k }: { group: Editable[]; k: number }) => (
     <div className="nwc-sheet" key={k}>
@@ -360,7 +394,17 @@ export default function CardsClient() {
                             onChange={(ev) => patch(c.id, { occasion: ev.target.value })}
                             placeholder="โอกาสพิเศษ (ไม่ใส่ก็ได้)"
                             style={{ ...field, flex: 1, minWidth: 190, fontSize: 13 }}
-                          />
+                          />                          <select
+                            value={c.art ?? 0}
+                            onChange={(ev) => patch(c.id, { art: Number(ev.target.value) || undefined })}
+                            title="ภาพบนการ์ด"
+                            style={{ ...field, fontSize: 13, colorScheme: 'dark' }}
+                          >
+                            <option value={0}>{'🎨 สุ่ม: ' + (CARD_ART[artIndexFor(c.id)]?.title ?? '')}</option>
+                            {CARD_ART.map((a, ai) => (
+                              <option key={a.id} value={ai + 1}>{(a.tone === 'navy' ? '🌙 ' : '☀️ ') + a.title}</option>
+                            ))}
+                          </select>
                           {c.manual && (
                             <button
                               onClick={() => setExtras((x) => x.filter((e) => e.id !== c.id))}
@@ -406,7 +450,7 @@ export default function CardsClient() {
                   🖨️ พิมพ์การ์ด {printing.length} ใบ ({sheets.length} แผ่น)
                 </button>
                 <div style={{ color: 'rgba(245,240,230,0.6)', fontSize: 13, lineHeight: 1.75, minWidth: 260, flex: 1 }}>
-                  ตั้งค่าในหน้าต่างพิมพ์: เครื่อง <strong style={{ color: BRASSL }}>Epson ET-16650</strong> · กระดาษ <strong style={{ color: BRASSL }}>Letter</strong> · <strong style={{ color: BRASSL }}>แนวนอน</strong> · Scale <strong style={{ color: BRASSL }}>100%</strong> · ปิด Headers and footers
+                  ตั้งค่าในหน้าต่างพิมพ์: เครื่อง <strong style={{ color: BRASSL }}>Epson ET-16650</strong> · กระดาษ <strong style={{ color: BRASSL }}>Letter</strong> · <strong style={{ color: BRASSL }}>แนวนอน</strong> · Scale <strong style={{ color: BRASSL }}>100%</strong> · เปิด <strong style={{ color: BRASSL }}>Background graphics</strong> · ปิด Headers and footers
                   <br />
                   แนะนำกระดาษหนา 65–110 lb (176–300 gsm) จะตั้งได้ไม่ล้ม
                 </div>
@@ -471,11 +515,33 @@ const CSS = `
 
 .nwc-face{
   position:absolute; left:0; width:${TENT_W}in; height:${TENT_H}in;
-  box-sizing:border-box; padding:0.34in 0.45in 0.56in;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; color:${NAVY}; background:#fff;
+  box-sizing:border-box; text-align:center; color:${NAVY}; background:#fff;
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
 }
+.nwc-face.nwc-classic{
+  padding:0.34in 0.45in 0.56in;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+/* v2 — full-face art */
+.nwc-panel{ position:absolute; inset:0.2in; overflow:hidden; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.nwc-panel.navy{ background:${DNA_NAVY}; }
+.nwc-panel.cream{ background:${ART_CREAM}; }
+.nwc-art{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.nwc-scrim{ position:absolute; left:0; right:0; bottom:0; height:60%; }
+.nwc-panel.navy .nwc-scrim{ background:linear-gradient(to top, rgba(9,37,59,.92) 0%, rgba(9,37,59,.7) 35%, rgba(9,37,59,0) 100%); }
+.nwc-panel.cream .nwc-scrim{ background:linear-gradient(to top, rgba(246,238,222,.92) 0%, rgba(246,238,222,.7) 35%, rgba(246,238,222,0) 100%); }
+.nwc-hair{ position:absolute; inset:6pt; pointer-events:none; }
+.nwc-panel.navy .nwc-hair{ border:0.6pt solid rgba(212,178,106,.7); }
+.nwc-panel.cream .nwc-hair{ border:0.6pt solid rgba(200,162,78,.6); }
+.nwc-text{ position:absolute; left:0.35in; right:0.35in; bottom:0.42in; }
+.nwc-panel .nwc-foot{ bottom:0.12in; }
+.nwc-panel.navy .nwc-kicker{ color:${DNA_GOLD}; }
+.nwc-panel.navy .nwc-name{ color:${CREAM}; }
+.nwc-panel.navy .nwc-meta{ color:${CREAM}; opacity:.82; }
+.nwc-panel.navy .nwc-occasion{ color:${DNA_GOLD}; }
+.nwc-panel.navy .nwc-thanks{ color:${CREAM}; opacity:.88; }
+.nwc-panel.navy .nwc-foot{ color:${DNA_GOLD}; opacity:.85; }
+.nwc-panel.cream .nwc-foot{ opacity:.8; }
 .nwc-face.is-front{ top:${TENT_H}in; }
 .nwc-face.is-back{ top:0; transform:rotate(180deg); }
 

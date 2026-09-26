@@ -13,7 +13,7 @@ const nextConfig = {
   // function bundler cannot trace on its own — list them so they ship with
   // the route (there is a fetch-from-CDN fallback, but disk is faster).
   outputFileTracingIncludes: {
-    '/api/owner/card': ['./public/fonts/*.ttf', './public/images/logo-mark-print.png'],
+    '/api/owner/card': ['./public/fonts/*.ttf', './public/images/logo-mark-print.png', './public/images/cards/*'],
   },
 };
 
