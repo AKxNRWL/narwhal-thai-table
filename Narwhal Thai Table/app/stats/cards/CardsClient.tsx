@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import {
   addDays,
+  CARD_THANKS,
   cardsForDate,
   prettyLongDate,
   todayInLA,
@@ -224,6 +225,7 @@ export default function CardsClient() {
         <div className="nwc-meta">{[c.time, c.party].filter(Boolean).join('  ·  ')}</div>
       ) : null}
       {c.occasion.trim() ? <div className="nwc-occasion">{c.occasion}</div> : null}
+      <div className="nwc-thanks">{CARD_THANKS}</div>
       <div className="nwc-foot">Narwhal Thai Table</div>
     </div>
   );
@@ -495,6 +497,10 @@ const CSS = `
 .nwc-occasion{
   font-family:var(--font-serif, Georgia, serif); font-style:italic;
   font-size:12pt; color:${BRASS_DEEP}; margin-top:0.10in;
+}
+.nwc-thanks{
+  font-family:var(--font-serif, Georgia, serif); font-style:italic;
+  font-size:10.5pt; line-height:1.3; color:${NAVY_SOFT}; opacity:0.85; margin-top:0.14in;
 }
 .nwc-foot{
   position:absolute; left:0; right:0; bottom:0.30in;

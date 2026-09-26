@@ -185,6 +185,38 @@ function timeRank(raw: string | undefined): number {
 }
 
 /**
+ * The line under the name that says why the card is there at all. One string,
+ * used by the print page, the PDF and /stats/cards alike so every tent on
+ * every table reads the same. Owner-approved copy — change it here only.
+ */
+export const CARD_THANKS = 'Welcome to our table — thank you for joining us.';
+
+/** One reservation → one card. The same rulebook `cardsForDate` uses. */
+export function cardFromSource(r: CardSource, fallbackId = 'card'): GuestCard {
+  return {
+    id: tidy(r.id) || fallbackId,
+    name: partyName(r.first_name, r.last_name, r.party_size),
+    time: prettyTime(r.time),
+    party: partyLine(r.party_size),
+    occasion: occasionLine(r.notes),
+    notes: tidy(r.notes),
+  };
+}
+
+/**
+ * File name for the archived PDF: "2026-09-27 19-00 John Smith & Party.pdf".
+ * Sorts by service date and time inside the Drive folder, and the name is
+ * readable without opening the file. Characters Drive/Windows dislike are
+ * dropped rather than escaped.
+ */
+export function cardFileName(r: CardSource, card: GuestCard = cardFromSource(r)): string {
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(tidy(r.date)) ? tidy(r.date) : 'undated';
+  const time = tidy(r.time).replace(':', '-') || '';
+  const name = card.name.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
+  return [date, time, name].filter(Boolean).join(' ') + '.pdf';
+}
+
+/**
  * Confirmed bookings for one service day, earliest seating first, turned into
  * cards. Only `status: 'confirmed'` records qualify: an unconfirmed request is
  * a table we have not promised, and a card on that table is a promise.
@@ -193,12 +225,5 @@ export function cardsForDate(reservations: CardSource[], ymd: string): GuestCard
   return reservations
     .filter((r) => tidy(r.status) === 'confirmed' && tidy(r.date) === tidy(ymd))
     .sort((a, b) => timeRank(a.time) - timeRank(b.time))
-    .map((r, i) => ({
-      id: tidy(r.id) || `resv-${i}`,
-      name: partyName(r.first_name, r.last_name, r.party_size),
-      time: prettyTime(r.time),
-      party: partyLine(r.party_size),
-      occasion: occasionLine(r.notes),
-      notes: tidy(r.notes),
-    }));
+    .map((r, i) => cardFromSource(r, `resv-${i}`));
 }

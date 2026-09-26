@@ -3,6 +3,7 @@ import { requireOwner } from '@/lib/session';
 import { jsonCors } from '@/lib/cors';
 import { dataFor, getTenant } from '@/lib/tenants';
 import { looksLikeEmail, sendReservationConfirmed } from '@/lib/guestMail';
+import { cardUrls } from '@/lib/cardLink';
 
 export { OPTIONS } from '@/lib/cors';
 
@@ -15,6 +16,12 @@ export { OPTIONS } from '@/lib/cors';
  * Confirming does two things: it stamps the stored record (status/confirmedAt)
  * and it emails the guest "your table is confirmed". A second Confirm click is
  * a no-op unless resend:true — nobody wants to send the same guest four emails.
+ *
+ * A confirmation also answers with `card` — short-lived signed links to the
+ * guest's welcome card (print page / PDF, see /api/owner/card) so the app can
+ * open it for printing right away. Archiving the PDF to Drive is a separate
+ * POST /api/owner/card { action: 'archive' } the app fires next: kept out of
+ * this request so a slow upload can never hold up, or fail, the confirmation.
  *
  * Guarded by the owner session cookie, scoped to the logged-in tenant's own
  * blob key, exactly like /api/owner/data.
@@ -69,9 +76,17 @@ export async function POST(req: Request) {
   }
 
   // ── confirm ──────────────────────────────────────────────────────────────
+  const card = () => {
+    try {
+      const drive = rec.card && typeof rec.card === 'object' ? str(rec.card as Rec, 'url') : '';
+      return { ...cardUrls(new URL(req.url).origin, id), drive };
+    } catch {
+      return undefined; // no AUTH_SECRET → no signed links; the confirmation itself still stands
+    }
+  };
   const already = str(rec, 'status') === 'confirmed';
   if (already && !body.resend) {
-    return json({ ok: true, status: 'confirmed', emailed: false, already: true });
+    return json({ ok: true, status: 'confirmed', emailed: false, already: true, card: card() });
   }
 
   const email = str(rec, 'email');
@@ -111,5 +126,5 @@ export async function POST(req: Request) {
     return json({ ok: false, error: 'could not save', emailed }, { status: 503 });
   }
 
-  return json({ ok: true, status: 'confirmed', emailed, ...(emailed ? {} : { mailError }) });
+  return json({ ok: true, status: 'confirmed', emailed, ...(emailed ? {} : { mailError }), card: card() });
 }

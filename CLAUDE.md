@@ -10,11 +10,13 @@
 - `lib/dishes.ts` — เมนู canonical (67+ จาน มี story/lede/history) → ไหลเข้าเว็บ + prompt Aileen + Order Line
 - `lib/site.ts` — `ORDER_ONLINE_URL` (ว่าง = ซ่อนปุ่มทุกจุด), `SHOW_CHEF`, เบอร์/ลิงก์โซเชียล
 - `lib/serviceHours.ts` — `HOURS` ตารางเวลาร้าน + margin 15 นาทีก่อนเปิด/grace 60 นาทีหลังปิด (route.ts บังคับฝั่ง server, ChatWidget เลือกคำทักทาย) · เวลาเปลี่ยน = แก้ที่นี่ + JSON-LD ใน `app/layout.tsx`
-- `lib/chatKnowledge.ts` — RESTAURANT_FACTS + buildMenuText() (+ `lib/dishFacts.ts` ส่วนผสม/allergen) → ใช้ร่วมกันเว็บแชท + สายโทร
+- `lib/chatKnowledge.ts` — RESTAURANT_FACTS + buildMenuText() (+ `lib/dishFacts.ts` ส่วนผสม/allergen) → ใช้ร่วมกันเว็บแชท + สายโทร (`restaurantFacts()` = FACTS + บรรทัด SPECIAL CLOSURE อัตโนมัติ)
+- `lib/closures.ts` — **ปิดร้านวันเดียว/ช่วงสั้น แก้ที่นี่ที่เดียว** (`CLOSURES[]` date/label/labelTh/reopen) → ticker แถบเตือน (ComingSoonTicker) + ชิปใต้ hours ใน Hero + hint/บล็อกวันในฟอร์มจอง + `/api/reservation` ตอบ 409 + `serviceWindowNow()` ปิดแชท-โต๊ะ + Aileen แชท/โทร (prompt) + JSON-LD `specialOpeningHoursSpecification` (layout.tsx) · ใช้ครั้งแรก 24 ก.ย. 2026 (3b79683) · หลังวันปิดผ่านไป: ลบ entry → deploy → `npm run sync:orderline` อีกรอบ (prompt โทรถึงจะหายบรรทัด CLOSURE)
 - `app/api/chat/route.ts` — Aileen (Anthropic API, MODEL `claude-sonnet-5`, MAX_TOKENS 1500, rate limit 20/นาที·300/วัน/IP, 40 เทิร์น) · tools ต่อบริบท: โต๊ะ → `call_server` / `?t=togo` → `place_order_request` / เว็บเปล่า → จอง+ฝากข้อความ · validate `?t=` ด้วย `/^[a-zA-Z0-9-]{1,12}$/`
 - `components/ChatWidget.tsx` — มือถือเต็มจอ+ปุ่มย่อ, seat timeout 2 ชม./ข้ามวัน (localStorage `nara-seat`), geo guard fail-open (>400 ม. + accuracy ≤1500 ม.), `seatLabel()` (7 → "table 7", P3 → "patio table 3")
 - จอพนักงาน (token-gate ด้วย `STATS_TOKEN` ใน Netlify env — ค่าอยู่ใน project memory ไม่ใส่ในไฟล์นี้): `/stats` (แชท/จอง/ยืนยันโต๊ะ) · `/orders` (คิว TO-GO) · `/calls` (เรียกพนักงาน ต้องมีจอเปิดหน้าร้าน)
 - การจองทุกช่องทาง (เว็บ/แชท/สายโทร) → `lib/reservation.ts submitReservation()` ทางเดียว → เมล ack อัตโนมัติ + ปุ่มยืนยันใน /stats ส่งเมล Confirmed (`lib/guestMail.ts` → Apps Script ใน narwhal-mailer) · เนื้อเมลอังกฤษล้วน · **ห้ามมี `=` ใน URL/attribute ของ HTML เมล** (Gmail quoted-printable กิน) · ห้ามยิง Netlify form ตรง
+- **การ์ดต้อนรับโต๊ะ (welcome card)** — กติกาชื่อ/บรรทัด + คำขอบคุณ `CARD_THANKS` (user เคาะ Sep 26: "Welcome to our table — thank you for joining us.") อยู่ `lib/guestCards.ts` ที่เดียว ใช้ทั้ง `/stats/cards` (พิมพ์ทั้งวัน 2 ใบ/แผ่น) และ **การ์ดต่อการจอง** `app/api/owner/card` (GET `?id&format=html|pdf&print=1` ผ่านลิงก์เซ็น HMAC อายุ 30 นาที จาก `lib/cardLink.ts` — ไม่เอา token ใส่ URL / POST `{id, action:'link'|'archive'}` Bearer) · PDF = `lib/guestCardPdf.ts` (pdf-lib, Letter แนวนอน ใบเดียวอยู่ครึ่งซ้าย เส้นตัด/พับเหมือนหน้าเว็บ) · หน้าพิมพ์ = `lib/guestCardHtml.ts` (auto `window.print()`) · confirm ใน `/api/owner/reservations` ตอบ `card:{print,view,pdf,drive}` แล้ว HQ ยิง `archive` แยก (PDF → Apps Script mailer `action:'card'` → Drive welcome@ "Narwhal Reservation Cards/YYYY-MM", เก็บ `card:{fileId,url,name,at}` บน record) · ฟอนต์ `public/fonts/*.ttf` (Inter pre-subset Latin; **Inter ต้อง embed ทั้งไฟล์ — fontkit subset ทำตัวอักษรหาย / Fraunces+Noto Thai ต้อง subset:true ไม่งั้น ligature เว้นช่อง**) ถูก trace เข้า function ผ่าน `outputFileTracingIncludes` (มี fallback fetch จาก CDN) · พรีวิวไม่ต้องรันเว็บ: `npx tsx scripts/card-preview.ts out.pdf`
 - QR โต๊ะ `narwhalthaihb.com/menu?t=` — ในร้าน `1`–`13`, พาทิโอ `P1`–`P5`, `togo`, `spare1/2` (การ์ดพิมพ์อยู่ narwhal-menu\qr)
 - `components/AdsConversions.tsx` — Google Ads conversion (Order Online click / Phone click) landing = narwhalthaihb.com เท่านั้น
 - ตัวกรองลิงก์ QR ค้าง 4 ชั้น (เกตเวลาร้าน / prompt guard / seat timeout / geo) — อย่ารื้อ
@@ -35,13 +37,23 @@
 
 ## Deploy (สูตรมาตรฐาน — มี skill `narwhal-deploy`)
 1. แก้ไฟล์ใน `Narwhal Thai Table\` (จาก cloud: stage → แก้ใน /tmp → SendUserFile → device_commit_files พร้อม mtime guard; หรือ device_bash แก้ในที่) · syntax เร็ว: `npx --yes esbuild <file> --loader:.tsx=tsx` · typecheck จริง: `npx tsc --noEmit` ที่ Windows (Desktop Commander/PowerShell, ~5 วิ) — **อย่า build ผ่าน sandbox mount (ช้ามาก)**
-2. **commit+push ผ่าน Windows-MCP PowerShell เท่านั้น**: `cd D:\projects\narwhal-thai-table; git add -A; git commit -m "..."; git push origin main` — ห้าม git จาก sandbox (mount lag)
+2. **commit+push ผ่าน Windows-MCP PowerShell เท่านั้น**: `cd D:\projects\narwhal-thai-table; git add "<path>" ...; git commit -F msg.txt; git push origin main` — **ห้าม `git add -A`** (จะติด `tsconfig.tsbuildinfo` ที่เปลี่ยนทุก build + ไฟล์ค้างของเซสชันอื่น) · เช็ค `git status`/`git log` ก่อนเสมอ (มี Claude อีกเซสชันใช้ working tree เดียวกัน) · commit message มี trailer `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>` + `Claude-Session: <url>` · ห้าม git จาก sandbox (mount lag)
 3. **git push → Netlify build โดน auto-cancel ทุกครั้ง** (สาเหตุไม่ทราบ) → ต้อง trigger เอง: **curl POST build hook `claude-deploy`** (URL อยู่ใน project memory `narwhal-deploy-workflow` + skill; ดู/สร้างใหม่ที่ Netlify → Build & deploy → Build hooks) → HTTP 200 → publish ~60 วิ
 4. รอ ~100 วิ แล้วเช็ค Netlify MCP `get-deploy-for-site` จน `state: ready` และ `commit_ref` = sha ที่ push · WebFetch แคช 15 นาที — เช็คหน้า live ให้ใส่ `?v=` กันแคช
 5. **ถ้าแก้ dishes.ts / RESTAURANT_FACTS / persona → หลัง deploy เสร็จรัน `npm run sync:orderline`** (ดึง prompt จากเว็บ **live** — รันก่อน deploy = "already in sync" หลอก)
 - Netlify env: `manage-env-vars` ผ่าน MCP · **ห้ามตั้ง `envVarIsSecret:true` ถ้าโค้ดอ่านตอน runtime** (Next function อ่านไม่เห็น) · env ที่มี: ANTHROPIC_API_KEY, STATS_TOKEN, GUEST_MAIL_URL/TOKEN, TOAST_* (4 ตัว สำหรับ /api/toast/*) · ห้าม `deploy-site` zip-upload (พังทุกครั้ง + cancel build)
 - runtime log: app.netlify.com/projects/nrwlhb/logs/functions/___netlify-server-handler (`console.warn` ฝั่ง server โผล่ที่นี่)
 - Netlify UI/session อยู่เบราว์เซอร์ **ส่วนตัว** (1aefabb3) ไม่ใช่เบราว์เซอร์ร้าน · `deploy.bat` ที่ git root = ทางของ user เอง
+
+## ปิดร้านชั่วคราว (one-off closure) — checklist ช่องทางภายนอก (ทำครั้งแรก 21 ก.ย. 2026 สำหรับ 24 ก.ย.)
+ทั้งหมดใช้ Chrome **ร้าน** (478bfcbf) · ตั้ง "special/holiday hours = Closed" เสมอ **ห้าม pause** (DoorDash/UE หัก rating) · ข้อความโพสต์ถึงลูกค้าต้องให้เจ้าของเคาะก่อน
+- **GBP**: google.com/search "narwhal thai table" → Places → Manage your Business Profile → Edit profile → Hours → Special hours → Add a date → Closed → Save (pending ~10 นาที) · `business.google.com/dashboard/l/<id>` วน account chooser ใช้ไม่ได้ · โพสต์: `/local/business/9904313587459156977/promote/updates`
+- **DoorDash**: merchant-portal.doordash.com → Settings → Store availability → ล่างสุด "Special hours and closures" → Add new → Custom date range → วันเดียวคลิก 2 ครั้ง → Closed all day → Save (เมนู hours ปกติแก้ได้แค่ผ่าน Toast)
+- **Uber Eats**: merchants.ubereats.com → Settings → Holiday Hours → Add → Stores: Select all (มี 2 store record) → Duration → Closed all day → Save ("in progress" ~1 นาทีแล้วขึ้น)
+- **Toast Online Ordering**: Toast Web → Takeout & delivery → Ordering hours & availability → **Overrides → Add override** → วันที่ → Closed all day → Add → **Publish all changes** (ต้อง publish ถึงมีผล; POS/dine-in ไม่เกี่ยว)
+- **Yelp**: biz.yelp.com → Business Information → Upcoming special hours → Edit (`/biz_info/jZicE8h0ZKhu4mEi47ToDg/special_hours`) → Add a New Day → Closed → Save
+- ฝั่งเว็บ/AI: `lib/closures.ts` (ดูด้านบน) → deploy → `npm run sync:orderline` · เช็คการจองวันนั้นใน `/api/owner/data` ก่อน
+- ไม่มีสวิตช์: Grubhub (ห้ามกด Add now), IG/FB (โพสต์เอง), ป้ายหน้าร้าน
 
 ## Drift ที่รู้อยู่ (ยังไม่แก้ ตั้งใจหรือรอ user)
 - เว็บยังไม่มี Orange Chicken / Fried Tofu / Sides (ข้าว 3 แบบ, ไข่ดาว, ไข่เจียว) / Meat Ball Skewer · ไวน์+เบียร์ตั้งใจไม่ขึ้นเว็บจนใบ Type 41 ออก · Lunch Specials ยังไม่อยู่บนเว็บ/Toast · Toast สะกดห้วนบางจาน (เว็บสวยกว่า ปล่อย)
