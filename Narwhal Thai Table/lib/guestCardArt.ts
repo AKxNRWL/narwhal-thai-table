@@ -25,11 +25,12 @@ import type { OccasionKey } from './occasions';
  *     1590 × 1200 = the 367.2 × 277.2 pt panel, picture shifted up 15 % with
  *     its own ground colour filled in below.
  *   · /public/images/cards/letter/art-XX.jpg — the Letter tent (one card per
- *     sheet, what the HQ app prints and Drive keeps): 2000 × 1250 = the
- *     576 × 360 pt panel (8 × 5 in, 250 dpi), window starting 15 % down the
- *     original, with the name scrim BAKED IN (fades to the picture's ground
- *     from 40 % down) so the print page and the PDF only lay type on top.
- *     Made by scripts/card-art-letter.py from the originals.
+ *     sheet, what the HQ app prints and Drive keeps), FULL BLEED: 2125 × 1375
+ *     = the whole 612 × 396 pt face (8.5 × 5.5 in, 250 dpi), window ending on
+ *     the original's bottom row (~13 % down), with the name scrim BAKED IN
+ *     (fades to the picture's ground from 46 % down) so the print page and
+ *     the PDF only lay type on top. Made by scripts/card-art-letter.py from
+ *     the originals.
  * Originals (2336 × 1744 PNG) are kept in
  * D:\projects\narwhal-thai-table\_art-candidates\cards. To retire a piece,
  * delete it from this list; to add one, generate in the same style, cut both

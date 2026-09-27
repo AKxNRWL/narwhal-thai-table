@@ -9,20 +9,26 @@ import { artFor, letterFileOf, type CardArt, type CardTone } from './guestCardAr
  * Welcome-card PDFs, in two layouts.
  *
  * LETTER (default — v4, owner 27 Sep 2026: "ออกมาเล็ก ไม่ใช่ size letter …
- * ส่งไฟล์พร้อมปริ้นแบบกระดาษหนา"): ONE card per Letter sheet, portrait,
- * folded once across the middle into a tent 8.5 × 5.5 in — wider than tall,
- * so it stands, and big enough to read from the next table. Nothing to cut:
- * print on card stock, fold on the line, set it down. This is what the HQ
- * app prints on confirm, what "⬇ PDF" hands out and what Drive archives.
+ * ส่งไฟล์พร้อมปริ้นแบบกระดาษหนา"; v5 the same night: "ทำให้ปริ้นเต็ม …
+ * Borderless"): ONE card per Letter sheet, portrait, folded once across the
+ * middle into a tent 8.5 × 5.5 in — wider than tall, so it stands, and big
+ * enough to read from the next table. Nothing to cut: print on card stock,
+ * fold, set it down. This is what the HQ app prints on confirm, what
+ * "⬇ PDF" hands out and what Drive archives.
  *
  *   sheet 612 × 792 pt, fold at y = 396
  *   face  612 × 396 (8.5 × 5.5 in); the lower face reads upright, the upper
  *         face is the same face rotated 180° so it reads from the far side
- *   frame 0.25 in white round each face (the Epson can't print the outer
- *         ~3 mm, and a phone's "fit to page" shaves a few % — a frame on all
- *         four sides survives both and looks meant)
- *   panel 576 × 360 (8 × 5 in, ratio 1.6) — art from images/cards/letter/,
- *         cut to exactly this with the name scrim baked in
+ *   art   FULL BLEED: each picture covers its whole face, runs off the
+ *         paper's edges and meets the other one at the fold — art from
+ *         images/cards/letter/, cut to exactly the face (ratio 1.545) with
+ *         the name scrim baked in. Made for the printer's Borderless mode,
+ *         which prints ~3 mm past every edge (that sliver of picture is
+ *         lost, nothing that matters sits there). Printed WITH margins it
+ *         still works — the sheet just gets a thin white edge all round.
+ *   safe  type stays ≥ 0.45 in inside the paper edge, and there is no inset
+ *         frame line: borderless overspray and a card-stock sheet feeding a
+ *         millimetre askew would both show on a border as uneven margins.
  *
  * TENT2 (the original two-up): the same card as /stats/cards prints from the
  * browser — Letter landscape, two 5.5 × 8.5 in blanks side by side, each
@@ -30,10 +36,11 @@ import { artFor, letterFileOf, type CardArt, type CardTone } from './guestCardAr
  *
  * FACE DESIGN (v2, owner 26 Sep 2026): full-face artwork. One piece from the
  * house art set (lib/guestCardArt.ts — gold/navy line art, cute narwhal)
- * fills the face inside the white frame; the guest's name sits over the calm
- * lower part of the picture, behind a soft scrim in the picture's own ground
- * colour. The v1 layout (logo mark, rule, navy type on white) stays as the
- * fallback when the art set is empty.
+ * fills the face (Letter: to the paper's edges; tent2: inside a white frame
+ * with a hairline); the guest's name sits over the calm lower part of the
+ * picture, behind a soft scrim in the picture's own ground colour. The v1
+ * layout (logo mark, rule, navy type on white) stays as the fallback when
+ * the art set is empty.
  *
  * Fonts are the site's own (Fraunces for the name, Inter for the small caps)
  * shipped as TTFs in /public/fonts; Noto Sans Thai steps in for any string
@@ -64,27 +71,23 @@ const ART_FOOT_BOTTOM = 0.32 * IN;
 const SCRIM_FRAC = 0.6; // how much of the panel the name scrim covers, from the bottom
 
 /* ── page geometry (pt) — LETTER ───────────────────────────────────────── */
-const L_FRAME = 0.25 * IN; // 18 — white round each face
 const L_FACE_W = 8.5 * IN; // 612
 const L_FACE_H = 5.5 * IN; // 396 — the fold runs across the middle of the sheet
-const L_PANEL_W = L_FACE_W - 2 * L_FRAME; // 576
-const L_PANEL_H = L_FACE_H - 2 * L_FRAME; // 360
 export const LETTER = {
   sheetW: 8.5 * IN, // 612
   sheetH: 11 * IN, // 792
   faceW: L_FACE_W,
   faceH: L_FACE_H,
-  frame: L_FRAME,
-  panelW: L_PANEL_W,
-  panelH: L_PANEL_H,
-  /** Text column: the panel less 0.6 in each side. */
-  textW: L_PANEL_W - 2 * 0.6 * IN, // 489.6
-  /** Bottom of the name stack / of the small-caps footer, above the FACE's bottom edge. */
-  textBottom: L_FRAME + 0.46 * IN,
-  footBottom: L_FRAME + 0.2 * IN,
+  /** Text column, centred: 0.85 in in from each side edge of the paper. */
+  textW: L_FACE_W - 2 * 0.85 * IN, // 489.6
+  /** Bottom of the name stack / of the small-caps footer, above the paper edge (where v4 had them too). */
+  textBottom: 0.71 * IN,
+  footBottom: 0.45 * IN,
+  /** Fold ticks: this long in from each side edge, on the fold line. */
+  tick: 0.3 * IN,
   /**
    * Small type and gaps relative to the small tent's. Deliberately less than
-   * the face grew (×1.3): the picture keeps the top ~60 % of the panel and the
+   * the face grew (×1.3): the picture keeps the top ~60 % of the face and the
    * whole name block has to live in the calm bottom ~40 %.
    */
   k: 1.12,
@@ -95,7 +98,7 @@ export const LETTER = {
   /** Tallest the name block may be (pt) before the name steps down — keeps it off the picture. */
   stackMax: 112,
 } as const;
-export const LETTER_ART_RATIO = L_PANEL_W / L_PANEL_H; // 1.6 — letter/ files are cut to this
+export const LETTER_ART_RATIO = L_FACE_W / L_FACE_H; // 1.545 — letter/ files are cut to this (the whole face)
 
 /**
  * The name on a Letter card: as big as fits on ONE line (40 → 26 pt), and
@@ -523,27 +526,22 @@ function drawArtFace(page: PDFPage, bx: number, flip: boolean, card: GuestCard, 
 }
 
 /**
- * The Letter card's face: the same design at 8.5 × 5.5 in. `baked` = the
- * picture is the letter/ cut (exact panel ratio, scrim already in it); if
- * only the small-tent cut could be loaded it is cropped to fill and the
- * scrim is drawn instead, so a missing file never costs the card.
+ * The Letter card's face, full bleed: the picture covers the whole
+ * 8.5 × 5.5 in face, the name block sits over its calm bottom. `baked` = the
+ * picture is the letter/ cut (the face's exact ratio, scrim already in it);
+ * anything else — the small-tent cut when the letter file can't be loaded,
+ * or a cut of another ratio — is cropped to fill, and an unbaked one gets
+ * the scrim drawn, so a missing file never costs the card.
  */
 function drawLetterArtFace(page: PDFPage, flip: boolean, card: GuestCard, fonts: Fonts, art: { img: PDFImage; baked: boolean }, tone: CardTone, opts: RenderOptions) {
   const f = new Face(page, 0, flip, LETTER_FACE);
   const dark = tone === 'navy';
   const ground = dark ? DNA_NAVY : ART_CREAM;
-  const accent = dark ? DNA_GOLD : BRASS;
-  const { frame: fr, panelW: pw, panelH: ph } = LETTER;
-  f.rect(fr, fr, pw, ph, { color: ground });
-  if (art.baked) f.image(art.img, fr, fr, pw, ph);
-  else {
-    f.coverImage(art.img, fr, fr, pw, ph);
-    drawScrim(f, fr, fr, pw, ph, ground, dark);
-  }
-  const inset = 8;
-  f.rect(fr + inset, fr + inset, pw - inset * 2, ph - inset * 2, { border: accent, borderWidth: 0.75, borderOpacity: dark ? 0.7 : 0.6, opacity: 0 });
+  const { faceW: fw, faceH: fh } = LETTER;
+  f.coverImage(art.img, 0, 0, fw, fh);
+  if (!art.baked) drawScrim(f, 0, 0, fw, fh, ground, dark);
   const lines = textStack(card, fonts, opts, dark ? ON_NAVY : ON_WHITE, LETTER.textW, LETTER.k, letterNameFit(nameMeasure(fonts, card.name), card, opts));
-  f.stack(lines, L_FACE_H - LETTER.textBottom - stackHeight(lines), L_FACE_W / 2);
+  f.stack(lines, fh - LETTER.textBottom - stackHeight(lines), fw / 2);
   f.foot(fonts.sansBold, dark ? DNA_GOLD : BRASS_DEEP, dark ? 0.85 : 0.8, LETTER.footBottom, 6.8 * LETTER.k);
 }
 
@@ -556,23 +554,27 @@ function drawGuides(page: PDFPage) {
 }
 
 /**
- * Letter: nothing to cut — one fold across the middle, in the white band
- * between the two pictures. A light dotted line to fold (or score, on card
- * stock) along, plus a firm tick at each edge to lay a ruler on.
+ * Letter: nothing to cut — one fold across the middle, where the two
+ * pictures meet. No line across the art (fold a hair off and it would show
+ * on a face); just a short tick in from each side edge, on the fold line, to
+ * lay a ruler on and score along (card stock folds clean scored). Long
+ * enough that borderless overspray (~3 mm) leaves most of it; after folding
+ * it sits on the crease and disappears. `tone` = the picture's ground.
  */
-function drawLetterGuides(page: PDFPage) {
-  const ink = rgb(11 / 255, 31 / 255, 51 / 255);
-  const y = L_FACE_H;
-  page.drawLine({ start: { x: 0, y }, end: { x: L_FACE_W, y }, thickness: 0.6, color: ink, opacity: 0.2, dashArray: [1, 2.5] });
-  page.drawLine({ start: { x: 10, y }, end: { x: 30, y }, thickness: 0.75, color: ink, opacity: 0.45 });
-  page.drawLine({ start: { x: L_FACE_W - 30, y }, end: { x: L_FACE_W - 10, y }, thickness: 0.75, color: ink, opacity: 0.45 });
+function drawLetterGuides(page: PDFPage, tone: CardTone | null) {
+  const ink = tone === 'navy' ? CREAM : NAVY;
+  const opacity = tone === 'navy' ? 0.55 : 0.45;
+  const y = LETTER.faceH;
+  const { sheetW: w, tick } = LETTER;
+  page.drawLine({ start: { x: 0, y }, end: { x: tick, y }, thickness: 0.75, color: ink, opacity });
+  page.drawLine({ start: { x: w - tick, y }, end: { x: w, y }, thickness: 0.75, color: ink, opacity });
 }
 
 /* ── public API ────────────────────────────────────────────────────────── */
 export type CardLayout = 'letter' | 'tent2';
 
 export type RenderOptions = {
-  /** 'letter' (default): one card per Letter sheet, fold in half → 8.5 × 5.5 in tent. 'tent2': two 5.5 × 4.25 in tents per landscape sheet (the /stats/cards sheet). */
+  /** 'letter' (default): one card per Letter sheet, full bleed, fold in half → 8.5 × 5.5 in tent. 'tent2': two 5.5 × 4.25 in tents per landscape sheet (the /stats/cards sheet). */
   layout?: CardLayout;
   /** Show "7:00 PM · Party of 4" under the name (default true). */
   details?: boolean;
@@ -661,11 +663,13 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
       const page = doc.addPage([LETTER.sheetW, LETTER.sheetH]);
       const art = arts[i];
       const got = art ? artImages.get(art.id) : undefined;
+      // The picture's ground under the whole sheet first: no white hairline where the two pictures meet at the fold.
+      if (got && art) page.drawRectangle({ x: 0, y: 0, width: LETTER.sheetW, height: LETTER.sheetH, color: art.tone === 'navy' ? DNA_NAVY : ART_CREAM });
       for (const flip of [true, false]) {
         if (got && art) drawLetterArtFace(page, flip, card, fonts, got, art.tone, opts);
         else drawClassicFace(page, 0, flip, card, fonts, mark, opts, LETTER_FACE, LETTER.k);
       }
-      drawLetterGuides(page);
+      drawLetterGuides(page, got && art ? art.tone : null);
     });
     return doc.save();
   }

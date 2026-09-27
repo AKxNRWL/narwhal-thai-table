@@ -18,6 +18,12 @@ import { LETTER, type NameFit } from './guestCardPdf';
  * size everywhere. The name's size and line breaks come in precomputed
  * (`nameFit`, from letterNameLayout) so they match the PDF exactly.
  *
+ * Full bleed (v5, "ทำให้ปริ้นเต็ม … Borderless"): the picture runs to the
+ * paper's edges like the PDF's. A browser/AirPrint print has no Borderless
+ * switch, so from here the printer keeps its ~3 mm margin (a thin white edge
+ * round the sheet); edge-to-edge comes from the PDF through the Epson app —
+ * the hint on the page says so.
+ *
  * Self-contained on purpose: no React, no site chrome, fonts from
  * /public/fonts so the print output matches the PDF glyph for glyph.
  */
@@ -33,15 +39,15 @@ const DNA_GOLD = '#D4B26A';
 const CREAM = '#F7F0E1';
 const ART_CREAM = '#F6EEDE'; // the cream edition's own ground
 
-/* Letter geometry, inches (LETTER is in points) */
+/* Letter geometry, inches (LETTER is in points) — the picture fills each face edge to edge */
 const IN = 72;
 const SHEET_W = LETTER.sheetW / IN; // 8.5
 const SHEET_H = LETTER.sheetH / IN; // 11
 const FACE_H = LETTER.faceH / IN; // 5.5
-const FRAME = LETTER.frame / IN; // 0.25
-const SIDE = (LETTER.panelW - LETTER.textW) / 2 / IN; // 0.6
-const TEXT_BOTTOM = (LETTER.textBottom - LETTER.frame) / IN; // above the panel's bottom edge
-const FOOT_BOTTOM = (LETTER.footBottom - LETTER.frame) / IN;
+const SIDE = (LETTER.faceW - LETTER.textW) / 2 / IN; // 0.85
+const TEXT_BOTTOM = LETTER.textBottom / IN; // 0.71 — above the paper edge
+const FOOT_BOTTOM = LETTER.footBottom / IN; // 0.45
+const TICK = LETTER.tick / IN; // 0.3
 const K = LETTER.k;
 const pt = (n: number) => `${+(n * K).toFixed(2)}pt`;
 const inch = (n: number) => `${+(n * K).toFixed(4)}in`;
@@ -90,7 +96,6 @@ function faceInner(c: GuestCard, o: CardPageOptions, art: CardArt | null): strin
         <div class="panel ${art.tone}">
           <img class="art" src="/${esc(letterFileOf(art))}" alt="" onerror="this.onerror=null;this.src='${esc(small)}';this.parentNode.classList.add('unbaked')">
           <div class="scrim"></div>
-          <div class="hair"></div>
           <div class="text">${textBlock}
           </div>
           <div class="foot">Narwhal Thai Table</div>
@@ -133,7 +138,9 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
 
 .wrap{padding:14px;overflow:auto}
 .scale{transform-origin:top left}
-.sheet{position:relative;width:${SHEET_W}in;height:${SHEET_H}in;background:#fff;overflow:hidden;box-shadow:0 10px 34px rgba(0,0,0,.45);border-radius:2px}
+.sheet{position:relative;width:${SHEET_W}in;height:${SHEET_H}in;background:#fff;overflow:hidden;box-shadow:0 10px 34px rgba(0,0,0,.45);border-radius:2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet.navy{background:${DNA_NAVY}}
+.sheet.cream{background:${ART_CREAM}}
 .face{position:absolute;left:0;width:${SHEET_W}in;height:${FACE_H}in;color:${NAVY};background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .face.front{top:${FACE_H}in}
 .face.back{top:0;transform:rotate(180deg)}
@@ -146,15 +153,14 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
 .meta{font-family:Inter,'Noto Sans Thai',sans-serif;font-size:${pt(9.5)};line-height:1.2;letter-spacing:.09em;white-space:pre;color:${NAVY_SOFT};opacity:.78;margin-top:${inch(0.11)}}
 .occasion{font-family:Fraunces,'Noto Sans Thai',Georgia,serif;font-style:italic;font-size:${pt(12)};line-height:1.25;color:${BRASS_DEEP};margin-top:${inch(0.1)}}
 .thanks{font-family:Fraunces,'Noto Sans Thai',Georgia,serif;font-style:italic;font-size:${pt(10.5)};line-height:1.3;color:${NAVY_SOFT};opacity:.85;margin-top:${inch(0.14)}}
-.foot{position:absolute;left:0;right:0;bottom:${FOOT_BOTTOM}in;text-align:center;font-family:Inter,sans-serif;font-size:${pt(6.8)};line-height:1.2;font-weight:600;letter-spacing:.34em;text-transform:uppercase;color:${BRASS_DEEP};opacity:.75}
-.face.classic .foot{bottom:${(LETTER.footBottom / IN).toFixed(4)}in}
+.foot{position:absolute;left:0;right:0;bottom:${FOOT_BOTTOM.toFixed(4)}in;text-align:center;font-family:Inter,sans-serif;font-size:${pt(6.8)};line-height:1.2;font-weight:600;letter-spacing:.34em;text-transform:uppercase;color:${BRASS_DEEP};opacity:.75}
 
 /* v1 pieces */
 .mark{height:${inch(0.36)};width:auto;opacity:.92}
 .rule{width:${inch(1.35)};height:1px;background:${BRASS};opacity:.75;margin:${inch(0.19)} 0 ${inch(0.12)}}
 
-/* v2 — full-face art */
-.panel{position:absolute;inset:${FRAME}in;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+/* v2 — full-face art; v5 — to the paper's edges */
+.panel{position:absolute;inset:0;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .panel.navy{background:${DNA_NAVY}}
 .panel.cream{background:${ART_CREAM}}
 .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
@@ -162,10 +168,7 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
 .panel.unbaked .scrim{display:block}
 .panel.navy .scrim{background:linear-gradient(to top,rgba(9,37,59,.92) 0%,rgba(9,37,59,.7) 35%,rgba(9,37,59,0) 100%)}
 .panel.cream .scrim{background:linear-gradient(to top,rgba(246,238,222,.92) 0%,rgba(246,238,222,.7) 35%,rgba(246,238,222,0) 100%)}
-.hair{position:absolute;inset:8pt;pointer-events:none}
-.panel.navy .hair{border:0.75pt solid rgba(212,178,106,.7)}
-.panel.cream .hair{border:0.75pt solid rgba(200,162,78,.6)}
-.text{position:absolute;left:${SIDE}in;right:${SIDE}in;bottom:${TEXT_BOTTOM.toFixed(4)}in;text-align:center}
+.text{position:absolute;left:${SIDE.toFixed(4)}in;right:${SIDE.toFixed(4)}in;bottom:${TEXT_BOTTOM.toFixed(4)}in;text-align:center}
 .panel.navy .kicker{color:${DNA_GOLD}}
 .panel.navy .name{color:${CREAM}}
 .panel.navy .meta{color:${CREAM};opacity:.82}
@@ -174,10 +177,10 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
 .panel.navy .foot{color:${DNA_GOLD};opacity:.85}
 .panel.cream .foot{opacity:.8}
 
-/* fold: one line across the middle, in the white band between the pictures */
-.fold{position:absolute;left:0;right:0;top:${FACE_H}in;height:0;border-top:0.6pt dotted rgba(11,31,51,.25)}
-.tick{position:absolute;top:${FACE_H}in;width:20pt;height:0;border-top:0.75pt solid rgba(11,31,51,.45)}
-.tick.l{left:10pt}.tick.r{right:10pt}
+/* fold: where the two pictures meet — a short tick in from each side edge, nothing across the art */
+.tick{position:absolute;top:${FACE_H}in;width:${TICK}in;height:0;border-top:0.75pt solid rgba(11,31,51,.45)}
+.sheet.navy .tick{border-top-color:rgba(247,240,225,.55)}
+.tick.l{left:0}.tick.r{right:0}
 
 @media print{
   @page{size:${SHEET_W}in ${SHEET_H}in;margin:0}
@@ -196,10 +199,10 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
   <a class="btn" href="${esc(o.pdfUrl)}" target="_blank" rel="noopener">📄 PDF พร้อมพิมพ์</a>
   ${o.driveUrl ? `<a class="btn" href="${esc(o.driveUrl)}" target="_blank" rel="noopener">☁️ Drive</a>` : ''}
 </div>
-<div class="hint">การ์ด <b>1 ใบเต็มแผ่น Letter แนวตั้ง</b> · กระดาษ<b>การ์ดหนา 65–80 lb cover (176–216 g/m²)</b> · Epson ET-16650: ใส่การ์ด<b>ช่องป้อนกระดาษด้านหลัง</b> หงายด้านพิมพ์ขึ้น · ชนิดกระดาษ <b>Card Stock</b> · Scale <b>100%</b> — พิมพ์แล้ว<b>พับครึ่ง</b>ตามเส้นกลางแผ่น (กรีดด้วยสันมีดตามไม้บรรทัดก่อน พับจะคม) ตั้งเป็นเต็นท์ 8.5 × 5.5 นิ้ว · ถ้าพิมพ์จากหน้านี้แล้วขนาดเพี้ยน ให้กด <b>📄 PDF</b> แล้วพิมพ์จาก PDF แทน</div>
-<div class="wrap"><div class="scale" id="scale"><div class="sheet">
+<div class="hint">การ์ด <b>1 ใบเต็มแผ่น Letter แนวตั้ง · ภาพเต็มถึงขอบ</b> · กระดาษ<b>การ์ด 65–80 lb cover (176–216 g/m²)</b> ใส่<b>ช่องป้อนด้านหลัง</b> หงายด้านพิมพ์ขึ้น · <b>ไร้ขอบ (Borderless)</b>: กด <b>📄 PDF</b> → เปิดด้วยแอป <b>Epson Smart Panel</b> → Letter · <b>Borderless เปิด</b> · Paper Type <b>Premium Presentation Paper Matte</b> (ถ้าเลือก Card Stock ปุ่ม Borderless มักกดไม่ได้) — ปุ่ม 🖨 หน้านี้/AirPrint ก็พิมพ์ได้ แต่จะเหลือขอบขาว ~3 มม. รอบแผ่น · พิมพ์แล้ว<b>พับครึ่ง</b>ตรงขีดสั้นที่ขอบซ้าย-ขวา (กรีดตามไม้บรรทัดก่อน พับจะคม) ตั้งเป็นเต็นท์ 8.5 × 5.5 นิ้ว</div>
+<div class="wrap"><div class="scale" id="scale"><div class="sheet ${art ? art.tone : 'classic'}">
   ${face(true)}${face(false)}
-  <div class="fold"></div><div class="tick l"></div><div class="tick r"></div>
+  <div class="tick l"></div><div class="tick r"></div>
 </div></div></div>
 <script>
 (function(){
