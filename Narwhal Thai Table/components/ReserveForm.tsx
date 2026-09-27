@@ -204,6 +204,21 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
           </SelectShell>
         </Field>
 
+        <Field id="rsv-occasion" label={t.occasion} full>
+          <SelectShell>
+            {/* values are lib/occasions.ts keys — the card artwork and the team's email key off them */}
+            <select id="rsv-occasion" name="occasion" defaultValue="" className={selectField}>
+              <option value="">{t.occasions.none}</option>
+              <option value="birthday">{t.occasions.birthday}</option>
+              <option value="anniversary">{t.occasions.anniversary}</option>
+              <option value="celebration">{t.occasions.celebration}</option>
+              <option value="family">{t.occasions.family}</option>
+              <option value="friends">{t.occasions.friends}</option>
+              <option value="business">{t.occasions.business}</option>
+            </select>
+          </SelectShell>
+        </Field>
+
         <Field id="rsv-notes" label={t.notes} full>
           <textarea id="rsv-notes" name="notes" rows={4} placeholder={t.notesPlaceholder} className={textareaField}></textarea>
         </Field>

@@ -210,7 +210,7 @@ export default function CardsClient() {
   const addManual = () =>
     setExtras((x) => [
       ...x,
-      { id: 'm_' + Date.now().toString(36), name: '', time: '', party: '', occasion: '', notes: '', on: true, manual: true },
+      { id: 'm_' + Date.now().toString(36), name: '', time: '', party: '', occasion: '', theme: '', notes: '', on: true, manual: true },
     ]);
 
   const isToday = date === todayInLA();
@@ -236,7 +236,7 @@ export default function CardsClient() {
      scrim in the picture's own ground colour, inside a 0.2in white frame. The
      v1 white card with the logo mark is the fallback when the set is empty. */
   const Face = ({ c, back }: { c: Editable; back?: boolean }) => {
-    const art = artFor(c.id, c.art);
+    const art = artFor(c.id, c.art, c.theme);
     if (!art) {
       return (
         <div className={'nwc-face nwc-classic' + (back ? ' is-back' : ' is-front')}>
@@ -400,9 +400,9 @@ export default function CardsClient() {
                             title="ภาพบนการ์ด"
                             style={{ ...field, fontSize: 13, colorScheme: 'dark' }}
                           >
-                            <option value={0}>{'🎨 สุ่ม: ' + (CARD_ART[artIndexFor(c.id)]?.title ?? '')}</option>
+                            <option value={0}>{'🎨 อัตโนมัติ: ' + (CARD_ART[artIndexFor(c.id, c.theme)]?.title ?? '')}</option>
                             {CARD_ART.map((a, ai) => (
-                              <option key={a.id} value={ai + 1}>{(a.tone === 'navy' ? '🌙 ' : '☀️ ') + a.title}</option>
+                              <option key={a.id} value={ai + 1}>{(a.occasion ? '🎉 ' : a.tone === 'navy' ? '🌙 ' : '☀️ ') + a.title}</option>
                             ))}
                           </select>
                           {c.manual && (

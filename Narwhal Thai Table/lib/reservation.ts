@@ -20,6 +20,7 @@ import { getStore } from '@netlify/blobs';
 import { upsertCustomer } from './customers';
 import { looksLikeEmail, sendReservationReceived } from './guestMail';
 import { notifyHQ } from './hqNotify';
+import { normalizeOccasion, occasionByKey } from './occasions';
 
 export const RESV_STORE = 'aileen-reservations';
 export const RESV_KEY = 'list';
@@ -34,6 +35,8 @@ export type ReservationInput = {
   time: string;
   party_size: string;
   notes?: string;
+  /** Special occasion (lib/occasions.ts key or free text — normalised here). Optional. */
+  occasion?: string;
   /** Where the booking came from — the website form, Aileen chat, or the call line. */
   source?: 'chat' | 'phone' | 'web';
 };
@@ -70,7 +73,9 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
     time: clip(input.time, 40),
     party_size: clip(input.party_size, 40),
     notes: clip(input.notes, 400),
+    occasion: normalizeOccasion(input.occasion),
   };
+  const occ = occasionByKey(rec.occasion);
 
   // 1) Email the restaurant via the existing Netlify "reservation" form.
   let emailed = false;
@@ -84,7 +89,7 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
       date: rec.date,
       time: rec.time,
       party_size: rec.party_size,
-      notes: (rec.notes ? rec.notes + ' — ' : '') + `Booked via ${via}`,
+      notes: (occ ? `Occasion: ${occ.label} — ` : '') + (rec.notes ? rec.notes + ' — ' : '') + `Booked via ${via}`,
     });
     const res = await fetch(`${SITE}/__forms.html`, {
       method: 'POST',
@@ -109,6 +114,7 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
       time: rec.time,
       party_size: rec.party_size,
       notes: rec.notes,
+      occasion: occ?.label,
     });
     guestEmailed = r.sent;
     if (!r.sent) console.warn('[reservation] guest ack email not sent:', r.error);
@@ -143,7 +149,7 @@ export async function submitReservation(input: ReservationInput): Promise<Reserv
     const partyN = (rec.party_size.match(/\d+/) || [rec.party_size || '?'])[0]; // "2 Guests" → 2
     await notifyHQ({
       title: `📅 จองใหม่ ${partyN} ท่าน · ${guest}`,
-      body: `${rec.date} ${rec.time} · ☎ ${rec.phone || '-'}${rec.notes ? ' · ' + rec.notes : ''} · ผ่าน${via.replace('the website form', 'ฟอร์มเว็บ').replace('Aileen phone line', 'โทร Aileen').replace('Aileen chat', 'แชต Aileen')}`,
+      body: `${rec.date} ${rec.time} · ☎ ${rec.phone || '-'}${occ ? ' · ' + occ.emoji + ' ' + occ.th : ''}${rec.notes ? ' · ' + rec.notes : ''} · ผ่าน${via.replace('the website form', 'ฟอร์มเว็บ').replace('Aileen phone line', 'โทร Aileen').replace('Aileen chat', 'แชต Aileen')}`,
       url: './#inbox',
       tag: 'resv-' + id,
     });

@@ -205,6 +205,8 @@ export type ReservationMail = {
   time: string;
   party_size: string;
   notes?: string;
+  /** Special occasion label, e.g. 'Birthday' (optional). */
+  occasion?: string;
 };
 
 const guests = (n: string): string => {
@@ -216,6 +218,7 @@ const detailRows = (r: ReservationMail): Row[] => [
   { k: 'Date', v: prettyDate(r.date) },
   { k: 'Time', v: prettyTime(r.time) },
   { k: 'Party', v: guests(r.party_size) },
+  { k: 'Occasion', v: r.occasion || '' },
   { k: 'Name', v: [r.first_name, r.last_name].filter(Boolean).join(' ') },
   { k: 'Phone', v: r.phone || '' },
   { k: 'Notes', v: r.notes || '' },

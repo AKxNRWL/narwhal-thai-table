@@ -81,7 +81,7 @@ function faceInner(c: GuestCard, o: CardPageOptions, art: CardArt | null): strin
 
 export function cardPageHtml(o: CardPageOptions): string {
   const c = o.card;
-  const art = o.noArt ? null : artFor(c.id, o.art);
+  const art = o.noArt ? null : artFor(c.id, o.art, c.theme);
   const inner = faceInner(c, o, art);
   const face = (back: boolean) => `<div class="face ${back ? 'back' : 'front'} ${art ? 'has-art ' + art.tone : 'classic'}">${inner}</div>`;
 

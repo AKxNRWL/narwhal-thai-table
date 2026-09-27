@@ -2,24 +2,26 @@
  * Render sample welcome cards to a PDF without the site running — for eyeballing
  * a layout change before it reaches a table.
  *
- *   npx tsx scripts/card-preview.ts [out.pdf] [--all-art] [--no-art]
+ *   npx tsx scripts/card-preview.ts [out.pdf] [--all-art] [--occasions] [--no-art]
  *
- *   --all-art  one card per piece in CARD_ART (16 cards → 8 sheets), so every
- *              picture is checked under real type
- *   --no-art   the v1 white card
+ *   --all-art    one card per piece in CARD_ART (every picture under real type)
+ *   --occasions  one card per occasion set, drawn the way a real booking would
+ *                (explicit occasion → that set + its line)
+ *   --no-art     the v1 white card
  *
  * Reads fonts/logo/art straight from /public, so it also proves the asset loader.
  */
 import { writeFile } from 'fs/promises';
 import path from 'path';
-import { cardFromSource, type GuestCard } from '../lib/guestCards';
+import { cardFromSource, type CardSource, type GuestCard } from '../lib/guestCards';
 import { CARD_ART } from '../lib/guestCardArt';
+import { OCCASIONS } from '../lib/occasions';
 import { renderCardsPdf } from '../lib/guestCardPdf';
 
-const samples = [
-  { id: 'a', first_name: 'John', last_name: 'Smith', party_size: '4 Guests', date: '2026-09-27', time: '19:00', notes: 'birthday dinner' },
+const samples: CardSource[] = [
+  { id: 'a', first_name: 'John', last_name: 'Smith', party_size: '4 Guests', date: '2026-09-27', time: '19:00', notes: '' },
   { id: 'b', first_name: 'Maria', last_name: 'Gonzalez-Hernandez', party_size: '2 Guests', date: '2026-09-27', time: '18:30', notes: '' },
-  { id: 'c', first_name: 'สมชาย', last_name: 'ใจดี', party_size: '6', date: '2026-09-27', time: '20:00', notes: 'ครบรอบแต่งงาน' },
+  { id: 'c', first_name: 'สมชาย', last_name: 'ใจดี', party_size: '6', date: '2026-09-27', time: '20:00', notes: '' },
   { id: 'd', first_name: 'Alex', last_name: '', party_size: '1', date: '2026-09-27', time: '12:15', notes: '' },
 ];
 
@@ -33,6 +35,15 @@ async function main() {
   if (flags.has('--all-art')) {
     cards = CARD_ART.map((a, i) => ({ ...cardFromSource(samples[i % samples.length]), id: a.id }));
     art = (_c, i) => i + 1;
+  } else if (flags.has('--occasions')) {
+    // every piece of every occasion set, each as a booking that declared that occasion
+    cards = [];
+    for (const o of OCCASIONS) {
+      const pieces = CARD_ART.map((a, i) => ({ a, i })).filter(({ a }) => a.occasion === o.key);
+      pieces.forEach(({ a }, j) => cards.push({ ...cardFromSource({ ...samples[j % samples.length], occasion: o.key }), id: a.id }));
+    }
+    const byId = new Map(CARD_ART.map((a, i) => [a.id, i + 1]));
+    art = (c) => byId.get(c.id) ?? 0;
   }
   const pdf = await renderCardsPdf(cards, { title: 'Welcome card — preview', art, noArt: flags.has('--no-art') });
   await writeFile(out, pdf);

@@ -377,13 +377,13 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
   doc.setProducer('narwhalthaihb.com');
   doc.setCreator('Narwhal Thai Table');
 
-  const list = cards.length ? cards : [{ id: 'blank', name: 'Reserved', time: '', party: '', occasion: '', notes: '' }];
+  const list: GuestCard[] = cards.length ? cards : [{ id: 'blank', name: 'Reserved', time: '', party: '', occasion: '', theme: '', notes: '' }];
 
   // Decide the artwork per card first so the assets can load in one go.
   const arts: (CardArt | null)[] = list.map((c, i) => {
     if (opts.noArt) return null;
     const o = typeof opts.art === 'function' ? opts.art(c, i) : opts.art;
-    return artFor(c.id, o);
+    return artFor(c.id, o, c.theme);
   });
   const artFiles = [...new Set(arts.filter((a): a is CardArt => !!a).map((a) => a.file))];
 

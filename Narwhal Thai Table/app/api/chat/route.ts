@@ -60,7 +60,12 @@ const RESERVATION_TOOL = {
       date: { type: 'string', description: 'Requested date, e.g. "2026-06-14" or "Saturday June 14"' },
       time: { type: 'string', description: 'Requested time within 11:00 AM-11:00 PM, e.g. "7:00 PM"' },
       party_size: { type: 'string', description: 'Number of guests, e.g. "4"' },
-      notes: { type: 'string', description: 'Allergies, occasion, seating preference, etc. (optional)' },
+      notes: { type: 'string', description: 'Allergies, seating preference, etc. (optional)' },
+      occasion: {
+        type: 'string',
+        enum: ['birthday', 'anniversary', 'celebration', 'family', 'friends', 'business'],
+        description: 'Special occasion, if the guest mentioned one: birthday, anniversary, celebration (graduation/promotion/engagement), family (family gathering), friends (night out with friends), business (work/meeting dinner). Omit when none.',
+      },
     },
     required: ['first_name', 'phone', 'date', 'time', 'party_size'],
   },
@@ -281,6 +286,7 @@ export async function POST(req: Request) {
           time: String(input.time ?? ''),
           party_size: String(input.party_size ?? ''),
           notes: input.notes ? String(input.notes) : undefined,
+          occasion: input.occasion ? String(input.occasion) : undefined,
         });
         reservationMade = result.ok;
         resultText = result.ok

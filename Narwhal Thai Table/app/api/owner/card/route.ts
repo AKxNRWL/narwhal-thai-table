@@ -51,6 +51,7 @@ const asSource = (r: Rec): CardSource => ({
   time: str(r, 'time'),
   notes: str(r, 'notes'),
   status: str(r, 'status'),
+  occasion: str(r, 'occasion'),
 });
 
 const driveOf = (r: Rec): { url: string; fileId: string } | null => {

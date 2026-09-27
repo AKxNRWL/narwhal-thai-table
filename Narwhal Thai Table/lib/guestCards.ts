@@ -14,6 +14,8 @@
  * page, and anything later (the HQ app, a print watcher), share one rulebook.
  */
 
+import { normalizeOccasion, occasionByKey, type OccasionKey } from './occasions';
+
 export type CardSource = {
   id?: string;
   first_name?: string;
@@ -23,6 +25,8 @@ export type CardSource = {
   time?: string;
   notes?: string;
   status?: string;
+  /** Explicit occasion from the form / Aileen (lib/occasions.ts key), when the guest gave one. */
+  occasion?: string;
 };
 
 /** The finished card, ready to lay out. */
@@ -34,8 +38,10 @@ export type GuestCard = {
   time: string;
   /** "Party of 4" — empty when we don't know the size. */
   party: string;
-  /** "Happy Birthday!" and friends — empty unless the notes said so. */
+  /** "Happy Birthday!" and friends — empty unless the guest told us (occasion field or notes). */
   occasion: string;
+  /** Which artwork set the card draws from — explicit occasion, else read from the notes; '' = the general set. */
+  theme: OccasionKey | '';
   /** The raw note, shown in the Control Room list only (never printed). */
   notes: string;
 };
@@ -86,31 +92,44 @@ export function partyLine(size: string | undefined): string {
   return n ? `Party of ${n}` : '';
 }
 
-/* Occasions worth a line on the card. First match wins, so the more specific
-   patterns sit above the generic "celebrate". Thai spellings included because
-   guests book in Thai through Aileen. */
-const OCCASIONS: { re: RegExp; line: string }[] = [
-  { re: /\b(birthday|bday|b-day|happy\s*bday)\b|วันเกิด/i, line: 'Happy Birthday!' },
-  { re: /\banniversar(y|ies)\b|ครบรอบ/i, line: 'Happy Anniversary!' },
-  { re: /\b(engagement|engaged|propose|proposal)\b|ขอแต่งงาน|หมั้น/i, line: 'Congratulations!' },
-  { re: /\b(wedding|honeymoon)\b|แต่งงาน|ฮันนีมูน/i, line: 'Congratulations!' },
-  { re: /\b(graduat\w*)\b|จบการศึกษา|รับปริญญา/i, line: 'Congratulations, Graduate!' },
-  { re: /\b(promotion|new\s*job|retirement|retiring)\b|เลื่อนขั้น|เกษียณ/i, line: 'Congratulations!' },
-  { re: /\b(celebrat\w*|special\s*occasion)\b|ฉลอง|โอกาสพิเศษ/i, line: 'Here’s to the celebration!' },
+/* Occasions worth a line on the card, read from free-text notes. First match
+   wins, so the more specific patterns sit above the generic "celebrate". Thai
+   spellings included because guests book in Thai through Aileen. `theme`
+   is the artwork set the note points at (lib/guestCardArt.ts). */
+const NOTE_OCCASIONS: { re: RegExp; line: string; theme: OccasionKey }[] = [
+  { re: /\b(birthday|bday|b-day|happy\s*bday)\b|วันเกิด/i, line: 'Happy Birthday!', theme: 'birthday' },
+  { re: /\banniversar(y|ies)\b|ครบรอบ/i, line: 'Happy Anniversary!', theme: 'anniversary' },
+  { re: /\b(engagement|engaged|propose|proposal)\b|ขอแต่งงาน|หมั้น/i, line: 'Congratulations!', theme: 'anniversary' },
+  { re: /\b(wedding|honeymoon)\b|แต่งงาน|ฮันนีมูน/i, line: 'Congratulations!', theme: 'anniversary' },
+  { re: /\b(graduat\w*)\b|จบการศึกษา|รับปริญญา/i, line: 'Congratulations, Graduate!', theme: 'celebration' },
+  { re: /\b(promotion|new\s*job|retirement|retiring)\b|เลื่อนขั้น|เกษียณ/i, line: 'Congratulations!', theme: 'celebration' },
+  { re: /\b(celebrat\w*|special\s*occasion)\b|ฉลอง|โอกาสพิเศษ/i, line: 'Here’s to the celebration!', theme: 'celebration' },
+  { re: /\b(family|reunion|relatives|grandma|grandpa|parents)\b|ครอบครัว|ญาติ/i, line: '', theme: 'family' },
+  { re: /\b(friends?|girls'?\s*night|guys'?\s*night|night\s*out)\b|เพื่อน/i, line: '', theme: 'friends' },
+  { re: /\b(business|meeting|work\s*dinner|corporate|clients?|team\s*dinner|company)\b|ประชุม|บริษัท/i, line: '', theme: 'business' },
 ];
 
+/** A note that negates the occasion ("no birthday song please") never becomes a line. */
+const negated = (s: string) => /\b(no|not|don'?t|without)\b[^.;]{0,24}(birthday|anniversar|celebrat|song|sing)/i.test(s);
+
 /**
- * Read an occasion out of the booking notes. Deliberately quiet: no match
- * means no line, and the team can type one in before printing. We skip a
- * note that negates the occasion ("no birthday song please") so the card
- * never shouts something the guest asked us not to.
+ * The occasion behind a booking: the explicit field first (the form's
+ * dropdown / Aileen's tool), then the free-text notes. Returns the card line
+ * and the artwork theme. Deliberately quiet: nothing recognised → no line,
+ * general artwork, and the team can still type a line in before printing.
  */
-export function occasionLine(notes: string | undefined): string {
+export function occasionOf(notes: string | undefined, explicit?: string | undefined): { line: string; theme: OccasionKey | '' } {
+  const key = normalizeOccasion(explicit);
+  if (key) return { line: occasionByKey(key)?.line ?? '', theme: key };
   const s = tidy(notes);
-  if (!s) return '';
-  if (/\b(no|not|don'?t|without)\b[^.;]{0,24}(birthday|anniversar|celebrat|song|sing)/i.test(s)) return '';
-  for (const o of OCCASIONS) if (o.re.test(s)) return o.line;
-  return '';
+  if (!s || negated(s)) return { line: '', theme: '' };
+  for (const o of NOTE_OCCASIONS) if (o.re.test(s)) return { line: o.line, theme: o.theme };
+  return { line: '', theme: '' };
+}
+
+/** Card line only — kept for callers that just want the words. */
+export function occasionLine(notes: string | undefined, explicit?: string | undefined): string {
+  return occasionOf(notes, explicit).line;
 }
 
 /** '19:00' → '7:00 PM'. Already-pretty or unparseable values pass through. */
@@ -193,12 +212,14 @@ export const CARD_THANKS = 'Welcome to our table — thank you for joining us.';
 
 /** One reservation → one card. The same rulebook `cardsForDate` uses. */
 export function cardFromSource(r: CardSource, fallbackId = 'card'): GuestCard {
+  const occ = occasionOf(r.notes, r.occasion);
   return {
     id: tidy(r.id) || fallbackId,
     name: partyName(r.first_name, r.last_name, r.party_size),
     time: prettyTime(r.time),
     party: partyLine(r.party_size),
-    occasion: occasionLine(r.notes),
+    occasion: occ.line,
+    theme: occ.theme,
     notes: tidy(r.notes),
   };
 }

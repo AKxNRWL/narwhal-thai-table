@@ -29,6 +29,7 @@ type Payload = {
   time?: string;
   party_size?: string;
   notes?: string;
+  occasion?: string;
   'bot-field'?: string;
 };
 
@@ -75,6 +76,7 @@ export async function POST(req: Request) {
     time,
     party_size,
     notes: s(body.notes, 400) || undefined,
+    occasion: s(body.occasion, 40) || undefined,
     source: 'web',
   });
 
