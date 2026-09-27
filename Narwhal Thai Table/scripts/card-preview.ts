@@ -2,12 +2,14 @@
  * Render sample welcome cards to a PDF without the site running — for eyeballing
  * a layout change before it reaches a table.
  *
- *   npx tsx scripts/card-preview.ts [out.pdf] [--all-art] [--occasions] [--no-art]
+ *   npx tsx scripts/card-preview.ts [out.pdf] [--all-art] [--occasions] [--no-art] [--small]
  *
  *   --all-art    one card per piece in CARD_ART (every picture under real type)
  *   --occasions  one card per occasion set, drawn the way a real booking would
  *                (explicit occasion → that set + its line)
  *   --no-art     the v1 white card
+ *   --small      the old two-up sheet (5.5 × 4.25 in tents, what /stats/cards
+ *                prints) instead of the Letter card (one per sheet, the default)
  *
  * Reads fonts/logo/art straight from /public, so it also proves the asset loader.
  */
@@ -45,9 +47,10 @@ async function main() {
     const byId = new Map(CARD_ART.map((a, i) => [a.id, i + 1]));
     art = (c) => byId.get(c.id) ?? 0;
   }
-  const pdf = await renderCardsPdf(cards, { title: 'Welcome card — preview', art, noArt: flags.has('--no-art') });
+  const small = flags.has('--small');
+  const pdf = await renderCardsPdf(cards, { title: 'Welcome card — preview', art, noArt: flags.has('--no-art'), layout: small ? 'tent2' : 'letter' });
   await writeFile(out, pdf);
-  console.log(`wrote ${out} (${pdf.length} bytes, ${cards.length} cards, ${Math.ceil(cards.length / 2)} sheets)`);
+  console.log(`wrote ${out} (${pdf.length} bytes, ${cards.length} cards, ${small ? Math.ceil(cards.length / 2) : cards.length} sheets)`);
 }
 
 main().catch((e) => {

@@ -71,6 +71,9 @@ function niceCase(raw: string | undefined): string {
     .replace(/(^|[\s\-'’])([a-zà-ÿ])/g, (_m, sep: string, ch: string) => sep + ch.toUpperCase());
 }
 
+/** "Lisette &Henry" → "Lisette & Henry": guests type the ampersand any which way. */
+const spaceAmp = (s: string): string => s.replace(/\s*&\s*/g, ' & ').trim();
+
 /**
  * The naming rule. `size` is the party size as stored ("4 Guests"):
  *   2+ guests, full name → "John Smith & Party"
@@ -79,8 +82,8 @@ function niceCase(raw: string | undefined): string {
  *   no name at all       → "Reserved"
  */
 export function partyName(first: string | undefined, last: string | undefined, size: string | undefined): string {
-  const f = niceCase(first);
-  const l = niceCase(last);
+  const f = spaceAmp(niceCase(first));
+  const l = spaceAmp(niceCase(last));
   const full = [f, l].filter(Boolean).join(' ');
   if (!full) return 'Reserved';
   return partyCount(size) >= 2 ? `${full} & Party` : full;

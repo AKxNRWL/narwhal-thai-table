@@ -20,13 +20,20 @@ import type { OccasionKey } from './occasions';
  * The pick is DETERMINISTIC per reservation (hash of the reservation id), so
  * a reprint or the Drive copy always shows the same picture the table did.
  *
- * Files live in /public/images/cards, pre-cropped to the card's navy panel
- * (1590 × 1200 = 367.2 × 277.2 pt, see guestCardPdf.ts) with the picture
- * shifted up 15 % and its own ground colour filled in below, which is what
- * leaves the lower third calm enough for a two-line name. Originals (2336 ×
- * 1744 PNG) are kept in D:\projects\narwhal-thai-table\_art-candidates\cards.
- * To retire a piece, delete it from this list; to add one, generate in the
- * same style, crop/shift the same way and append.
+ * Two cuts of every piece:
+ *   · /public/images/cards/art-XX.jpg — the small two-up tent (/stats/cards):
+ *     1590 × 1200 = the 367.2 × 277.2 pt panel, picture shifted up 15 % with
+ *     its own ground colour filled in below.
+ *   · /public/images/cards/letter/art-XX.jpg — the Letter tent (one card per
+ *     sheet, what the HQ app prints and Drive keeps): 2000 × 1250 = the
+ *     576 × 360 pt panel (8 × 5 in, 250 dpi), window starting 15 % down the
+ *     original, with the name scrim BAKED IN (fades to the picture's ground
+ *     from 40 % down) so the print page and the PDF only lay type on top.
+ *     Made by scripts/card-art-letter.py from the originals.
+ * Originals (2336 × 1744 PNG) are kept in
+ * D:\projects\narwhal-thai-table\_art-candidates\cards. To retire a piece,
+ * delete it from this list; to add one, generate in the same style, cut both
+ * files the same way and append.
  */
 
 export type CardTone = 'navy' | 'cream';
@@ -91,6 +98,11 @@ export const CARD_ART: CardArt[] = [
   { id: 'biz-scrolls', file: 'images/cards/art-73.jpg', tone: 'cream', occasion: 'business', title: 'งาน — แบกม้วนเอกสารผูกริบบิ้นทอง' },
   { id: 'biz-emblem', file: 'images/cards/art-74.jpg', tone: 'cream', occasion: 'business', title: 'งาน — ตรากนกทองสง่างาม' },
 ];
+
+/** The Letter-tent cut of a piece (see the note at the top): same name, `letter/` folder. */
+export function letterFileOf(art: CardArt): string {
+  return art.file.replace(/^images\/cards\//, 'images/cards/letter/');
+}
 
 /** FNV-1a — small, stable, good enough to spread ids evenly over a set. */
 function hash32(s: string): number {

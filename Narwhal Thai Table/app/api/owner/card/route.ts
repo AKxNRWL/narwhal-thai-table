@@ -3,7 +3,7 @@ import { requireOwner } from '@/lib/session';
 import { jsonCors } from '@/lib/cors';
 import { dataFor, getTenant, TENANT_NARWHAL_ID } from '@/lib/tenants';
 import { cardFileName, cardFromSource, type CardSource } from '@/lib/guestCards';
-import { renderCardPdf } from '@/lib/guestCardPdf';
+import { letterNameLayout, renderCardPdf } from '@/lib/guestCardPdf';
 import { cardPageHtml } from '@/lib/guestCardHtml';
 import { cardUrls, verifyCardLink } from '@/lib/cardLink';
 import { archiveCard } from '@/lib/cardArchive';
@@ -19,6 +19,9 @@ export { OPTIONS } from '@/lib/cors';
  *        opens in a new tab — or the owner cookie / Bearer token.
  *        html → the printable page (print=1 opens the print dialog itself)
  *        pdf  → the PDF, inline, named "<date> <time> <name>.pdf"
+ *        Both are the LETTER card — one card per Letter sheet, portrait,
+ *        fold in half → 8.5 × 5.5 in tent, made for card stock.
+ *        (&layout=tent2 on the PDF = the old two-up 5.5 × 4.25 in sheet.)
  *
  *   POST /api/owner/card { id, action: 'link' | 'archive' }
  *        Auth: owner cookie / Bearer token only.
@@ -90,7 +93,7 @@ export async function GET(req: Request) {
   if (format === 'pdf') {
     let pdf: Uint8Array;
     try {
-      pdf = await renderCardPdf(card, { art });
+      pdf = await renderCardPdf(card, { art, layout: url.searchParams.get('layout') === 'tent2' ? 'tent2' : 'letter' });
     } catch (e) {
       return new Response('render failed: ' + (e instanceof Error ? e.message : String(e)), { status: 500 });
     }
@@ -108,7 +111,13 @@ export async function GET(req: Request) {
 
   const links = cardUrls(url.origin, id);
   const when = [prettyDate(src.date || ''), src.time ? prettyTime(src.time) : ''].filter(Boolean).join(' · ');
-  const html = cardPageHtml({ card, when, pdfUrl: art ? links.pdf + '&art=' + encodeURIComponent(art) : links.pdf, driveUrl: driveOf(rec)?.url, autoPrint, art });
+  let nameFit: Awaited<ReturnType<typeof letterNameLayout>>;
+  try {
+    nameFit = await letterNameLayout(card);
+  } catch {
+    nameFit = { size: 30, lines: [card.name], thai: false }; // fonts unreachable: still a usable page
+  }
+  const html = cardPageHtml({ card, nameFit, when, pdfUrl: art ? links.pdf + '&art=' + encodeURIComponent(art) : links.pdf, driveUrl: driveOf(rec)?.url, autoPrint, art });
   return new Response(html, {
     status: 200,
     headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' },

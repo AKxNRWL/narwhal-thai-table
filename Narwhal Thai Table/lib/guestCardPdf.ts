@@ -1,34 +1,39 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
-import { PDFDocument, PDFFont, PDFImage, PDFPage, degrees, rgb } from 'pdf-lib';
+import { PDFDocument, PDFFont, PDFImage, PDFPage, PrintScaling, clip, degrees, endPath, popGraphicsState, pushGraphicsState, rectangle, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { CARD_THANKS, type GuestCard } from './guestCards';
-import { artFor, type CardArt, type CardTone } from './guestCardArt';
+import { artFor, letterFileOf, type CardArt, type CardTone } from './guestCardArt';
 
 /**
- * Table-tent PDF — the same card /stats/cards prints from the browser, drawn
- * by hand into a Letter-landscape PDF so it can be ARCHIVED (Drive) and
- * printed from a phone (iOS share → Print) where a web page's @page rules are
- * not reliable.
+ * Welcome-card PDFs, in two layouts.
  *
- * Geometry is the one documented in app/stats/cards/CardsClient.tsx, in
- * points (72/in): sheet 792 × 612, two blanks of 396 × 612 side by side, each
- * folded at its waist into a 396 × 306 tent (5.5 × 4.25 in). The lower half
- * of a blank is the front face, upright; the upper half is the same face
- * rotated 180° so it reads from the far side of the table once folded.
- * A single confirmation prints one card into the left blank and leaves the
- * right blank empty — the cut line is still drawn so the team's routine is
- * unchanged: cut down the middle, fold across the dotted line.
+ * LETTER (default — v4, owner 27 Sep 2026: "ออกมาเล็ก ไม่ใช่ size letter …
+ * ส่งไฟล์พร้อมปริ้นแบบกระดาษหนา"): ONE card per Letter sheet, portrait,
+ * folded once across the middle into a tent 8.5 × 5.5 in — wider than tall,
+ * so it stands, and big enough to read from the next table. Nothing to cut:
+ * print on card stock, fold on the line, set it down. This is what the HQ
+ * app prints on confirm, what "⬇ PDF" hands out and what Drive archives.
  *
- * FACE DESIGN (v2, owner 26 Sep 2026): full-face artwork. A navy panel with
- * one piece from the house art set (lib/guestCardArt.ts — gold line art,
- * cute narwhal) fills the face inside a 0.2 in white frame; the guest's name
- * sits in cream over the calm lower third of the picture, behind a soft
- * navy scrim. The white frame is deliberate: the Epson cannot print into
- * the outer ~3 mm of the sheet, so a true full-bleed would come out with a
- * white sliver on two edges of every tent — a frame on all four looks meant.
- * The v1 layout (logo mark, rule, navy type on white) stays as the fallback
- * when the art set is empty.
+ *   sheet 612 × 792 pt, fold at y = 396
+ *   face  612 × 396 (8.5 × 5.5 in); the lower face reads upright, the upper
+ *         face is the same face rotated 180° so it reads from the far side
+ *   frame 0.25 in white round each face (the Epson can't print the outer
+ *         ~3 mm, and a phone's "fit to page" shaves a few % — a frame on all
+ *         four sides survives both and looks meant)
+ *   panel 576 × 360 (8 × 5 in, ratio 1.6) — art from images/cards/letter/,
+ *         cut to exactly this with the name scrim baked in
+ *
+ * TENT2 (the original two-up): the same card as /stats/cards prints from the
+ * browser — Letter landscape, two 5.5 × 8.5 in blanks side by side, each
+ * folded at its waist into a 5.5 × 4.25 in tent. Kept for batch previews.
+ *
+ * FACE DESIGN (v2, owner 26 Sep 2026): full-face artwork. One piece from the
+ * house art set (lib/guestCardArt.ts — gold/navy line art, cute narwhal)
+ * fills the face inside the white frame; the guest's name sits over the calm
+ * lower part of the picture, behind a soft scrim in the picture's own ground
+ * colour. The v1 layout (logo mark, rule, navy type on white) stays as the
+ * fallback when the art set is empty.
  *
  * Fonts are the site's own (Fraunces for the name, Inter for the small caps)
  * shipped as TTFs in /public/fonts; Noto Sans Thai steps in for any string
@@ -36,7 +41,7 @@ import { artFor, type CardArt, type CardTone } from './guestCardArt';
  * on the table instead of boxes.
  */
 
-/* ── page geometry (pt) ────────────────────────────────────────────────── */
+/* ── page geometry (pt) — TENT2 ────────────────────────────────────────── */
 const IN = 72;
 const SHEET_W = 11 * IN; // 792
 const SHEET_H = 8.5 * IN; // 612
@@ -57,6 +62,99 @@ const ART_TEXT_W = PANEL_W - 2 * 0.35 * IN;
 const ART_TEXT_BOTTOM = 0.62 * IN; // stack bottom, measured from the face's bottom edge
 const ART_FOOT_BOTTOM = 0.32 * IN;
 const SCRIM_FRAC = 0.6; // how much of the panel the name scrim covers, from the bottom
+
+/* ── page geometry (pt) — LETTER ───────────────────────────────────────── */
+const L_FRAME = 0.25 * IN; // 18 — white round each face
+const L_FACE_W = 8.5 * IN; // 612
+const L_FACE_H = 5.5 * IN; // 396 — the fold runs across the middle of the sheet
+const L_PANEL_W = L_FACE_W - 2 * L_FRAME; // 576
+const L_PANEL_H = L_FACE_H - 2 * L_FRAME; // 360
+export const LETTER = {
+  sheetW: 8.5 * IN, // 612
+  sheetH: 11 * IN, // 792
+  faceW: L_FACE_W,
+  faceH: L_FACE_H,
+  frame: L_FRAME,
+  panelW: L_PANEL_W,
+  panelH: L_PANEL_H,
+  /** Text column: the panel less 0.6 in each side. */
+  textW: L_PANEL_W - 2 * 0.6 * IN, // 489.6
+  /** Bottom of the name stack / of the small-caps footer, above the FACE's bottom edge. */
+  textBottom: L_FRAME + 0.46 * IN,
+  footBottom: L_FRAME + 0.2 * IN,
+  /**
+   * Small type and gaps relative to the small tent's. Deliberately less than
+   * the face grew (×1.3): the picture keeps the top ~60 % of the panel and the
+   * whole name block has to live in the calm bottom ~40 %.
+   */
+  k: 1.12,
+  /** Name: largest one-line size, smallest one-line size, largest two-line size. */
+  nameMax: 40,
+  nameMinOne: 26,
+  nameMaxTwo: 30,
+  /** Tallest the name block may be (pt) before the name steps down — keeps it off the picture. */
+  stackMax: 112,
+} as const;
+export const LETTER_ART_RATIO = L_PANEL_W / L_PANEL_H; // 1.6 — letter/ files are cut to this
+
+/**
+ * The name on a Letter card: as big as fits on ONE line (40 → 26 pt), and
+ * only when even 26 pt won't hold it, two balanced lines (≤ 30 pt) — never
+ * "William Northington &" / "Party". `measure` is the width of a string at a
+ * size, from the same font the card is set in, so the PDF and the print page
+ * (which asks for the numbers through letterNameLayout) break identically.
+ * `maxSize` lets the face step the name down when the block runs too tall.
+ */
+export type NameFit = { size: number; lines: string[] };
+export function fitName(measure: (text: string, size: number) => number, raw: string, maxW: number, maxSize: number = LETTER.nameMax): NameFit {
+  const text = raw.replace(/\s+/g, ' ').trim() || 'Reserved';
+  for (let s = maxSize; s >= LETTER.nameMinOne; s -= 1) if (measure(text, s) <= maxW) return { size: s, lines: [text] };
+  const words = text.split(' ');
+  if (words.length > 1) {
+    for (let s = Math.min(maxSize, LETTER.nameMaxTwo); s >= 16; s -= 1) {
+      let best: { cost: number; lines: string[] } | null = null;
+      for (let i = 1; i < words.length; i++) {
+        const a = words.slice(0, i).join(' ');
+        const b = words.slice(i).join(' ');
+        if (/&$/.test(a)) continue; // never leave the ampersand hanging
+        const wa = measure(a, s);
+        const wb = measure(b, s);
+        if (wa > maxW || wb > maxW) continue;
+        const cost = Math.max(wa, wb) + (b.startsWith('&') ? maxW * 0.08 : 0);
+        if (!best || cost < best.cost) best = { cost, lines: [a, b] };
+      }
+      if (best) return { size: s, lines: best.lines };
+    }
+  }
+  return { size: 16, lines: [text] };
+}
+
+/** Everything in the Letter name block except the name itself, in pt (occasion/thanks on one line each). */
+function letterOtherHeight(hasMeta: boolean, hasOccasion: boolean, hasThanks: boolean): number {
+  const k = LETTER.k;
+  let hh = 7.5 * k * 1.2 + 0.09 * IN * k; // kicker + the gap above the name
+  if (hasMeta) hh += 0.11 * IN * k + 9.5 * k * 1.2;
+  if (hasOccasion) hh += 0.1 * IN * k + 12 * k * 1.25;
+  if (hasThanks) hh += 0.14 * IN * k + 10.5 * k * 1.3;
+  return hh;
+}
+
+/**
+ * The Letter name fit for a whole card: fitName, stepped down until the block
+ * (kicker, name, time/party, occasion, thanks) stays inside LETTER.stackMax —
+ * a card with an occasion line gets 16 pt more, since that line is the point.
+ */
+export function letterNameFit(measure: (text: string, size: number) => number, card: GuestCard, opts: Pick<RenderOptions, 'details' | 'thanks'> = {}): NameFit {
+  const hasMeta = opts.details !== false && Boolean(card.time || card.party);
+  const hasOccasion = Boolean(card.occasion.trim());
+  const hasThanks = Boolean((opts.thanks ?? CARD_THANKS).trim());
+  const budget = LETTER.stackMax + (hasOccasion ? 16 : 0) - letterOtherHeight(hasMeta, hasOccasion, hasThanks);
+  let fit = fitName(measure, card.name, LETTER.textW);
+  for (let max = fit.size - 1; fit.lines.length * fit.size * 1.08 > budget && max >= LETTER.nameMinOne; max -= 1) {
+    fit = fitName(measure, card.name, LETTER.textW, max);
+  }
+  return fit;
+}
 
 /* ── brand ─────────────────────────────────────────────────────────────── */
 const NAVY = rgb(11 / 255, 31 / 255, 51 / 255); // #0B1F33 type on the white card
@@ -107,6 +205,39 @@ function loadAsset(rel: string): Promise<Uint8Array> {
 }
 
 type Fonts = Record<keyof typeof FONT_FILES, PDFFont>;
+
+/* ── name measuring without a PDF (for the print page) ─────────────────── */
+type FkFont = { unitsPerEm: number; characterSet: number[]; layout: (s: string) => { advanceWidth: number } };
+const fkCache = new Map<string, Promise<{ font: FkFont; chars: Set<number> }>>();
+function fkFont(rel: string) {
+  let p = fkCache.get(rel);
+  if (!p) {
+    p = loadAsset(rel).then((bytes) => {
+      const font = (fontkit as unknown as { create: (b: Uint8Array) => FkFont }).create(bytes);
+      return { font, chars: new Set(font.characterSet) };
+    });
+    fkCache.set(rel, p);
+    p.catch(() => fkCache.delete(rel));
+  }
+  return p;
+}
+
+/**
+ * The Letter card's name layout (size + lines), measured with the same font
+ * files and the same rule (letterNameFit) the PDF uses — the print page asks
+ * for this so a name breaks the same way on paper from either path. A name
+ * the serif cannot set is measured in Noto Sans Thai, as the PDF draws it.
+ */
+export async function letterNameLayout(card: GuestCard, opts: Pick<RenderOptions, 'details' | 'thanks'> = {}): Promise<NameFit & { thai: boolean }> {
+  const serif = await fkFont(FONT_FILES.serif);
+  const fits = [...card.name].every((ch) => {
+    const cp = ch.codePointAt(0) ?? 0;
+    return cp < 32 || serif.chars.has(cp);
+  });
+  const use = fits ? serif : await fkFont(FONT_FILES.thai);
+  const measure = (t: string, s: number) => (use.font.layout(t).advanceWidth * s) / use.font.unitsPerEm;
+  return { ...letterNameFit(measure, card, opts), thai: !fits };
+}
 
 /* ── text helpers ──────────────────────────────────────────────────────── */
 const charsets = new WeakMap<PDFFont, Set<number>>();
@@ -193,57 +324,68 @@ type Palette = { kicker: ReturnType<typeof rgb>; name: ReturnType<typeof rgb>; m
 const ON_WHITE: Palette = { kicker: BRASS_DEEP, name: NAVY, meta: NAVY_SOFT, metaOpacity: 0.78, occasion: BRASS_DEEP, thanks: NAVY_SOFT, thanksOpacity: 0.85 };
 const ON_NAVY: Palette = { kicker: DNA_GOLD, name: CREAM, meta: CREAM, metaOpacity: 0.82, occasion: DNA_GOLD, thanks: CREAM, thanksOpacity: 0.88 };
 
-/** The text lines of a card, top to bottom (no logo/rule — the art face adds none). */
-function textStack(card: GuestCard, fonts: Fonts, opts: RenderOptions, pal: Palette, maxW: number): Line[] {
+/**
+ * The text lines of a card, top to bottom (no logo/rule — the art face adds none).
+ * `k` scales every size and gap (1 = the small tent; LETTER.k for the Letter
+ * card), and `nameFit` (the Letter rule, letterNameFit) replaces the small
+ * tent's character-count steps for the name.
+ */
+function textStack(card: GuestCard, fonts: Fonts, opts: RenderOptions, pal: Palette, maxW: number, k = 1, nameFit?: NameFit): Line[] {
   const pick = (want: PDFFont, text: string): PDFFont => (canSet(want, text) ? want : fonts.thai);
   const out: Line[] = [];
 
-  out.push({ kind: 'text', text: 'RESERVED FOR', font: fonts.sansBold, size: 7.5, lh: 7.5 * 1.2, spacing: 0.3 * 7.5, color: pal.kicker, opacity: 1, mt: 0 });
+  out.push({ kind: 'text', text: 'RESERVED FOR', font: fonts.sansBold, size: 7.5 * k, lh: 7.5 * k * 1.2, spacing: 0.3 * 7.5 * k, color: pal.kicker, opacity: 1, mt: 0 });
 
   const name = card.name.trim() || 'Reserved';
-  const nSize = nameSize(name);
   const nFont = pick(fonts.serif, name);
-  wrap(nFont, name, nSize, maxW).forEach((ln, i) =>
-    out.push({ kind: 'text', text: ln, font: nFont, size: nSize, lh: nSize * 1.08, spacing: 0, color: pal.name, opacity: 1, mt: i === 0 ? 0.09 * IN : 0 }),
+  const nm: NameFit = nameFit ?? { size: nameSize(name), lines: wrap(nFont, name, nameSize(name), maxW) };
+  nm.lines.forEach((ln, i) =>
+    out.push({ kind: 'text', text: ln, font: nFont, size: nm.size, lh: nm.size * 1.08, spacing: 0, color: pal.name, opacity: 1, mt: i === 0 ? 0.09 * IN * k : 0 }),
   );
 
   const meta = opts.details === false ? '' : [card.time, card.party].filter(Boolean).join('  ·  ');
   if (meta) {
-    out.push({ kind: 'text', text: meta, font: pick(fonts.sans, meta), size: 9.5, lh: 9.5 * 1.2, spacing: 0.09 * 9.5, color: pal.meta, opacity: pal.metaOpacity, mt: 0.11 * IN });
+    out.push({ kind: 'text', text: meta, font: pick(fonts.sans, meta), size: 9.5 * k, lh: 9.5 * k * 1.2, spacing: 0.09 * 9.5 * k, color: pal.meta, opacity: pal.metaOpacity, mt: 0.11 * IN * k });
   }
 
   const occasion = card.occasion.trim();
   if (occasion) {
     const f = pick(fonts.serifItalic, occasion);
-    wrap(f, occasion, 12, maxW).forEach((ln, i) =>
-      out.push({ kind: 'text', text: ln, font: f, size: 12, lh: 12 * 1.25, spacing: 0, color: pal.occasion, opacity: 1, mt: i === 0 ? 0.1 * IN : 0 }),
+    wrap(f, occasion, 12 * k, maxW).forEach((ln, i) =>
+      out.push({ kind: 'text', text: ln, font: f, size: 12 * k, lh: 12 * k * 1.25, spacing: 0, color: pal.occasion, opacity: 1, mt: i === 0 ? 0.1 * IN * k : 0 }),
     );
   }
 
   const thanks = (opts.thanks ?? CARD_THANKS).trim();
   if (thanks) {
     const f = pick(fonts.serifItalic, thanks);
-    wrap(f, thanks, 10.5, maxW).forEach((ln, i) =>
-      out.push({ kind: 'text', text: ln, font: f, size: 10.5, lh: 10.5 * 1.3, spacing: 0, color: pal.thanks, opacity: pal.thanksOpacity, mt: i === 0 ? 0.14 * IN : 0 }),
+    wrap(f, thanks, 10.5 * k, maxW).forEach((ln, i) =>
+      out.push({ kind: 'text', text: ln, font: f, size: 10.5 * k, lh: 10.5 * k * 1.3, spacing: 0, color: pal.thanks, opacity: pal.thanksOpacity, mt: i === 0 ? 0.14 * IN * k : 0 }),
     );
   }
   return out;
 }
 
 /* ── drawing ───────────────────────────────────────────────────────────── */
+type FaceGeom = { w: number; h: number };
+const TENT2_FACE: FaceGeom = { w: TENT_W, h: TENT_H };
+const LETTER_FACE: FaceGeom = { w: L_FACE_W, h: L_FACE_H };
+
 /**
  * A face's drawing surface. Everything is placed in "face-local" coordinates
  * — `l` from the face's left edge, `t` from its top edge, like CSS — and the
- * surface maps that onto the sheet: the upright face is the LOWER half of a
- * blank, the flipped face the UPPER half rotated 180°, which is the same as
- * point-reflecting every element and rotating text/images by 180°.
+ * surface maps that onto the sheet. Both layouts fold at y = g.h: the upright
+ * face is the region BELOW the fold (its top edge on the fold), the flipped
+ * face the region ABOVE it rotated 180°, which is the same as point-
+ * reflecting every element and rotating text/images by 180°.
  */
 class Face {
-  constructor(private page: PDFPage, private bx: number, private flip: boolean) {}
+  constructor(private page: PDFPage, private bx: number, private flip: boolean, private g: FaceGeom = TENT2_FACE) {}
 
   text(text: string, font: PDFFont, size: number, l: number, t: number, color: ReturnType<typeof rgb>, opacity: number) {
-    if (!this.flip) this.page.drawText(text, { x: this.bx + l, y: TENT_H - t, size, font, color, opacity });
-    else this.page.drawText(text, { x: this.bx + TENT_W - l, y: TENT_H + t, size, font, color, opacity, rotate: degrees(180) });
+    const { w, h } = this.g;
+    if (!this.flip) this.page.drawText(text, { x: this.bx + l, y: h - t, size, font, color, opacity });
+    else this.page.drawText(text, { x: this.bx + w - l, y: h + t, size, font, color, opacity, rotate: degrees(180) });
   }
 
   /** Letter-spaced run, drawn glyph by glyph (pdf-lib has no tracking). */
@@ -257,14 +399,31 @@ class Face {
   }
 
   image(img: PDFImage, l: number, t: number, w: number, hh: number, opacity = 1) {
-    if (!this.flip) this.page.drawImage(img, { x: this.bx + l, y: TENT_H - (t + hh), width: w, height: hh, opacity });
-    else this.page.drawImage(img, { x: this.bx + TENT_W - l, y: TENT_H + t + hh, width: w, height: hh, opacity, rotate: degrees(180) });
+    const g = this.g;
+    if (!this.flip) this.page.drawImage(img, { x: this.bx + l, y: g.h - (t + hh), width: w, height: hh, opacity });
+    else this.page.drawImage(img, { x: this.bx + g.w - l, y: g.h + t + hh, width: w, height: hh, opacity, rotate: degrees(180) });
+  }
+
+  /** Page-space rectangle of a face-local box. */
+  box(l: number, t: number, w: number, hh: number) {
+    const g = this.g;
+    return { x: this.flip ? this.bx + g.w - l - w : this.bx + l, y: this.flip ? g.h + t : g.h - (t + hh), width: w, height: hh };
+  }
+
+  /** An image cropped to a box ("object-fit: cover", anchored to the box's TOP). */
+  coverImage(img: PDFImage, l: number, t: number, w: number, hh: number) {
+    const scale = Math.max(w / img.width, hh / img.height);
+    const dw = img.width * scale;
+    const dh = img.height * scale;
+    const b = this.box(l, t, w, hh);
+    this.page.pushOperators(pushGraphicsState(), rectangle(b.x, b.y, b.width, b.height), clip(), endPath());
+    this.image(img, l + (w - dw) / 2, t, dw, dh);
+    this.page.pushOperators(popGraphicsState());
   }
 
   rect(l: number, t: number, w: number, hh: number, o: { color?: ReturnType<typeof rgb>; opacity?: number; border?: ReturnType<typeof rgb>; borderWidth?: number; borderOpacity?: number }) {
-    const x = this.flip ? this.bx + TENT_W - l - w : this.bx + l;
-    const y = this.flip ? TENT_H + t : TENT_H - (t + hh);
-    this.page.drawRectangle({ x, y, width: w, height: hh, color: o.color, opacity: o.opacity, borderColor: o.border, borderWidth: o.borderWidth ?? 0, borderOpacity: o.borderOpacity });
+    const b = this.box(l, t, w, hh);
+    this.page.drawRectangle({ ...b, color: o.color, opacity: o.opacity, borderColor: o.border, borderWidth: o.borderWidth ?? 0, borderOpacity: o.borderOpacity });
   }
 
   /** Draw a text stack whose TOP sits at `top` (face-local), each line centred on `cx`. */
@@ -281,34 +440,62 @@ class Face {
   }
 
   /** The small-caps footer, pinned `bottom` above the face's bottom edge. */
-  foot(font: PDFFont, color: ReturnType<typeof rgb>, opacity: number, bottom: number) {
-    const ln: Line = { kind: 'text', text: 'NARWHAL THAI TABLE', font, size: 6.8, lh: 6.8 * 1.2, spacing: 0.34 * 6.8, color, opacity, mt: 0 };
+  foot(font: PDFFont, color: ReturnType<typeof rgb>, opacity: number, bottom: number, size = 6.8) {
+    const g = this.g;
+    const ln: Line = { kind: 'text', text: 'NARWHAL THAI TABLE', font, size, lh: size * 1.2, spacing: 0.34 * size, color, opacity, mt: 0 };
     const fm = metrics(font);
-    const top = TENT_H - bottom - ln.lh;
+    const top = g.h - bottom - ln.lh;
     const baseline = top + (ln.lh - (fm.asc + fm.desc) * ln.size) / 2 + fm.asc * ln.size;
-    this.line(ln, (TENT_W - textWidth(font, ln.text, ln.size, ln.spacing)) / 2, baseline);
+    this.line(ln, (g.w - textWidth(font, ln.text, ln.size, ln.spacing)) / 2, baseline);
   }
 }
 
 const stackHeight = (lines: Line[]) => lines.reduce((s, l) => s + h(l), 0);
 
-/** v1 — logo mark, brass rule, navy type on the white card. Used when no art is available. */
-function drawClassicFace(page: PDFPage, bx: number, flip: boolean, card: GuestCard, fonts: Fonts, mark: PDFImage, opts: RenderOptions) {
-  const f = new Face(page, bx, flip);
-  const lines = textStack(card, fonts, opts, ON_WHITE, CONTENT_W);
-  const markW = (0.36 * IN * 457) / 260;
-  const markH = 0.36 * IN;
-  const ruleMt = 0.19 * IN;
-  const ruleMb = 0.12 * IN;
-  const total = markH + ruleMt + 0.75 + ruleMb + stackHeight(lines);
-  let top = PAD_TOP + Math.max(0, (CONTENT_H - total) / 2);
+/** Width measure in the font the name will be set in (the serif, or Noto Sans Thai for what it can't set). */
+const nameMeasure = (fonts: Fonts, name: string) => {
+  const f = canSet(fonts.serif, name.trim() || 'Reserved') ? fonts.serif : fonts.thai;
+  return (t: string, s: number) => f.widthOfTextAtSize(t, s);
+};
 
-  f.image(mark, (TENT_W - markW) / 2, top, markW, markH, 0.92);
+/** v1 — logo mark, brass rule, navy type on the white card. Used when no art is available. */
+function drawClassicFace(page: PDFPage, bx: number, flip: boolean, card: GuestCard, fonts: Fonts, mark: PDFImage, opts: RenderOptions, g: FaceGeom = TENT2_FACE, k = 1) {
+  const f = new Face(page, bx, flip, g);
+  const padTop = PAD_TOP * k;
+  const contentW = g.w - PAD_SIDE * k * 2;
+  const contentH = g.h - padTop - PAD_BOTTOM * k;
+  const nameFit = k !== 1 ? letterNameFit(nameMeasure(fonts, card.name), card, opts) : undefined;
+  const lines = textStack(card, fonts, opts, ON_WHITE, contentW, k, nameFit);
+  const markH = 0.36 * IN * k;
+  const markW = (markH * 457) / 260;
+  const ruleMt = 0.19 * IN * k;
+  const ruleMb = 0.12 * IN * k;
+  const total = markH + ruleMt + 0.75 + ruleMb + stackHeight(lines);
+  let top = padTop + Math.max(0, (contentH - total) / 2);
+
+  f.image(mark, (g.w - markW) / 2, top, markW, markH, 0.92);
   top += markH + ruleMt;
-  f.rect((TENT_W - 1.35 * IN) / 2, top, 1.35 * IN, 0.75, { color: BRASS, opacity: 0.75 });
+  f.rect((g.w - 1.35 * IN * k) / 2, top, 1.35 * IN * k, 0.75, { color: BRASS, opacity: 0.75 });
   top += 0.75 + ruleMb;
-  f.stack(lines, top, TENT_W / 2);
-  f.foot(fonts.sansBold, BRASS_DEEP, 0.75, 0.3 * IN);
+  f.stack(lines, top, g.w / 2);
+  f.foot(fonts.sansBold, BRASS_DEEP, 0.75, k !== 1 ? LETTER.footBottom : 0.3 * IN, 6.8 * k);
+}
+
+/**
+ * Soft scrim in the picture's own ground colour: bands from the panel's
+ * bottom up, solid at the base and fading out over SCRIM_FRAC of the panel —
+ * keeps the name readable whatever the picture does down there. (The Letter
+ * art files carry this baked in; it is drawn only over a small-tent cut.)
+ */
+function drawScrim(f: Face, l: number, t: number, w: number, hh: number, ground: ReturnType<typeof rgb>, dark: boolean) {
+  const bands = 18;
+  const scrimH = hh * SCRIM_FRAC;
+  const bh = scrimH / bands;
+  for (let i = 0; i < bands; i++) {
+    const k = 1 - i / bands; // 1 at the bottom band
+    const opacity = (dark ? 0.92 : 0.9) * Math.pow(k, 1.4);
+    f.rect(l, t + hh - (i + 1) * bh, w, bh + 0.2, { color: ground, opacity });
+  }
 }
 
 /**
@@ -324,16 +511,7 @@ function drawArtFace(page: PDFPage, bx: number, flip: boolean, card: GuestCard, 
   // panel + picture (the file is pre-cropped to the panel's ratio; draw it edge to edge)
   f.rect(FRAME, FRAME, PANEL_W, PANEL_H, { color: ground });
   f.image(art, FRAME, FRAME, PANEL_W, PANEL_H);
-  // scrim: bands from the panel's bottom up, solid at the base and fading out —
-  // keeps the name readable whatever the picture does down there
-  const bands = 18;
-  const scrimH = PANEL_H * SCRIM_FRAC;
-  const bh = scrimH / bands;
-  for (let i = 0; i < bands; i++) {
-    const k = 1 - i / bands; // 1 at the bottom band
-    const opacity = (dark ? 0.92 : 0.9) * Math.pow(k, 1.4);
-    f.rect(FRAME, FRAME + PANEL_H - (i + 1) * bh, PANEL_W, bh + 0.2, { color: ground, opacity });
-  }
+  drawScrim(f, FRAME, FRAME, PANEL_W, PANEL_H, ground, dark);
   // hairline just inside the panel
   const inset = 6;
   f.rect(FRAME + inset, FRAME + inset, PANEL_W - inset * 2, PANEL_H - inset * 2, { border: accent, borderWidth: 0.6, borderOpacity: dark ? 0.7 : 0.6, opacity: 0 });
@@ -344,6 +522,31 @@ function drawArtFace(page: PDFPage, bx: number, flip: boolean, card: GuestCard, 
   f.foot(fonts.sansBold, dark ? DNA_GOLD : BRASS_DEEP, dark ? 0.85 : 0.8, ART_FOOT_BOTTOM);
 }
 
+/**
+ * The Letter card's face: the same design at 8.5 × 5.5 in. `baked` = the
+ * picture is the letter/ cut (exact panel ratio, scrim already in it); if
+ * only the small-tent cut could be loaded it is cropped to fill and the
+ * scrim is drawn instead, so a missing file never costs the card.
+ */
+function drawLetterArtFace(page: PDFPage, flip: boolean, card: GuestCard, fonts: Fonts, art: { img: PDFImage; baked: boolean }, tone: CardTone, opts: RenderOptions) {
+  const f = new Face(page, 0, flip, LETTER_FACE);
+  const dark = tone === 'navy';
+  const ground = dark ? DNA_NAVY : ART_CREAM;
+  const accent = dark ? DNA_GOLD : BRASS;
+  const { frame: fr, panelW: pw, panelH: ph } = LETTER;
+  f.rect(fr, fr, pw, ph, { color: ground });
+  if (art.baked) f.image(art.img, fr, fr, pw, ph);
+  else {
+    f.coverImage(art.img, fr, fr, pw, ph);
+    drawScrim(f, fr, fr, pw, ph, ground, dark);
+  }
+  const inset = 8;
+  f.rect(fr + inset, fr + inset, pw - inset * 2, ph - inset * 2, { border: accent, borderWidth: 0.75, borderOpacity: dark ? 0.7 : 0.6, opacity: 0 });
+  const lines = textStack(card, fonts, opts, dark ? ON_NAVY : ON_WHITE, LETTER.textW, LETTER.k, letterNameFit(nameMeasure(fonts, card.name), card, opts));
+  f.stack(lines, L_FACE_H - LETTER.textBottom - stackHeight(lines), L_FACE_W / 2);
+  f.foot(fonts.sansBold, dark ? DNA_GOLD : BRASS_DEEP, dark ? 0.85 : 0.8, LETTER.footBottom, 6.8 * LETTER.k);
+}
+
 function drawGuides(page: PDFPage) {
   const ink = rgb(11 / 255, 31 / 255, 51 / 255);
   // Cut down the middle (dashed) — vanishes into the tent's edge.
@@ -352,8 +555,25 @@ function drawGuides(page: PDFPage) {
   page.drawLine({ start: { x: 0, y: TENT_H }, end: { x: SHEET_W, y: TENT_H }, thickness: 0.75, color: ink, opacity: 0.22, dashArray: [1, 2] });
 }
 
+/**
+ * Letter: nothing to cut — one fold across the middle, in the white band
+ * between the two pictures. A light dotted line to fold (or score, on card
+ * stock) along, plus a firm tick at each edge to lay a ruler on.
+ */
+function drawLetterGuides(page: PDFPage) {
+  const ink = rgb(11 / 255, 31 / 255, 51 / 255);
+  const y = L_FACE_H;
+  page.drawLine({ start: { x: 0, y }, end: { x: L_FACE_W, y }, thickness: 0.6, color: ink, opacity: 0.2, dashArray: [1, 2.5] });
+  page.drawLine({ start: { x: 10, y }, end: { x: 30, y }, thickness: 0.75, color: ink, opacity: 0.45 });
+  page.drawLine({ start: { x: L_FACE_W - 30, y }, end: { x: L_FACE_W - 10, y }, thickness: 0.75, color: ink, opacity: 0.45 });
+}
+
 /* ── public API ────────────────────────────────────────────────────────── */
+export type CardLayout = 'letter' | 'tent2';
+
 export type RenderOptions = {
+  /** 'letter' (default): one card per Letter sheet, fold in half → 8.5 × 5.5 in tent. 'tent2': two 5.5 × 4.25 in tents per landscape sheet (the /stats/cards sheet). */
+  layout?: CardLayout;
   /** Show "7:00 PM · Party of 4" under the name (default true). */
   details?: boolean;
   /** Override the thank-you line; '' hides it. Defaults to CARD_THANKS. */
@@ -366,16 +586,21 @@ export type RenderOptions = {
   noArt?: boolean;
 };
 
+type LoadedArt = { bytes: Uint8Array; file: string; baked: boolean };
+
 /**
- * Render cards to a Letter-landscape PDF, two tents per sheet, in order.
- * One card → one sheet with the right blank empty.
+ * Render cards to a PDF, in order. Letter: one sheet per card. Tent2: two
+ * tents per landscape sheet; one card → one sheet with the right blank empty.
  */
 export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {}): Promise<Uint8Array> {
+  const layout: CardLayout = opts.layout === 'tent2' ? 'tent2' : 'letter';
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
   doc.setTitle(opts.title || 'Narwhal Thai Table — welcome card');
   doc.setProducer('narwhalthaihb.com');
   doc.setCreator('Narwhal Thai Table');
+  // Print at actual size where the viewer honours it (Acrobat): the fold is the middle of the sheet.
+  if (layout === 'letter') doc.catalog.getOrCreateViewerPreferences().setPrintScaling(PrintScaling.None);
 
   const list: GuestCard[] = cards.length ? cards : [{ id: 'blank', name: 'Reserved', time: '', party: '', occasion: '', theme: '', notes: '' }];
 
@@ -385,16 +610,28 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
     const o = typeof opts.art === 'function' ? opts.art(c, i) : opts.art;
     return artFor(c.id, o, c.theme);
   });
-  const artFiles = [...new Set(arts.filter((a): a is CardArt => !!a).map((a) => a.file))];
+  const pieces = [...new Map(arts.filter((a): a is CardArt => !!a).map((a) => [a.id, a])).values()];
 
-  const [serif, serifItalic, sans, sansBold, thai, markBytes, ...artBytes] = await Promise.all([
+  const loadArt = async (a: CardArt): Promise<LoadedArt> => {
+    if (layout === 'letter') {
+      const file = letterFileOf(a);
+      try {
+        return { bytes: await loadAsset(file), file, baked: true };
+      } catch {
+        /* no letter cut on disk or CDN — crop the small one instead */
+      }
+    }
+    return { bytes: await loadAsset(a.file), file: a.file, baked: false };
+  };
+
+  const [serif, serifItalic, sans, sansBold, thai, markBytes, ...artLoaded] = await Promise.all([
     loadAsset(FONT_FILES.serif),
     loadAsset(FONT_FILES.serifItalic),
     loadAsset(FONT_FILES.sans),
     loadAsset(FONT_FILES.sansBold),
     loadAsset(FONT_FILES.thai),
     loadAsset(MARK_FILE),
-    ...artFiles.map((f) => loadAsset(f)),
+    ...pieces.map(loadArt),
   ]);
 
   // Two embedding modes, chosen by experiment (scripts/card-preview.ts):
@@ -411,11 +648,26 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
     sansBold: await doc.embedFont(sansBold, { subset: false }),
     thai: await doc.embedFont(thai, { subset: true }),
   };
-  const mark = await doc.embedPng(markBytes);
-  const artImages = new Map<string, PDFImage>();
-  for (let i = 0; i < artFiles.length; i++) {
-    const bytes = artBytes[i];
-    artImages.set(artFiles[i], /\.png$/i.test(artFiles[i]) ? await doc.embedPng(bytes) : await doc.embedJpg(bytes));
+  const mark = await doc.embedPng(markBytes as Uint8Array);
+  const artImages = new Map<string, { img: PDFImage; baked: boolean }>();
+  for (let i = 0; i < pieces.length; i++) {
+    const got = artLoaded[i] as LoadedArt;
+    const img = /\.png$/i.test(got.file) ? await doc.embedPng(got.bytes) : await doc.embedJpg(got.bytes);
+    artImages.set(pieces[i].id, { img, baked: got.baked });
+  }
+
+  if (layout === 'letter') {
+    list.forEach((card, i) => {
+      const page = doc.addPage([LETTER.sheetW, LETTER.sheetH]);
+      const art = arts[i];
+      const got = art ? artImages.get(art.id) : undefined;
+      for (const flip of [true, false]) {
+        if (got && art) drawLetterArtFace(page, flip, card, fonts, got, art.tone, opts);
+        else drawClassicFace(page, 0, flip, card, fonts, mark, opts, LETTER_FACE, LETTER.k);
+      }
+      drawLetterGuides(page);
+    });
+    return doc.save();
   }
 
   for (let i = 0; i < list.length; i += 2) {
@@ -423,10 +675,10 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
     list.slice(i, i + 2).forEach((card, j) => {
       const bx = j * TENT_W;
       const art = arts[i + j];
-      const img = art ? artImages.get(art.file) : undefined;
-      if (img) {
-        drawArtFace(page, bx, true, card, fonts, img, art!.tone, opts);
-        drawArtFace(page, bx, false, card, fonts, img, art!.tone, opts);
+      const got = art ? artImages.get(art.id) : undefined;
+      if (got && art) {
+        drawArtFace(page, bx, true, card, fonts, got.img, art.tone, opts);
+        drawArtFace(page, bx, false, card, fonts, got.img, art.tone, opts);
       } else {
         drawClassicFace(page, bx, true, card, fonts, mark, opts);
         drawClassicFace(page, bx, false, card, fonts, mark, opts);
@@ -437,6 +689,7 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
   return doc.save();
 }
 
+/** One reservation's card — the Letter tent unless `layout: 'tent2'` is asked for. */
 export async function renderCardPdf(card: GuestCard, opts: RenderOptions = {}): Promise<Uint8Array> {
   return renderCardsPdf([card], { title: `Welcome card — ${card.name}`, ...opts });
 }
