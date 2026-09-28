@@ -12,7 +12,8 @@ import {
   type CardSource,
   type GuestCard,
 } from '@/lib/guestCards';
-import { CARD_ART, artFor, artIndexFor } from '@/lib/guestCardArt';
+import { CARD_ART, artFor } from '@/lib/guestCardArt';
+import { backdropFile, castFile, layoutCast } from '@/lib/guestCardCast';
 
 /**
  * Owner · Welcome Cards (/stats/cards)
@@ -210,7 +211,7 @@ export default function CardsClient() {
   const addManual = () =>
     setExtras((x) => [
       ...x,
-      { id: 'm_' + Date.now().toString(36), name: '', time: '', party: '', occasion: '', theme: '', notes: '', on: true, manual: true },
+      { id: 'm_' + Date.now().toString(36), name: '', time: '', party: '', guests: 0, occasion: '', theme: '', notes: '', on: true, manual: true },
     ]);
 
   const isToday = date === todayInLA();
@@ -236,7 +237,38 @@ export default function CardsClient() {
      scrim in the picture's own ground colour, inside a 0.2in white frame. The
      v1 white card with the logo mark is the fallback when the set is empty. */
   const Face = ({ c, back }: { c: Editable; back?: boolean }) => {
-    const art = artFor(c.id, c.art, c.theme);
+    /* v6: the party-size card is the default — backdrop for the occasion, the narwhal host and one
+       sea friend per guest, placed by layoutCast (fractions of the face, same as the PDF); a number
+       in the picker shows one of the finished scenes instead. */
+    const art = c.art ? artFor(c.id, c.art, c.theme) : null;
+    if (!art && !c.art) {
+      const lay = layoutCast({ id: c.id, party: c.party, guests: c.guests, theme: c.theme }, { stageBottom: 0.5 });
+      const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
+      return (
+        <div className={'nwc-face' + (back ? ' is-back' : ' is-front')}>
+          <div className="nwc-panel cream composed">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={'/' + backdropFile(lay.backdrop.id, 'small')} alt="" className="nwc-art" />
+            <div className="nwc-scrim" />
+            {lay.cast.map((p, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={'/' + castFile(p.id)}
+                alt=""
+                className={'nwc-cast' + (p.mirror ? ' mirror' : '')}
+                style={{ left: pct(p.l), top: pct(p.t), width: pct(p.w), height: pct(p.h) }}
+              />
+            ))}
+            <div className="nwc-hair" />
+            <div className="nwc-text">
+              <TextBlock c={c} />
+            </div>
+            <div className="nwc-foot">Narwhal Thai Table</div>
+          </div>
+        </div>
+      );
+    }
     if (!art) {
       return (
         <div className={'nwc-face nwc-classic' + (back ? ' is-back' : ' is-front')}>
@@ -400,7 +432,7 @@ export default function CardsClient() {
                             title="ภาพบนการ์ด"
                             style={{ ...field, fontSize: 13, colorScheme: 'dark' }}
                           >
-                            <option value={0}>{'🎨 อัตโนมัติ: ' + (CARD_ART[artIndexFor(c.id, c.theme)]?.title ?? '')}</option>
+                            <option value={0}>{'🎨 อัตโนมัติ: นาวาล + เพื่อนตามจำนวนคน (' + layoutCast({ id: c.id, party: c.party, guests: c.guests, theme: c.theme }).backdrop.title + ')'}</option>
                             {CARD_ART.map((a, ai) => (
                               <option key={a.id} value={ai + 1}>{(a.occasion ? '🎉 ' : a.tone === 'navy' ? '🌙 ' : '☀️ ') + a.title}</option>
                             ))}
@@ -527,6 +559,11 @@ const CSS = `
 .nwc-panel.navy{ background:${DNA_NAVY}; }
 .nwc-panel.cream{ background:${ART_CREAM}; }
 .nwc-art{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.nwc-cast{ position:absolute; display:block; object-fit:contain; }
+.nwc-cast.mirror{ transform:scaleX(-1); }
+.nwc-panel.composed .nwc-scrim{ z-index:0; }
+.nwc-panel.composed .nwc-cast{ z-index:1; }
+.nwc-panel.composed .nwc-text,.nwc-panel.composed .nwc-foot,.nwc-panel.composed .nwc-hair{ z-index:2; }
 .nwc-scrim{ position:absolute; left:0; right:0; bottom:0; height:60%; }
 .nwc-panel.navy .nwc-scrim{ background:linear-gradient(to top, rgba(9,37,59,.92) 0%, rgba(9,37,59,.7) 35%, rgba(9,37,59,0) 100%); }
 .nwc-panel.cream .nwc-scrim{ background:linear-gradient(to top, rgba(246,238,222,.92) 0%, rgba(246,238,222,.7) 35%, rgba(246,238,222,0) 100%); }

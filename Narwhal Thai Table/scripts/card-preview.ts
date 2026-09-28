@@ -2,11 +2,12 @@
  * Render sample welcome cards to a PDF without the site running — for eyeballing
  * a layout change before it reaches a table.
  *
- *   npx tsx scripts/card-preview.ts [out.pdf] [--all-art] [--occasions] [--no-art] [--small]
+ *   npx tsx scripts/card-preview.ts [out.pdf] [--all-art] [--occasions] [--cast] [--no-art] [--small]
  *
  *   --all-art    one card per piece in CARD_ART (every picture under real type)
  *   --occasions  one card per occasion set, drawn the way a real booking would
  *                (explicit occasion → that set + its line)
+ *   --cast       the party-size card (default design): every occasion at party sizes 1, 2, 3, 4, 6, 8
  *   --no-art     the v1 white card
  *   --small      the old two-up sheet (5.5 × 4.25 in tents, what /stats/cards
  *                prints) instead of the Letter card (one per sheet, the default)
@@ -47,7 +48,20 @@ async function main() {
     const byId = new Map(CARD_ART.map((a, i) => [a.id, i + 1]));
     art = (c) => byId.get(c.id) ?? 0;
   }
+  if (flags.has('--cast')) {
+    cards = [];
+    const sizes = [1, 2, 3, 4, 6, 8];
+    const themes: (string | undefined)[] = [undefined, ...OCCASIONS.map((o) => o.key)];
+    themes.forEach((occasion, ti) =>
+      sizes.forEach((n, si) => {
+        const s = samples[(ti + si) % samples.length];
+        cards.push(cardFromSource({ ...s, id: `${occasion || 'general'}-${n}-${ti}`, party_size: `${n} Guests`, occasion }));
+      }),
+    );
+    art = undefined;
+  }
   const small = flags.has('--small');
+  // --all-art / --occasions pick finished scenes by index (art chooser); --cast and plain runs compose the party-size card
   const pdf = await renderCardsPdf(cards, { title: 'Welcome card — preview', art, noArt: flags.has('--no-art'), layout: small ? 'tent2' : 'letter' });
   await writeFile(out, pdf);
   console.log(`wrote ${out} (${pdf.length} bytes, ${cards.length} cards, ${small ? Math.ceil(cards.length / 2) : cards.length} sheets)`);

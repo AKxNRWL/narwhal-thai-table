@@ -38,6 +38,8 @@ export type GuestCard = {
   time: string;
   /** "Party of 4" — empty when we don't know the size. */
   party: string;
+  /** Guest count as a number (0 = unknown) — the party-size card seats this many characters. */
+  guests?: number;
   /** "Happy Birthday!" and friends — empty unless the guest told us (occasion field or notes). */
   occasion: string;
   /** Which artwork set the card draws from — explicit occasion, else read from the notes; '' = the general set. */
@@ -221,6 +223,7 @@ export function cardFromSource(r: CardSource, fallbackId = 'card'): GuestCard {
     name: partyName(r.first_name, r.last_name, r.party_size),
     time: prettyTime(r.time),
     party: partyLine(r.party_size),
+    guests: partyCount(r.party_size),
     occasion: occ.line,
     theme: occ.theme,
     notes: tidy(r.notes),

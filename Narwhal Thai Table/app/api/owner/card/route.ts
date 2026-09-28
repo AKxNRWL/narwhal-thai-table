@@ -69,7 +69,8 @@ export async function GET(req: Request) {
   const id = (url.searchParams.get('id') || '').trim();
   const format = url.searchParams.get('format') === 'pdf' ? 'pdf' : 'html';
   const autoPrint = url.searchParams.get('print') === '1';
-  const art = url.searchParams.get('art'); // optional 1-based pick from CARD_ART (testing / owner preference); default = per-reservation
+  const art = url.searchParams.get('art'); // optional: a 1-based CARD_ART index shows that finished scene; default = the composed party-size card
+  const backdrop = url.searchParams.get('backdrop'); // optional BACKDROPS id for the composed card
   if (!id) return new Response('missing id', { status: 400 });
 
   // Signed link first (no cookie, no header — a plain URL that expires), then the usual owner auth.
@@ -93,7 +94,7 @@ export async function GET(req: Request) {
   if (format === 'pdf') {
     let pdf: Uint8Array;
     try {
-      pdf = await renderCardPdf(card, { art, layout: url.searchParams.get('layout') === 'tent2' ? 'tent2' : 'letter' });
+      pdf = await renderCardPdf(card, { art, backdrop, layout: url.searchParams.get('layout') === 'tent2' ? 'tent2' : 'letter' });
     } catch (e) {
       return new Response('render failed: ' + (e instanceof Error ? e.message : String(e)), { status: 500 });
     }
@@ -117,7 +118,8 @@ export async function GET(req: Request) {
   } catch {
     nameFit = { size: 30, lines: [card.name], thai: false }; // fonts unreachable: still a usable page
   }
-  const html = cardPageHtml({ card, nameFit, when, pdfUrl: art ? links.pdf + '&art=' + encodeURIComponent(art) : links.pdf, driveUrl: driveOf(rec)?.url, autoPrint, art });
+  const extra = (art ? '&art=' + encodeURIComponent(art) : '') + (backdrop ? '&backdrop=' + encodeURIComponent(backdrop) : '');
+  const html = cardPageHtml({ card, nameFit, when, pdfUrl: links.pdf + extra, driveUrl: driveOf(rec)?.url, autoPrint, art, backdrop });
   return new Response(html, {
     status: 200,
     headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex' },

@@ -14,7 +14,7 @@ const nextConfig = {
   // ship with the route (there is a fetch-from-CDN fallback, but disk is
   // faster). letter/ = the Letter-card cut the route renders by default.
   outputFileTracingIncludes: {
-    '/api/owner/card': ['./public/fonts/*.ttf', './public/images/logo-mark-print.png', './public/images/cards/*.jpg', './public/images/cards/letter/*.jpg'],
+    '/api/owner/card': ['./public/fonts/*.ttf', './public/images/logo-mark-print.png', './public/images/cards/*.jpg', './public/images/cards/letter/*.jpg', './public/images/cards/backdrops/**/*.jpg', './public/images/cards/cast/*.png'],
   },
 };
 

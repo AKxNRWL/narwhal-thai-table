@@ -1,6 +1,7 @@
 import { CARD_THANKS, type GuestCard } from './guestCards';
-import { artFor, letterFileOf, type CardArt } from './guestCardArt';
-import { LETTER, type NameFit } from './guestCardPdf';
+import { letterFileOf, type CardArt } from './guestCardArt';
+import { backdropFile, castFile, type CastLayout } from './guestCardCast';
+import { cardDesign, LETTER, type NameFit } from './guestCardPdf';
 
 /**
  * The card as a stand-alone web page — what the HQ app opens the moment a
@@ -67,14 +68,35 @@ export type CardPageOptions = {
   autoPrint?: boolean;
   thanks?: string;
   details?: boolean;
-  /** 1-based index into CARD_ART; anything else = deterministic pick for this card. */
+  /** A 1-based index into CARD_ART shows that finished scene; anything else composes the party-size card (default). */
   art?: number | string | null;
+  /** Backdrop override for the composed card (BACKDROPS id). */
+  backdrop?: string | null;
   /** Force the v1 white card. */
   noArt?: boolean;
 };
 
+/** The composed (party-size) face: backdrop to the edges, the cast placed in % of the face, then the name. */
+function castInner(textBlock: string, lay: CastLayout): string {
+  const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
+  const cast = lay.cast
+    .map(
+      (p) =>
+        `<img class="cast${p.mirror ? ' mirror' : ''}${p.host ? ' host' : ''}" src="/${esc(castFile(p.id))}" alt="" style="left:${pct(p.l)};top:${pct(p.t)};width:${pct(p.w)};height:${pct(p.h)}">`,
+    )
+    .join('');
+  return `
+        <div class="panel cream composed">
+          <img class="art" src="/${esc(backdropFile(lay.backdrop.id, 'letter'))}" alt="">
+          ${cast}
+          <div class="text">${textBlock}
+          </div>
+          <div class="foot">Narwhal Thai Table</div>
+        </div>`;
+}
+
 /** The inside of one face — shared by both faces of the tent. */
-function faceInner(c: GuestCard, o: CardPageOptions, art: CardArt | null): string {
+function faceInner(c: GuestCard, o: CardPageOptions, art: CardArt | null, cast: CastLayout | null): string {
   const thanks = (o.thanks ?? CARD_THANKS).trim();
   const meta = o.details === false ? '' : [c.time, c.party].filter(Boolean).join('  ·  ');
   const name = o.nameFit.lines.map(esc).join('<br>');
@@ -84,6 +106,7 @@ function faceInner(c: GuestCard, o: CardPageOptions, art: CardArt | null): strin
         ${meta ? `<div class="meta">${esc(meta)}</div>` : ''}
         ${c.occasion.trim() ? `<div class="occasion">${esc(c.occasion)}</div>` : ''}
         ${thanks ? `<div class="thanks">${esc(thanks)}</div>` : ''}`;
+  if (cast) return castInner(textBlock, cast);
   if (!art) {
     return `
         <img class="mark" src="/images/logo-mark-print.png" alt="">
@@ -104,9 +127,13 @@ function faceInner(c: GuestCard, o: CardPageOptions, art: CardArt | null): strin
 
 export function cardPageHtml(o: CardPageOptions): string {
   const c = o.card;
-  const art = o.noArt ? null : artFor(c.id, o.art, c.theme);
-  const inner = faceInner(c, o, art);
-  const face = (back: boolean) => `<div class="face ${back ? 'back' : 'front'} ${art ? 'has-art ' + art.tone : 'classic'}">${inner}</div>`;
+  const design = cardDesign(c, o.art, { noArt: o.noArt, backdrop: o.backdrop, layout: 'letter' });
+  const art = design.kind === 'scene' ? design.art : null;
+  const cast = design.kind === 'cast' ? design.layout : null;
+  const tone = cast ? 'cream' : art ? art.tone : 'classic';
+  const inner = faceInner(c, o, art, cast);
+  const face = (back: boolean) => `<div class="face ${back ? 'back' : 'front'} ${tone === 'classic' ? 'classic' : 'has-art ' + tone}">${inner}</div>`;
+  const title = cast ? `${cast.backdrop.title} · ${cast.cast.map((p) => p.title).join(', ')}` : art ? art.title : '';
 
   return `<!doctype html>
 <html lang="en">
@@ -164,6 +191,8 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
 .panel.navy{background:${DNA_NAVY}}
 .panel.cream{background:${ART_CREAM}}
 .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.cast{position:absolute;display:block;object-fit:contain}
+.cast.mirror{transform:scaleX(-1)}
 .scrim{display:none;position:absolute;left:0;right:0;bottom:0;height:60%;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .panel.unbaked .scrim{display:block}
 .panel.navy .scrim{background:linear-gradient(to top,rgba(9,37,59,.92) 0%,rgba(9,37,59,.7) 35%,rgba(9,37,59,0) 100%)}
@@ -200,7 +229,7 @@ body{background:${NAVY};color:${OFF};font-family:Inter,'Noto Sans Thai',system-u
   ${o.driveUrl ? `<a class="btn" href="${esc(o.driveUrl)}" target="_blank" rel="noopener">☁️ Drive</a>` : ''}
 </div>
 <div class="hint">การ์ด <b>1 ใบเต็มแผ่น Letter แนวตั้ง · ภาพเต็มถึงขอบ</b> · กระดาษ<b>การ์ด 65–80 lb cover (176–216 g/m²)</b> ใส่<b>ช่องป้อนด้านหลัง</b> หงายด้านพิมพ์ขึ้น · <b>ไร้ขอบ (Borderless)</b>: กด <b>📄 PDF</b> → เปิดด้วยแอป <b>Epson Smart Panel</b> → Letter · <b>Borderless เปิด</b> · Paper Type <b>Premium Presentation Paper Matte</b> (ถ้าเลือก Card Stock ปุ่ม Borderless มักกดไม่ได้) — ปุ่ม 🖨 หน้านี้/AirPrint ก็พิมพ์ได้ แต่จะเหลือขอบขาว ~3 มม. รอบแผ่น · พิมพ์แล้ว<b>พับครึ่ง</b>ตรงขีดสั้นที่ขอบซ้าย-ขวา (กรีดตามไม้บรรทัดก่อน พับจะคม) ตั้งเป็นเต็นท์ 8.5 × 5.5 นิ้ว</div>
-<div class="wrap"><div class="scale" id="scale"><div class="sheet ${art ? art.tone : 'classic'}">
+<div class="wrap"><div class="scale" id="scale"><div class="sheet ${tone}">
   ${face(true)}${face(false)}
   <div class="tick l"></div><div class="tick r"></div>
 </div></div></div>

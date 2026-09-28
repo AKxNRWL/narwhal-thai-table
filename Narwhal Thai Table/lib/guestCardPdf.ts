@@ -1,9 +1,10 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
-import { PDFDocument, PDFFont, PDFImage, PDFPage, PrintScaling, clip, degrees, endPath, popGraphicsState, pushGraphicsState, rectangle, rgb } from 'pdf-lib';
+import { PDFDocument, PDFFont, PDFImage, PDFPage, PrintScaling, clip, concatTransformationMatrix, degrees, endPath, popGraphicsState, pushGraphicsState, rectangle, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { CARD_THANKS, type GuestCard } from './guestCards';
 import { artFor, letterFileOf, type CardArt, type CardTone } from './guestCardArt';
+import { backdropFile, castFile, layoutCast, type CastLayout } from './guestCardCast';
 
 /**
  * Welcome-card PDFs, in two layouts.
@@ -407,6 +408,20 @@ class Face {
     else this.page.drawImage(img, { x: this.bx + g.w - l, y: g.h + t + hh, width: w, height: hh, opacity, rotate: degrees(180) });
   }
 
+  /**
+   * An image drawn mirrored left↔right in its own box (a friend on the
+   * host's right looks in toward the host). A horizontal mirror about the
+   * box's vertical centre line commutes with the flipped face's 180° turn,
+   * so it is the same operation on both faces.
+   */
+  imageMirrored(img: PDFImage, l: number, t: number, w: number, hh: number) {
+    const b = this.box(l, t, w, hh);
+    const cx = b.x + b.width / 2;
+    this.page.pushOperators(pushGraphicsState(), concatTransformationMatrix(-1, 0, 0, 1, 2 * cx, 0));
+    this.image(img, l, t, w, hh);
+    this.page.pushOperators(popGraphicsState());
+  }
+
   /** Page-space rectangle of a face-local box. */
   box(l: number, t: number, w: number, hh: number) {
     const g = this.g;
@@ -545,6 +560,51 @@ function drawLetterArtFace(page: PDFPage, flip: boolean, card: GuestCard, fonts:
   f.foot(fonts.sansBold, dark ? DNA_GOLD : BRASS_DEEP, dark ? 0.85 : 0.8, LETTER.footBottom, 6.8 * LETTER.k);
 }
 
+/** Images a composed (cast) card needs: its backdrop and every cutout it seats. */
+type CastImages = { backdrop: PDFImage; cutouts: Map<string, PDFImage> };
+
+/**
+ * The party-size card's Letter face: backdrop (letter cut, scrim baked in)
+ * to the paper's edges, then the cast — host and friends placed by
+ * layoutCast in fractions of the face — then the name block. Cream edition
+ * only, so the type is the on-cream palette.
+ */
+function drawLetterCastFace(page: PDFPage, flip: boolean, card: GuestCard, fonts: Fonts, lay: CastLayout, imgs: CastImages, opts: RenderOptions) {
+  const f = new Face(page, 0, flip, LETTER_FACE);
+  const { faceW: fw, faceH: fh } = LETTER;
+  f.coverImage(imgs.backdrop, 0, 0, fw, fh);
+  for (const p of lay.cast) {
+    const img = imgs.cutouts.get(p.id);
+    if (!img) continue;
+    if (p.mirror) f.imageMirrored(img, p.l * fw, p.t * fh, p.w * fw, p.h * fh);
+    else f.image(img, p.l * fw, p.t * fh, p.w * fw, p.h * fh);
+  }
+  const lines = textStack(card, fonts, opts, ON_WHITE, LETTER.textW, LETTER.k, letterNameFit(nameMeasure(fonts, card.name), card, opts));
+  f.stack(lines, fh - LETTER.textBottom - stackHeight(lines), fw / 2);
+  f.foot(fonts.sansBold, BRASS_DEEP, 0.8, LETTER.footBottom, 6.8 * LETTER.k);
+}
+
+/** The party-size card on the small tent (tent2): backdrop small cut in the panel, drawn scrim UNDER the cast, then the cast, hairline, name. */
+function drawCastFace(page: PDFPage, bx: number, flip: boolean, card: GuestCard, fonts: Fonts, lay: CastLayout, imgs: CastImages, opts: RenderOptions) {
+  const f = new Face(page, bx, flip);
+  f.rect(FRAME, FRAME, PANEL_W, PANEL_H, { color: ART_CREAM });
+  f.coverImage(imgs.backdrop, FRAME, FRAME, PANEL_W, PANEL_H);
+  drawScrim(f, FRAME, FRAME, PANEL_W, PANEL_H, ART_CREAM, false);
+  for (const p of lay.cast) {
+    const img = imgs.cutouts.get(p.id);
+    if (!img) continue;
+    const l = FRAME + p.l * PANEL_W;
+    const t = FRAME + p.t * PANEL_H;
+    if (p.mirror) f.imageMirrored(img, l, t, p.w * PANEL_W, p.h * PANEL_H);
+    else f.image(img, l, t, p.w * PANEL_W, p.h * PANEL_H);
+  }
+  const inset = 6;
+  f.rect(FRAME + inset, FRAME + inset, PANEL_W - inset * 2, PANEL_H - inset * 2, { border: BRASS, borderWidth: 0.6, borderOpacity: 0.6, opacity: 0 });
+  const lines = textStack(card, fonts, opts, ON_WHITE, ART_TEXT_W);
+  f.stack(lines, TENT_H - ART_TEXT_BOTTOM - stackHeight(lines), TENT_W / 2);
+  f.foot(fonts.sansBold, BRASS_DEEP, 0.8, ART_FOOT_BOTTOM);
+}
+
 function drawGuides(page: PDFPage) {
   const ink = rgb(11 / 255, 31 / 255, 51 / 255);
   // Cut down the middle (dashed) — vanishes into the tent's edge.
@@ -582,11 +642,35 @@ export type RenderOptions = {
   thanks?: string;
   /** PDF metadata title. */
   title?: string;
-  /** Art override: 1-based index into CARD_ART, or a chooser per card. Default: deterministic per card id. */
+  /**
+   * Art override: a 1-based index into CARD_ART picks a finished scene;
+   * 'cast' (or nothing) composes the party-size card; a chooser per card
+   * may return either. Default: the composed card.
+   */
   art?: number | string | null | ((card: GuestCard, i: number) => number | string | null | undefined);
+  /** Backdrop override for composed cards (BACKDROPS id), e.g. from the print page's picker. */
+  backdrop?: string | null;
   /** Force the v1 white card (no artwork). */
   noArt?: boolean;
 };
+
+/** What a card shows: a composed party-size card, a finished scene, or the plain v1 card. */
+export type CardDesign = { kind: 'cast'; layout: CastLayout } | { kind: 'scene'; art: CardArt } | { kind: 'plain' };
+
+/**
+ * Resolve one card's design from the options. A numeric override (1..N)
+ * means a scene from CARD_ART; anything else is the composed card — the
+ * default since v6 — unless `noArt` asks for the plain one.
+ */
+export function cardDesign(card: GuestCard, override: number | string | null | undefined, opts: Pick<RenderOptions, 'noArt' | 'backdrop' | 'layout'> = {}): CardDesign {
+  if (opts.noArt) return { kind: 'plain' };
+  const n = Number(override);
+  if (Number.isInteger(n) && n >= 1) {
+    const art = artFor(card.id, n, card.theme);
+    if (art) return { kind: 'scene', art };
+  }
+  return { kind: 'cast', layout: layoutCast(card, { backdrop: opts.backdrop, stageBottom: opts.layout === 'tent2' ? 0.5 : 0.57 }) };
+}
 
 type LoadedArt = { bytes: Uint8Array; file: string; baked: boolean };
 
@@ -606,13 +690,13 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
 
   const list: GuestCard[] = cards.length ? cards : [{ id: 'blank', name: 'Reserved', time: '', party: '', occasion: '', theme: '', notes: '' }];
 
-  // Decide the artwork per card first so the assets can load in one go.
-  const arts: (CardArt | null)[] = list.map((c, i) => {
-    if (opts.noArt) return null;
-    const o = typeof opts.art === 'function' ? opts.art(c, i) : opts.art;
-    return artFor(c.id, o, c.theme);
-  });
+  // Decide each card's design first so the assets can load in one go.
+  const designs: CardDesign[] = list.map((c, i) => cardDesign(c, typeof opts.art === 'function' ? opts.art(c, i) : opts.art, { noArt: opts.noArt, backdrop: opts.backdrop, layout }));
+  const arts: (CardArt | null)[] = designs.map((d) => (d.kind === 'scene' ? d.art : null));
   const pieces = [...new Map(arts.filter((a): a is CardArt => !!a).map((a) => [a.id, a])).values()];
+  const backdropIds = [...new Set(designs.flatMap((d) => (d.kind === 'cast' ? [d.layout.backdrop.id] : [])))];
+  const cutoutIds = [...new Set(designs.flatMap((d) => (d.kind === 'cast' ? d.layout.cast.map((p) => p.id) : [])))];
+  const cut = layout === 'letter' ? 'letter' : 'small';
 
   const loadArt = async (a: CardArt): Promise<LoadedArt> => {
     if (layout === 'letter') {
@@ -626,14 +710,16 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
     return { bytes: await loadAsset(a.file), file: a.file, baked: false };
   };
 
-  const [serif, serifItalic, sans, sansBold, thai, markBytes, ...artLoaded] = await Promise.all([
+  const [serif, serifItalic, sans, sansBold, thai, markBytes, artLoaded, backdropBytes, cutoutBytes] = await Promise.all([
     loadAsset(FONT_FILES.serif),
     loadAsset(FONT_FILES.serifItalic),
     loadAsset(FONT_FILES.sans),
     loadAsset(FONT_FILES.sansBold),
     loadAsset(FONT_FILES.thai),
     loadAsset(MARK_FILE),
-    ...pieces.map(loadArt),
+    Promise.all(pieces.map(loadArt)),
+    Promise.all(backdropIds.map((id) => loadAsset(backdropFile(id, cut)))),
+    Promise.all(cutoutIds.map((id) => loadAsset(castFile(id)))),
   ]);
 
   // Two embedding modes, chosen by experiment (scripts/card-preview.ts):
@@ -657,19 +743,31 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
     const img = /\.png$/i.test(got.file) ? await doc.embedPng(got.bytes) : await doc.embedJpg(got.bytes);
     artImages.set(pieces[i].id, { img, baked: got.baked });
   }
+  const backdrops = new Map<string, PDFImage>();
+  for (let i = 0; i < backdropIds.length; i++) backdrops.set(backdropIds[i], await doc.embedJpg(backdropBytes[i]));
+  const cutouts = new Map<string, PDFImage>();
+  for (let i = 0; i < cutoutIds.length; i++) cutouts.set(cutoutIds[i], await doc.embedPng(cutoutBytes[i]));
+  const castImages = (d: CastLayout): CastImages | null => {
+    const backdrop = backdrops.get(d.backdrop.id);
+    return backdrop ? { backdrop, cutouts } : null;
+  };
 
   if (layout === 'letter') {
     list.forEach((card, i) => {
       const page = doc.addPage([LETTER.sheetW, LETTER.sheetH]);
+      const d = designs[i];
       const art = arts[i];
       const got = art ? artImages.get(art.id) : undefined;
+      const cast = d.kind === 'cast' ? castImages(d.layout) : null;
+      const tone: CardTone | null = cast ? 'cream' : got && art ? art.tone : null;
       // The picture's ground under the whole sheet first: no white hairline where the two pictures meet at the fold.
-      if (got && art) page.drawRectangle({ x: 0, y: 0, width: LETTER.sheetW, height: LETTER.sheetH, color: art.tone === 'navy' ? DNA_NAVY : ART_CREAM });
+      if (tone) page.drawRectangle({ x: 0, y: 0, width: LETTER.sheetW, height: LETTER.sheetH, color: tone === 'navy' ? DNA_NAVY : ART_CREAM });
       for (const flip of [true, false]) {
-        if (got && art) drawLetterArtFace(page, flip, card, fonts, got, art.tone, opts);
+        if (d.kind === 'cast' && cast) drawLetterCastFace(page, flip, card, fonts, d.layout, cast, opts);
+        else if (got && art) drawLetterArtFace(page, flip, card, fonts, got, art.tone, opts);
         else drawClassicFace(page, 0, flip, card, fonts, mark, opts, LETTER_FACE, LETTER.k);
       }
-      drawLetterGuides(page, got && art ? art.tone : null);
+      drawLetterGuides(page, tone);
     });
     return doc.save();
   }
@@ -678,14 +776,14 @@ export async function renderCardsPdf(cards: GuestCard[], opts: RenderOptions = {
     const page = doc.addPage([SHEET_W, SHEET_H]);
     list.slice(i, i + 2).forEach((card, j) => {
       const bx = j * TENT_W;
+      const d = designs[i + j];
       const art = arts[i + j];
       const got = art ? artImages.get(art.id) : undefined;
-      if (got && art) {
-        drawArtFace(page, bx, true, card, fonts, got.img, art.tone, opts);
-        drawArtFace(page, bx, false, card, fonts, got.img, art.tone, opts);
-      } else {
-        drawClassicFace(page, bx, true, card, fonts, mark, opts);
-        drawClassicFace(page, bx, false, card, fonts, mark, opts);
+      const cast = d.kind === 'cast' ? castImages(d.layout) : null;
+      for (const flip of [true, false]) {
+        if (d.kind === 'cast' && cast) drawCastFace(page, bx, flip, card, fonts, d.layout, cast, opts);
+        else if (got && art) drawArtFace(page, bx, flip, card, fonts, got.img, art.tone, opts);
+        else drawClassicFace(page, bx, flip, card, fonts, mark, opts);
       }
     });
     drawGuides(page);
