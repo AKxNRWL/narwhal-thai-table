@@ -34,11 +34,11 @@ export const en = {
       notFound: 'Dish not found',
     },
     lunch: {
-      title: 'Thai Lunch Specials in Huntington Beach — Mon–Fri from $11.99 · Narwhal Thai Table',
+      title: 'Thai Lunch Specials in Huntington Beach — Mon–Fri from $12.99 · Narwhal Thai Table',
       description:
-        'Weekday Thai lunch specials on Beach Blvd: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, or a Yellow or Panang curry from $11.99 — with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in. Monday–Friday, 11:30 AM–3:00 PM.',
+        'Weekday Thai lunch specials on Beach Blvd: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, or a Yellow or Panang curry from $12.99 — with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in. Monday–Friday, 11:30 AM–3:00 PM.',
       ogTitle: 'Lunch Specials · Narwhal Thai Table',
-      ogDescription: 'Mon–Fri 11:30–3 · from $11.99 · salad + spring roll with every lunch, soup when you dine in.',
+      ogDescription: 'Mon–Fri 11:30–3 · from $12.99 · salad + spring roll with every lunch, soup when you dine in.',
     },
     about: {
       title: 'About Narwhal Thai Table — Three Siblings, One Table in Huntington Beach',
@@ -181,7 +181,7 @@ export const en = {
     title: 'The full menu — *tap a plate to hear its story*.',
     intro: 'Thirteen categories, cooked to order from the first bite to the last sweet one. ★ marks the house signatures. Every plate carries its own story — the recipe’s history, how to eat it well, and what belongs beside it.',
     lunchPill: 'Mon–Fri · 11:30–3',
-    lunchLine: 'Lunch specials from $11.99 — Pad Thai, curries, krapow & more, with salad and a spring roll',
+    lunchLine: 'Lunch specials from $12.99 — Pad Thai, curries, krapow & more, with salad and a spring roll',
     lunchGo: 'See lunch',
     jsonLdName: 'Narwhal Thai Table Menu',
     sidesDescription: 'Choose your protein (chicken, pork, tofu, beef, shrimp, seafood) and sides — jasmine rice, brown rice, sticky rice, fried egg, omelet.',
@@ -230,7 +230,7 @@ export const en = {
   /* ---------------- /lunch ---------------- */
   lunch: {
     eyebrow: 'Lunch Specials · Mon–Fri',
-    title: 'Weekday lunch, *cooked to order* — from $11.99.',
+    title: 'Weekday lunch, *cooked to order* — from $12.99.',
     lede: 'Monday through Friday, 11:30 AM to 3:00 PM. Pick a plate below and it comes with a fresh salad and a crispy spring roll — plus a cup of soup when you dine in. Quick, cozy, and right on Beach Boulevard: the lunch break you actually look forward to.',
     hoursLine: 'Mon–Fri 11:30 AM – 3:00 PM · dine in or take it to go · ',
     trayLabel: 'What comes with every lunch special',
@@ -240,7 +240,7 @@ export const en = {
       '**Soup, when you stay.** Dine in and a cup of soup is included — and if you have ten more minutes, the mango sticky rice is right there.',
     ],
     pickTitle: 'Pick your *plate*.',
-    pickLede: 'Tap a plate to read its story. Weekday lunch specials start at $11.99 — ask us for the price of the plate you’re eyeing.',
+    pickLede: 'Tap a plate to read its story. Weekday lunch specials start at $12.99 — ask us for the price of the plate you’re eyeing.',
     from: 'from',
     tag: 'Lunch special',
     spicy: 'Spicy',
@@ -258,7 +258,7 @@ export const en = {
     directions: 'Get directions',
     seeMenu: 'See the full menu',
     jsonLdName: 'Narwhal Thai Table Lunch Specials',
-    jsonLdDescription: 'Weekday lunch specials, Monday–Friday 11:30 AM–3:00 PM, from $11.99. Every lunch comes with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in.',
+    jsonLdDescription: 'Weekday lunch specials, Monday–Friday 11:30 AM–3:00 PM, from $12.99. Every lunch comes with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in.',
     jsonLdSection: 'Lunch Specials (Monday–Friday, 11:30 AM–3:00 PM)',
     jsonLdSectionDescription: 'Pick one plate. Served with a fresh salad and a crispy spring roll; a cup of soup is included when you dine in.',
     jsonLdItem: 'Lunch Special — {name}',
@@ -285,7 +285,7 @@ export const en = {
     ],
     h2Order: 'What to *order*',
     order:
-      'Start with the [Narwhal Chicken Wings](/menu/narwhal-chicken-wings), then share a curry and a wok plate: [Panang Curry](/menu/panang-curry) and [OG Pad Thai](/menu/og-pad-thai) are the ones people ask about most. Seafood lovers order the [Super Crab Fried Rice](/menu/crab-fried-rice) or a [whole fried pompano](/menu/fried-whole-pompano) for the table. If you miss home, head for the Isaan corner — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — or a bowl of [boat noodles](/menu/thai-boat-noodles). Weekdays until 3, the [lunch specials](/lunch) start at $11.99. And if you want to know how we judge any Thai kitchen, ours included, we wrote a field guide to the [best Thai food in Orange County](/thai-food-orange-county).',
+      'Start with the [Narwhal Chicken Wings](/menu/narwhal-chicken-wings), then share a curry and a wok plate: [Panang Curry](/menu/panang-curry) and [OG Pad Thai](/menu/og-pad-thai) are the ones people ask about most. Seafood lovers order the [Super Crab Fried Rice](/menu/crab-fried-rice) or a [whole fried pompano](/menu/fried-whole-pompano) for the table. If you miss home, head for the Isaan corner — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — or a bowl of [boat noodles](/menu/thai-boat-noodles). Weekdays until 3, the [lunch specials](/lunch) start at $12.99. And if you want to know how we judge any Thai kitchen, ours included, we wrote a field guide to the [best Thai food in Orange County](/thai-food-orange-county).',
     factsTitle: 'The short version, *for the record*',
     facts: [
       { k: 'Name', v: 'Narwhal Thai Table (people also say “Narwhal Thai” or “Narwhal HB”)' },
@@ -295,7 +295,7 @@ export const en = {
       { k: 'Where', v: '[{street}, Huntington Beach, CA 92648]({directions}) — Beach Blvd at Garfield Ave, free parking in the plaza lot' },
       { k: 'Hours', v: 'Open every day · Mon–Fri 11:30 AM–10 PM · Sat–Sun 12–10 PM · [lunch specials](/lunch) Mon–Fri 11:30–3' },
       { k: 'What we cook', v: 'Thai food the way we grew up eating it — curry pastes pounded in a granite mortar, wok noodles and fried rice made to order, whole fried fish, an Isaan corner of som tum, larb and crying tiger. [{count} dishes across 13 categories](/menu).' },
-      { k: 'Price', v: 'Most plates $12–20, seafood plates up to $35 · [lunch specials](/lunch) from $11.99' },
+      { k: 'Price', v: 'Most plates $12–20, seafood plates up to $35 · [lunch specials](/lunch) from $12.99' },
       { k: 'The room', v: 'A small dining room and a dog-friendly patio under string lights · a short wine list by the glass · mango sticky rice for the table' },
       { k: 'Ways to eat', v: 'Dine in · [reservations](/contact/reservation) · [pickup and delivery](/order) · [catering and private events](/contact/catering)' },
       { k: 'Payment', v: 'Credit and debit cards, Apple Pay and Google Pay (and cash)' },
@@ -307,7 +307,7 @@ export const en = {
       '**Before 2026 —** Thai Gulf Restaurant serves the neighborhood at 19072 Beach Blvd.',
       '**July 2026 —** Our family buys the business and renames it Narwhal Thai Table. New recipes, new kitchen habits, same address.',
       '**Sunday, August 9, 2026 —** Soft opening. Open every day since.',
-      '**Late August 2026 —** Weekday [lunch specials](/lunch) begin, Monday–Friday from $11.99.',
+      '**Late August 2026 —** Weekday [lunch specials](/lunch) begin, Monday–Friday.',
       '**Coming up —** The grand opening, with the chef’s introduction. Follow [@narwhalthaitablehb](https://www.instagram.com/narwhalthaitablehb/) so you don’t miss it.',
     ],
     seeMenu: 'See the menu',
@@ -352,7 +352,7 @@ export const en = {
       },
       {
         q: 'Do you have lunch specials?',
-        a: 'Yes — Monday through Friday, 11:30 AM to 3 PM, [lunch specials](/lunch) start at $11.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, or a Yellow or Panang curry. Every lunch comes with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in. Call [(714) 378-6003](tel:+17143786003) ahead for pickup.',
+        a: 'Yes — Monday through Friday, 11:30 AM to 3 PM, [lunch specials](/lunch) start at $12.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, or a Yellow or Panang curry. Every lunch comes with a fresh salad and a crispy spring roll, plus a cup of soup when you dine in. Call [(714) 378-6003](tel:+17143786003) ahead for pickup.',
       },
       {
         q: 'How spicy is the food?',

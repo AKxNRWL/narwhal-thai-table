@@ -21,7 +21,7 @@ import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/si
 
 const TITLE = 'Thai Food near Westminster, CA — Straight Down Beach Blvd to Narwhal Thai Table';
 const DESCRIPTION =
-  'Thai food near Westminster, CA: Narwhal Thai Table is 5.2 miles straight down Beach Blvd — about 12 minutes by car, or OCTA Route 29. Hand-pounded curries, Isaan salads and grills, boat noodles, weekday lunch specials from $11.99, pickup and delivery where available.';
+  'Thai food near Westminster, CA: Narwhal Thai Table is 5.2 miles straight down Beach Blvd — about 12 minutes by car, or OCTA Route 29. Hand-pounded curries, Isaan salads and grills, boat noodles, weekday lunch specials from $12.99, pickup and delivery where available.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -101,7 +101,7 @@ export default function ThaiFoodWestminsterPage() {
 
           <h2>Lunch on the way — <em>Monday to Friday until 3</em></h2>
           <p>
-            Our <Link href="/lunch">lunch specials</Link> start at $11.99 and come with a fresh salad and a
+            Our <Link href="/lunch">lunch specials</Link> start at $12.99 and come with a fresh salad and a
             crispy spring roll, plus a cup of soup when you dine in: <Dish slug="og-pad-thai">Pad
             Thai</Dish>, <Dish slug="pad-see-ew">Pad See Ew</Dish>, <Dish slug="pad-kee-mao">Pad Kee
             Mao</Dish>, <Dish slug="krapow-over-rice">Krapow</Dish>,{' '}

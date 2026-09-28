@@ -26,10 +26,10 @@ export const ko: DeepPartial<UiDict> = {
       notFound: "요리를 찾을 수 없습니다",
     },
     lunch: {
-      title: "헌팅턴비치 태국 런치 스페셜 — 월–금 $11.99부터 · Narwhal Thai Table",
-      description: "헌팅턴비치(Huntington Beach) Beach Blvd의 평일 태국 런치 스페셜: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, 또는 Yellow나 Panang 커리를 $11.99부터 — 신선한 샐러드와 바삭한 스프링롤이 함께 나오고, 매장에서 드시면 수프 한 컵까지. 월요일–금요일, 11:30 AM–3:00 PM.",
+      title: "헌팅턴비치 태국 런치 스페셜 — 월–금 $12.99부터 · Narwhal Thai Table",
+      description: "헌팅턴비치(Huntington Beach) Beach Blvd의 평일 태국 런치 스페셜: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, 또는 Yellow나 Panang 커리를 $12.99부터 — 신선한 샐러드와 바삭한 스프링롤이 함께 나오고, 매장에서 드시면 수프 한 컵까지. 월요일–금요일, 11:30 AM–3:00 PM.",
       ogTitle: "런치 스페셜 · Narwhal Thai Table",
-      ogDescription: "월–금 11:30–3 · $11.99부터 · 모든 런치에 샐러드 + 스프링롤, 매장 식사 시 수프까지.",
+      ogDescription: "월–금 11:30–3 · $12.99부터 · 모든 런치에 샐러드 + 스프링롤, 매장 식사 시 수프까지.",
     },
     about: {
       title: "Narwhal Thai Table 이야기 — 삼남매, 헌팅턴비치의 테이블 하나",
@@ -193,7 +193,7 @@ export const ko: DeepPartial<UiDict> = {
     title: "전체 메뉴 — *접시를 누르면 그 이야기가 들립니다*.",
     intro: "열세 개 카테고리, 첫 한 입부터 마지막 달콤한 한 입까지 주문마다 새로 만듭니다. ★는 이 집의 시그니처입니다. 모든 접시에는 저마다의 이야기가 있습니다 — 레시피의 내력, 맛있게 먹는 법, 그리고 곁에 두면 좋은 것들까지.",
     lunchPill: "월–금 · 11:30–3",
-    lunchLine: "런치 스페셜 $11.99부터 — Pad Thai, 커리, krapow 등에 샐러드와 스프링롤까지",
+    lunchLine: "런치 스페셜 $12.99부터 — Pad Thai, 커리, krapow 등에 샐러드와 스프링롤까지",
     lunchGo: "런치 보기",
     jsonLdName: "Narwhal Thai Table 메뉴",
     sidesDescription: "단백질(닭고기, 돼지고기, 두부, 소고기, 새우, 해산물)과 사이드를 고르세요 — 자스민 라이스, 현미밥, 찹쌀밥, 달걀 프라이, 오믈렛.",
@@ -237,7 +237,7 @@ export const ko: DeepPartial<UiDict> = {
   },
   lunch: {
     eyebrow: "런치 스페셜 · 월–금",
-    title: "평일 런치, *주문 후 조리* — $11.99부터.",
+    title: "평일 런치, *주문 후 조리* — $12.99부터.",
     lede: "월요일부터 금요일까지, 11:30 AM부터 3:00 PM까지. 아래에서 접시를 고르시면 신선한 샐러드와 바삭한 스프링롤이 함께 나옵니다 — 매장에서 드시면 수프 한 컵까지. 빠르고, 아늑하고, 바로 Beach 대로 위에 있습니다. 진짜로 기다려지는 점심시간입니다.",
     hoursLine: "월–금 11:30 AM – 3:00 PM · 매장 식사 또는 포장 · ",
     trayLabel: "모든 런치 스페셜에 함께 나오는 것",
@@ -247,7 +247,7 @@ export const ko: DeepPartial<UiDict> = {
       "**머무르시면 수프까지.** 매장에서 드시면 수프 한 컵이 포함됩니다 — 그리고 십 분만 더 여유가 있다면, mango sticky rice가 바로 거기 있습니다.",
     ],
     pickTitle: "오늘의 *접시*를 고르세요.",
-    pickLede: "접시를 누르면 그 이야기를 읽을 수 있습니다. 평일 런치 스페셜은 $11.99부터 시작합니다 — 눈여겨보신 접시의 가격은 저희에게 물어봐 주세요.",
+    pickLede: "접시를 누르면 그 이야기를 읽을 수 있습니다. 평일 런치 스페셜은 $12.99부터 시작합니다 — 눈여겨보신 접시의 가격은 저희에게 물어봐 주세요.",
     from: "최저",
     tag: "런치 스페셜",
     spicy: "매운맛",
@@ -265,7 +265,7 @@ export const ko: DeepPartial<UiDict> = {
     directions: "길 안내",
     seeMenu: "전체 메뉴 보기",
     jsonLdName: "Narwhal Thai Table 런치 스페셜",
-    jsonLdDescription: "평일 런치 스페셜, 월요일–금요일 11:30 AM–3:00 PM, $11.99부터. 모든 런치에 신선한 샐러드와 바삭한 스프링롤이 함께 나오고, 매장에서 드시면 수프 한 컵이 포함됩니다.",
+    jsonLdDescription: "평일 런치 스페셜, 월요일–금요일 11:30 AM–3:00 PM, $12.99부터. 모든 런치에 신선한 샐러드와 바삭한 스프링롤이 함께 나오고, 매장에서 드시면 수프 한 컵이 포함됩니다.",
     jsonLdSection: "런치 스페셜 (월요일–금요일, 11:30 AM–3:00 PM)",
     jsonLdSectionDescription: "접시 하나를 고르세요. 신선한 샐러드와 바삭한 스프링롤이 함께 나오며, 매장에서 드시면 수프 한 컵이 포함됩니다.",
     jsonLdItem: "런치 스페셜 — {name}",
@@ -289,7 +289,7 @@ export const ko: DeepPartial<UiDict> = {
       "**저희 가족에게서.** [{email}](mailto:{email})로 보내신 모든 메시지는 저희 삼남매 중 한 사람에게 닿습니다. 그리고 리뷰를 남기시면 답을 쓰는 사람도 남매 중 하나입니다 — 대행 업체가 아닙니다.",
     ],
     h2Order: "무엇을 *주문할까요*",
-    order: "[Narwhal Chicken Wings](/menu/narwhal-chicken-wings)로 시작해서 커리 하나와 웍 요리 하나를 나눠 드셔 보세요. [Panang Curry](/menu/panang-curry)와 [OG Pad Thai](/menu/og-pad-thai)가 가장 많이 찾으시는 메뉴입니다. 해산물을 좋아하신다면 [Super Crab Fried Rice](/menu/crab-fried-rice)나 [통째로 튀긴 pompano](/menu/fried-whole-pompano)를 테이블 가운데 놓으세요. 고향이 그리우시다면 Isaan 코너로 — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — 아니면 [boat noodles](/menu/thai-boat-noodles) 한 그릇도 좋습니다. 평일 3시까지는 [런치 스페셜](/lunch)이 $11.99부터입니다. 그리고 저희 주방까지 포함해 태국 주방을 어떻게 가늠하는지 궁금하시다면, [Orange County 최고의 태국 음식 (English)](/thai-food-orange-county)이라는 안내서를 써 두었습니다.",
+    order: "[Narwhal Chicken Wings](/menu/narwhal-chicken-wings)로 시작해서 커리 하나와 웍 요리 하나를 나눠 드셔 보세요. [Panang Curry](/menu/panang-curry)와 [OG Pad Thai](/menu/og-pad-thai)가 가장 많이 찾으시는 메뉴입니다. 해산물을 좋아하신다면 [Super Crab Fried Rice](/menu/crab-fried-rice)나 [통째로 튀긴 pompano](/menu/fried-whole-pompano)를 테이블 가운데 놓으세요. 고향이 그리우시다면 Isaan 코너로 — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — 아니면 [boat noodles](/menu/thai-boat-noodles) 한 그릇도 좋습니다. 평일 3시까지는 [런치 스페셜](/lunch)이 $12.99부터입니다. 그리고 저희 주방까지 포함해 태국 주방을 어떻게 가늠하는지 궁금하시다면, [Orange County 최고의 태국 음식 (English)](/thai-food-orange-county)이라는 안내서를 써 두었습니다.",
     factsTitle: "짧게 정리하면, *기록을 위해*",
     facts: [
       {
@@ -322,7 +322,7 @@ export const ko: DeepPartial<UiDict> = {
       },
       {
         k: "가격",
-        v: "대부분의 접시 $12–20, 해산물 접시는 최대 $35 · [런치 스페셜](/lunch) $11.99부터",
+        v: "대부분의 접시 $12–20, 해산물 접시는 최대 $35 · [런치 스페셜](/lunch) $12.99부터",
       },
       {
         k: "공간",
@@ -350,7 +350,7 @@ export const ko: DeepPartial<UiDict> = {
       "**2026년 이전 —** Thai Gulf Restaurant가 19072 Beach Blvd에서 동네를 지켰습니다.",
       "**2026년 7월 —** 저희 가족이 가게를 인수해 Narwhal Thai Table로 이름을 바꿨습니다. 새 레시피, 새 주방의 습관, 같은 주소.",
       "**2026년 8월 9일 일요일 —** 소프트 오픈. 그 후 매일 문을 열고 있습니다.",
-      "**2026년 8월 말 —** 평일 [런치 스페셜](/lunch) 시작, 월요일–금요일 $11.99부터.",
+      "**2026년 8월 말 —** 평일 [런치 스페셜](/lunch) 시작, 월요일–금요일.",
       "**곧 —** 셰프 소개와 함께하는 그랜드 오픈. 놓치지 않으시려면 [@narwhalthaitablehb](https://www.instagram.com/narwhalthaitablehb/)를 팔로우해 주세요.",
     ],
     seeMenu: "메뉴 보기",
@@ -405,7 +405,7 @@ export const ko: DeepPartial<UiDict> = {
       },
       {
         q: "런치 스페셜이 있나요?",
-        a: "있습니다 — 월요일부터 금요일까지 11:30 AM–3 PM, [런치 스페셜](/lunch)은 $11.99부터입니다: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, 또는 Yellow나 Panang 커리. 모든 런치에 신선한 샐러드와 바삭한 스프링롤이 함께 나오고, 매장에서 드시면 수프 한 컵까지 포함됩니다. 픽업은 [(714) 378-6003](tel:+17143786003)으로 미리 전화 주세요.",
+        a: "있습니다 — 월요일부터 금요일까지 11:30 AM–3 PM, [런치 스페셜](/lunch)은 $12.99부터입니다: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, 또는 Yellow나 Panang 커리. 모든 런치에 신선한 샐러드와 바삭한 스프링롤이 함께 나오고, 매장에서 드시면 수프 한 컵까지 포함됩니다. 픽업은 [(714) 378-6003](tel:+17143786003)으로 미리 전화 주세요.",
       },
       {
         q: "음식이 얼마나 맵나요?",

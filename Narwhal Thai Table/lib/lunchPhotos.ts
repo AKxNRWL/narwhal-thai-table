@@ -2,8 +2,9 @@
  * Lunch Specials — the facts the site repeats (homepage section, promo
  * library) and the plate photos that go with them.
  *
- * Facts come from the owner's Google Business Profile post of 28 Aug 2026 and
- * the /lunch page: weekdays 11:30–3, from $11.99, salad + spring roll with
+ * Facts come from the owner's Google Business Profile post of 28 Aug 2026,
+ * with the $12.99 starting price confirmed for dine-in and Toast on 28 Sep 2026:
+ * weekdays 11:30–3, salad + spring roll with
  * every lunch, a cup of soup when dining in. Per-plate prices are NOT
  * published anywhere on the site until the owner sends them — never guess.
  *
@@ -28,7 +29,7 @@ export const LUNCH_PHOTOS: ReadonlyArray<{ file: string; label: string }> = [
 export const LUNCH = {
   days: 'Monday – Friday',
   hours: '11:30 AM – 3:00 PM',
-  fromPrice: '$11.99',
+  fromPrice: '$12.99',
   /** Every plate listed on the GBP post / lunch menu (Pad See Ew has no photo yet). */
   plates: ['Pad Thai', 'Pad See Ew', 'Pad Kee Mao', 'Krapow', 'Garlic & Pepper', 'Cashew Nut', 'Mixed Vegetables', 'Yellow Curry', 'Panang Curry'],
   includes: 'a fresh salad and a crispy spring roll, plus a cup of soup when you dine in',

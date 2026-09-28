@@ -25,7 +25,7 @@ import { OG_LOCALE } from '@/lib/i18n/locales';
 const PATH = '/vi/nha-hang-thai-little-saigon';
 const TITLE = 'Nhà hàng Thái gần Little Saigon — chạy thẳng đường Beach tới Narwhal Thai Table';
 const DESCRIPTION =
-  'Món Thái gần Little Saigon: Narwhal Thai Table ở 19072 Beach Blvd, Huntington Beach — từ Westminster chạy thẳng đường Beach khoảng 12 phút, hoặc xe buýt OCTA tuyến 29. Cà ri giã tay, gỏi và đồ nướng kiểu Isaan, hủ tiếu thuyền Thái, món trưa đặc biệt ngày thường từ $11.99, đặt online đến lấy hoặc giao qua DoorDash. Thực đơn đầy đủ bằng tiếng Việt.';
+  'Món Thái gần Little Saigon: Narwhal Thai Table ở 19072 Beach Blvd, Huntington Beach — từ Westminster chạy thẳng đường Beach khoảng 12 phút, hoặc xe buýt OCTA tuyến 29. Cà ri giã tay, gỏi và đồ nướng kiểu Isaan, hủ tiếu thuyền Thái, món trưa đặc biệt ngày thường từ $12.99, đặt online đến lấy hoặc giao qua DoorDash. Thực đơn đầy đủ bằng tiếng Việt.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -111,7 +111,7 @@ export default function LittleSaigonPage() {
 
           <h2>Ăn trưa trên đường — <em>Thứ Hai đến Thứ Sáu tới 3 giờ</em></h2>
           <p>
-            <Link href="/vi/lunch">Món trưa đặc biệt</Link> bắt đầu từ $11.99, kèm xà lách tươi và một cuốn chả
+            <Link href="/vi/lunch">Món trưa đặc biệt</Link> bắt đầu từ $12.99, kèm xà lách tươi và một cuốn chả
             giò giòn, thêm một chén súp khi ăn tại quán: <Dish slug="og-pad-thai">Pad Thai</Dish>,{' '}
             <Dish slug="pad-see-ew">Pad See Ew</Dish>, <Dish slug="pad-kee-mao">Pad Kee Mao</Dish>,{' '}
             <Dish slug="krapow-over-rice">Krapow</Dish>, <Dish slug="garlic-pepper-over-rice">Garlic &amp; Pepper</Dish>,{' '}

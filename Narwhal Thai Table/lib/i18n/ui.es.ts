@@ -28,10 +28,10 @@ export const es: DeepPartial<UiDict> = {
       notFound: "Platillo no encontrado",
     },
     lunch: {
-      title: "Especiales de almuerzo tailandés en Huntington Beach — Lun–Vie desde $11.99 · Narwhal Thai Table",
-      description: "Especiales de almuerzo tailandés entre semana en Beach Blvd: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, o un curry Yellow o Panang desde $11.99 — con una ensalada fresca y un rollito primavera crujiente, más una taza de sopa si comes aquí. Lunes a viernes, 11:30 AM–3:00 PM.",
+      title: "Especiales de almuerzo tailandés en Huntington Beach — Lun–Vie desde $12.99 · Narwhal Thai Table",
+      description: "Especiales de almuerzo tailandés entre semana en Beach Blvd: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, o un curry Yellow o Panang desde $12.99 — con una ensalada fresca y un rollito primavera crujiente, más una taza de sopa si comes aquí. Lunes a viernes, 11:30 AM–3:00 PM.",
       ogTitle: "Especiales de almuerzo · Narwhal Thai Table",
-      ogDescription: "Lun–Vie 11:30–3 · desde $11.99 · ensalada + rollito primavera con cada almuerzo, y sopa si comes aquí.",
+      ogDescription: "Lun–Vie 11:30–3 · desde $12.99 · ensalada + rollito primavera con cada almuerzo, y sopa si comes aquí.",
     },
     about: {
       title: "Sobre Narwhal Thai Table — Tres hermanos, una mesa en Huntington Beach",
@@ -195,7 +195,7 @@ export const es: DeepPartial<UiDict> = {
     title: "El menú completo — *toca un platillo para escuchar su historia*.",
     intro: "Trece categorías, cocinadas al momento desde el primer bocado hasta el último dulce. ★ marca las especialidades de la casa. Cada platillo trae su propia historia — de dónde viene la receta, cómo comerlo bien y qué va a su lado.",
     lunchPill: "Lun–Vie · 11:30–3",
-    lunchLine: "Especiales de almuerzo desde $11.99 — Pad Thai, curries, krapow y más, con ensalada y rollito primavera",
+    lunchLine: "Especiales de almuerzo desde $12.99 — Pad Thai, curries, krapow y más, con ensalada y rollito primavera",
     lunchGo: "Ver el almuerzo",
     jsonLdName: "Menú de Narwhal Thai Table",
     sidesDescription: "Escoge tu proteína (pollo, puerco, tofu, res, camarón, mariscos) y tus acompañamientos — arroz jazmín, arroz integral, arroz glutinoso, huevo estrellado, omelet.",
@@ -239,7 +239,7 @@ export const es: DeepPartial<UiDict> = {
   },
   lunch: {
     eyebrow: "Especiales de almuerzo · Lun–Vie",
-    title: "Almuerzo entre semana, *hecho al momento* — desde $11.99.",
+    title: "Almuerzo entre semana, *hecho al momento* — desde $12.99.",
     lede: "De lunes a viernes, de 11:30 AM a 3:00 PM. Escoge un platillo de abajo y viene con una ensalada fresca y un rollito primavera crujiente — más una taza de sopa si comes aquí. Rápido, acogedor y justo sobre Beach Boulevard: la hora de comer que sí esperas con ganas.",
     hoursLine: "Lun–Vie 11:30 AM – 3:00 PM · para comer aquí o para llevar · ",
     trayLabel: "Qué trae cada especial de almuerzo",
@@ -249,7 +249,7 @@ export const es: DeepPartial<UiDict> = {
       "**Sopa, si te quedas.** Si comes aquí, va incluida una taza de sopa — y si te sobran diez minutos, el Mango Sticky Rice está ahí mismo.",
     ],
     pickTitle: "Escoge tu *platillo*.",
-    pickLede: "Toca un platillo para leer su historia. Los especiales de almuerzo entre semana empiezan en $11.99 — pregúntanos el precio del que traes entre ojos.",
+    pickLede: "Toca un platillo para leer su historia. Los especiales de almuerzo entre semana empiezan en $12.99 — pregúntanos el precio del que traes entre ojos.",
     from: "desde",
     tag: "Especial de almuerzo",
     spicy: "Picante",
@@ -267,7 +267,7 @@ export const es: DeepPartial<UiDict> = {
     directions: "Cómo llegar",
     seeMenu: "Ver el menú completo",
     jsonLdName: "Especiales de almuerzo de Narwhal Thai Table",
-    jsonLdDescription: "Especiales de almuerzo entre semana, de lunes a viernes de 11:30 AM a 3:00 PM, desde $11.99. Cada almuerzo viene con una ensalada fresca y un rollito primavera crujiente, más una taza de sopa si comes aquí.",
+    jsonLdDescription: "Especiales de almuerzo entre semana, de lunes a viernes de 11:30 AM a 3:00 PM, desde $12.99. Cada almuerzo viene con una ensalada fresca y un rollito primavera crujiente, más una taza de sopa si comes aquí.",
     jsonLdSection: "Especiales de almuerzo (lunes a viernes, 11:30 AM–3:00 PM)",
     jsonLdSectionDescription: "Escoge un platillo. Se sirve con una ensalada fresca y un rollito primavera crujiente; se incluye una taza de sopa si comes aquí.",
     jsonLdItem: "Especial de almuerzo — {name}",
@@ -291,7 +291,7 @@ export const es: DeepPartial<UiDict> = {
       "**De nuestra familia.** Cada mensaje a [{email}](mailto:{email}) llega a uno de los tres, y cuando dejas una reseña, te contesta un hermano — no un servicio.",
     ],
     h2Order: "Qué *ordenar*",
-    order: "Empieza con las [Narwhal Chicken Wings](/menu/narwhal-chicken-wings), y luego comparte un curry y un platillo al wok: el [Panang Curry](/menu/panang-curry) y el [OG Pad Thai](/menu/og-pad-thai) son los que más nos preguntan. Si te gustan los mariscos, ordena el [Super Crab Fried Rice](/menu/crab-fried-rice) o un [pompano entero frito](/menu/fried-whole-pompano) para la mesa. Si extrañas tu tierra, ve directo al rincón Isaan — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — o un tazón de [boat noodles](/menu/thai-boat-noodles). Entre semana hasta las 3, los [especiales de almuerzo](/lunch) empiezan en $11.99. Y si quieres saber cómo juzgamos cualquier cocina tailandesa, la nuestra incluida, escribimos una guía de campo sobre la [mejor comida tailandesa de Orange County (en inglés)](/thai-food-orange-county).",
+    order: "Empieza con las [Narwhal Chicken Wings](/menu/narwhal-chicken-wings), y luego comparte un curry y un platillo al wok: el [Panang Curry](/menu/panang-curry) y el [OG Pad Thai](/menu/og-pad-thai) son los que más nos preguntan. Si te gustan los mariscos, ordena el [Super Crab Fried Rice](/menu/crab-fried-rice) o un [pompano entero frito](/menu/fried-whole-pompano) para la mesa. Si extrañas tu tierra, ve directo al rincón Isaan — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — o un tazón de [boat noodles](/menu/thai-boat-noodles). Entre semana hasta las 3, los [especiales de almuerzo](/lunch) empiezan en $12.99. Y si quieres saber cómo juzgamos cualquier cocina tailandesa, la nuestra incluida, escribimos una guía de campo sobre la [mejor comida tailandesa de Orange County (en inglés)](/thai-food-orange-county).",
     factsTitle: "La versión corta, *para que conste*",
     facts: [
       {
@@ -324,7 +324,7 @@ export const es: DeepPartial<UiDict> = {
       },
       {
         k: "Precios",
-        v: "La mayoría de los platillos $12–20, los de mariscos hasta $35 · [especiales de almuerzo](/lunch) desde $11.99",
+        v: "La mayoría de los platillos $12–20, los de mariscos hasta $35 · [especiales de almuerzo](/lunch) desde $12.99",
       },
       {
         k: "El lugar",
@@ -352,7 +352,7 @@ export const es: DeepPartial<UiDict> = {
       "**Antes de 2026 —** Thai Gulf Restaurant le da de comer al barrio en 19072 Beach Blvd.",
       "**Julio de 2026 —** Nuestra familia compra el negocio y lo renombra Narwhal Thai Table. Recetas nuevas, costumbres nuevas en la cocina, la misma dirección.",
       "**Domingo 9 de agosto de 2026 —** Apertura suave. Abierto todos los días desde entonces.",
-      "**Finales de agosto de 2026 —** Empiezan los [especiales de almuerzo](/lunch) entre semana, de lunes a viernes desde $11.99.",
+      "**Finales de agosto de 2026 —** Empiezan los [especiales de almuerzo](/lunch) entre semana, de lunes a viernes.",
       "**Lo que viene —** La inauguración oficial, con la presentación del chef. Sigue a [@narwhalthaitablehb](https://www.instagram.com/narwhalthaitablehb/) para no perdértela.",
     ],
     seeMenu: "Ver el menú",
@@ -407,7 +407,7 @@ export const es: DeepPartial<UiDict> = {
       },
       {
         q: "¿Tienen especiales de almuerzo?",
-        a: "Sí — de lunes a viernes, de 11:30 AM a 3 PM, los [especiales de almuerzo](/lunch) empiezan en $11.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, o un curry Yellow o Panang. Cada almuerzo viene con una ensalada fresca y un rollito primavera crujiente, más una taza de sopa si comes aquí. Llama antes al [(714) 378-6003](tel:+17143786003) para recoger.",
+        a: "Sí — de lunes a viernes, de 11:30 AM a 3 PM, los [especiales de almuerzo](/lunch) empiezan en $12.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, o un curry Yellow o Panang. Cada almuerzo viene con una ensalada fresca y un rollito primavera crujiente, más una taza de sopa si comes aquí. Llama antes al [(714) 378-6003](tel:+17143786003) para recoger.",
       },
       {
         q: "¿Qué tan picante es la comida?",

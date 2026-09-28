@@ -34,11 +34,11 @@ export const vi: DeepPartial<UiDict> = {
       notFound: 'Không tìm thấy món',
     },
     lunch: {
-      title: 'Món trưa đặc biệt kiểu Thái ở Huntington Beach — Thứ Hai–Sáu từ $11.99 · Narwhal Thai Table',
+      title: 'Món trưa đặc biệt kiểu Thái ở Huntington Beach — Thứ Hai–Sáu từ $12.99 · Narwhal Thai Table',
       description:
-        'Món trưa đặc biệt ngày thường trên đường Beach: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, hoặc cà ri Yellow / Panang từ $11.99 — kèm xà lách tươi và chả giò giòn, thêm một chén súp khi ăn tại quán. Thứ Hai–Thứ Sáu, 11:30 AM–3:00 PM.',
+        'Món trưa đặc biệt ngày thường trên đường Beach: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, hoặc cà ri Yellow / Panang từ $12.99 — kèm xà lách tươi và chả giò giòn, thêm một chén súp khi ăn tại quán. Thứ Hai–Thứ Sáu, 11:30 AM–3:00 PM.',
       ogTitle: 'Món trưa đặc biệt · Narwhal Thai Table',
-      ogDescription: 'Thứ Hai–Sáu 11:30–3 · từ $11.99 · xà lách + chả giò kèm mỗi phần, súp khi ăn tại quán.',
+      ogDescription: 'Thứ Hai–Sáu 11:30–3 · từ $12.99 · xà lách + chả giò kèm mỗi phần, súp khi ăn tại quán.',
     },
     about: {
       title: 'Về Narwhal Thai Table — Ba anh chị em, một bàn ăn ở Huntington Beach',
@@ -176,7 +176,7 @@ export const vi: DeepPartial<UiDict> = {
     title: 'Thực đơn đầy đủ — *chạm vào một dĩa để nghe câu chuyện của nó*.',
     intro: 'Mười ba nhóm món, nấu theo từng phần gọi từ miếng đầu tiên đến miếng ngọt cuối cùng. ★ là những món đặc trưng của quán. Mỗi dĩa đều mang câu chuyện riêng — lịch sử của công thức, cách ăn cho ngon, và món gì nên gọi kèm.',
     lunchPill: 'Thứ Hai–Sáu · 11:30–3',
-    lunchLine: 'Món trưa đặc biệt từ $11.99 — Pad Thai, cà ri, krapow & nhiều món khác, kèm xà lách và chả giò',
+    lunchLine: 'Món trưa đặc biệt từ $12.99 — Pad Thai, cà ri, krapow & nhiều món khác, kèm xà lách và chả giò',
     lunchGo: 'Xem món trưa',
     jsonLdName: 'Thực đơn Narwhal Thai Table',
     sidesDescription: 'Chọn thịt (gà, heo, đậu hũ, bò, tôm, hải sản) và món kèm — cơm trắng, cơm gạo lứt, cơm nếp, trứng ốp la, trứng chiên.',
@@ -224,7 +224,7 @@ export const vi: DeepPartial<UiDict> = {
   /* ---------------- /vi/lunch ---------------- */
   lunch: {
     eyebrow: 'Món trưa đặc biệt · Thứ Hai–Sáu',
-    title: 'Bữa trưa ngày thường, *nấu theo phần gọi* — từ $11.99.',
+    title: 'Bữa trưa ngày thường, *nấu theo phần gọi* — từ $12.99.',
     lede: 'Thứ Hai đến Thứ Sáu, 11:30 AM đến 3:00 PM. Chọn một dĩa bên dưới, phần ăn kèm xà lách tươi và một cuốn chả giò giòn — thêm một chén súp khi ăn tại quán. Nhanh, ấm cúng, và ngay trên đường Beach: giờ nghỉ trưa mà bạn thật sự mong tới.',
     hoursLine: 'Thứ Hai–Sáu 11:30 AM – 3:00 PM · ăn tại quán hoặc mang về · ',
     trayLabel: 'Mỗi phần trưa đặc biệt gồm những gì',
@@ -234,7 +234,7 @@ export const vi: DeepPartial<UiDict> = {
       '**Súp, khi bạn ngồi lại.** Ăn tại quán thì có thêm một chén súp — và nếu còn dư mười phút, xôi xoài ở ngay đó.',
     ],
     pickTitle: 'Chọn *dĩa của bạn*.',
-    pickLede: 'Chạm vào một dĩa để đọc câu chuyện của nó. Món trưa đặc biệt ngày thường bắt đầu từ $11.99 — hỏi chúng tôi giá của dĩa bạn đang để mắt tới.',
+    pickLede: 'Chạm vào một dĩa để đọc câu chuyện của nó. Món trưa đặc biệt ngày thường bắt đầu từ $12.99 — hỏi chúng tôi giá của dĩa bạn đang để mắt tới.',
     from: 'từ',
     tag: 'Món trưa đặc biệt',
     spicy: 'Cay',
@@ -252,7 +252,7 @@ export const vi: DeepPartial<UiDict> = {
     directions: 'Chỉ đường',
     seeMenu: 'Xem thực đơn đầy đủ',
     jsonLdName: 'Món trưa đặc biệt Narwhal Thai Table',
-    jsonLdDescription: 'Món trưa đặc biệt ngày thường, Thứ Hai–Thứ Sáu 11:30 AM–3:00 PM, từ $11.99. Mỗi phần trưa kèm xà lách tươi và chả giò giòn, thêm một chén súp khi ăn tại quán.',
+    jsonLdDescription: 'Món trưa đặc biệt ngày thường, Thứ Hai–Thứ Sáu 11:30 AM–3:00 PM, từ $12.99. Mỗi phần trưa kèm xà lách tươi và chả giò giòn, thêm một chén súp khi ăn tại quán.',
     jsonLdSection: 'Món trưa đặc biệt (Thứ Hai–Thứ Sáu, 11:30 AM–3:00 PM)',
     jsonLdSectionDescription: 'Chọn một dĩa. Phục vụ kèm xà lách tươi và chả giò giòn; có thêm một chén súp khi ăn tại quán.',
     jsonLdItem: 'Món trưa đặc biệt — {name}',
@@ -279,7 +279,7 @@ export const vi: DeepPartial<UiDict> = {
     ],
     h2Order: 'Nên *gọi gì*',
     order:
-      'Bắt đầu với [Narwhal Chicken Wings](/menu/narwhal-chicken-wings), rồi chia nhau một món cà ri và một món chảo: [Panang Curry](/menu/panang-curry) và [OG Pad Thai](/menu/og-pad-thai) là hai món được hỏi nhiều nhất. Mê hải sản thì gọi [Super Crab Fried Rice](/menu/crab-fried-rice) hoặc một con [cá pompano chiên nguyên con](/menu/fried-whole-pompano) cho cả bàn. Nếu nhớ nhà, ghé góc Isaan — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — hoặc một tô [hủ tiếu thuyền Thái](/menu/thai-boat-noodles). Ngày thường đến 3 giờ chiều, [món trưa đặc biệt](/lunch) bắt đầu từ $11.99. Và nếu bạn muốn biết chúng tôi đánh giá một bếp Thái ra sao, kể cả bếp mình, chúng tôi đã viết một cẩm nang về [món Thái ngon nhất Orange County (English)](/thai-food-orange-county).',
+      'Bắt đầu với [Narwhal Chicken Wings](/menu/narwhal-chicken-wings), rồi chia nhau một món cà ri và một món chảo: [Panang Curry](/menu/panang-curry) và [OG Pad Thai](/menu/og-pad-thai) là hai món được hỏi nhiều nhất. Mê hải sản thì gọi [Super Crab Fried Rice](/menu/crab-fried-rice) hoặc một con [cá pompano chiên nguyên con](/menu/fried-whole-pompano) cho cả bàn. Nếu nhớ nhà, ghé góc Isaan — [som tum](/menu/som-tum-thai), [larb](/menu/larb), [crying tiger](/menu/crying-tiger) — hoặc một tô [hủ tiếu thuyền Thái](/menu/thai-boat-noodles). Ngày thường đến 3 giờ chiều, [món trưa đặc biệt](/lunch) bắt đầu từ $12.99. Và nếu bạn muốn biết chúng tôi đánh giá một bếp Thái ra sao, kể cả bếp mình, chúng tôi đã viết một cẩm nang về [món Thái ngon nhất Orange County (English)](/thai-food-orange-county).',
     factsTitle: 'Tóm tắt ngắn, *cho rõ ràng*',
     facts: [
       { k: 'Tên', v: 'Narwhal Thai Table (mọi người cũng hay gọi “Narwhal Thai” hoặc “Narwhal HB”)' },
@@ -289,7 +289,7 @@ export const vi: DeepPartial<UiDict> = {
       { k: 'Ở đâu', v: '[{street}, Huntington Beach, CA 92648]({directions}) — Beach Blvd góc Garfield Ave, đậu xe miễn phí trong bãi của khu plaza' },
       { k: 'Giờ mở cửa', v: 'Mở cửa mỗi ngày · Thứ Hai–Sáu 11:30 AM–10 PM · Thứ Bảy–Chủ Nhật 12–10 PM · [món trưa đặc biệt](/lunch) Thứ Hai–Sáu 11:30–3' },
       { k: 'Chúng tôi nấu gì', v: 'Món Thái đúng như cách chúng tôi lớn lên cùng — sốt cà ri giã trong cối đá, mì xào và cơm chiên nấu theo phần gọi, cá chiên nguyên con, một góc Isaan với som tum, larb và crying tiger. [{count} món trong 13 nhóm](/menu).' },
-      { k: 'Giá', v: 'Phần lớn các dĩa $12–20, món hải sản đến $35 · [món trưa đặc biệt](/lunch) từ $11.99' },
+      { k: 'Giá', v: 'Phần lớn các dĩa $12–20, món hải sản đến $35 · [món trưa đặc biệt](/lunch) từ $12.99' },
       { k: 'Không gian', v: 'Một phòng ăn nhỏ và sân hiên cho phép dắt chó dưới dây đèn · vài loại rượu vang theo ly · xôi xoài cho cả bàn' },
       { k: 'Cách thưởng thức', v: 'Ăn tại quán · [đặt bàn](/contact/reservation) · [đến lấy và giao tận nơi (English)](/order) · [đặt tiệc và sự kiện riêng](/contact/catering)' },
       { k: 'Thanh toán', v: 'Thẻ tín dụng và thẻ ghi nợ, Apple Pay và Google Pay (và tiền mặt)' },
@@ -301,7 +301,7 @@ export const vi: DeepPartial<UiDict> = {
       '**Trước 2026 —** Thai Gulf Restaurant phục vụ khu phố tại 19072 Beach Blvd.',
       '**Tháng 7/2026 —** Gia đình chúng tôi mua lại và đổi tên thành Narwhal Thai Table. Công thức mới, nếp bếp mới, cùng địa chỉ.',
       '**Chủ Nhật 9/8/2026 —** Mở cửa thử. Mở mỗi ngày từ đó.',
-      '**Cuối tháng 8/2026 —** Bắt đầu [món trưa đặc biệt](/lunch) ngày thường, Thứ Hai–Thứ Sáu từ $11.99.',
+      '**Cuối tháng 8/2026 —** Bắt đầu [món trưa đặc biệt](/lunch) ngày thường, Thứ Hai–Thứ Sáu.',
       '**Sắp tới —** Khai trương chính thức, cùng màn ra mắt đầu bếp. Theo dõi [@narwhalthaitablehb](https://www.instagram.com/narwhalthaitablehb/) để không bỏ lỡ.',
     ],
     seeMenu: 'Xem thực đơn',
@@ -346,7 +346,7 @@ export const vi: DeepPartial<UiDict> = {
       },
       {
         q: 'Quán có món trưa đặc biệt không?',
-        a: 'Có — Thứ Hai đến Thứ Sáu, 11:30 AM đến 3 PM, [món trưa đặc biệt](/lunch) bắt đầu từ $11.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, hoặc cà ri Yellow / Panang. Mỗi phần trưa kèm xà lách tươi và chả giò giòn, thêm một chén súp khi ăn tại quán. Gọi trước [(714) 378-6003](tel:+17143786003) nếu muốn đến lấy.',
+        a: 'Có — Thứ Hai đến Thứ Sáu, 11:30 AM đến 3 PM, [món trưa đặc biệt](/lunch) bắt đầu từ $12.99: Pad Thai, Pad See Ew, Pad Kee Mao, Krapow, Garlic & Pepper, Cashew, Mixed Vegetables, hoặc cà ri Yellow / Panang. Mỗi phần trưa kèm xà lách tươi và chả giò giòn, thêm một chén súp khi ăn tại quán. Gọi trước [(714) 378-6003](tel:+17143786003) nếu muốn đến lấy.',
       },
       {
         q: 'Đồ ăn cay cỡ nào?',

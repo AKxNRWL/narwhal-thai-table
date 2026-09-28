@@ -22,7 +22,7 @@ import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/si
 
 const TITLE = 'Thai Food near Fountain Valley — 8 Minutes to Narwhal Thai Table';
 const DESCRIPTION =
-  'Looking for Thai food in Fountain Valley? Narwhal Thai Table is 3.6 miles from the center of Fountain Valley — about 8 minutes via Brookhurst & Garfield or Slater & Newland to Beach Blvd. Curry pastes pounded by hand, weekday lunch specials from $11.99, pickup ready when you arrive, and delivery where available.';
+  'Looking for Thai food in Fountain Valley? Narwhal Thai Table is 3.6 miles from the center of Fountain Valley — about 8 minutes via Brookhurst & Garfield or Slater & Newland to Beach Blvd. Curry pastes pounded by hand, weekday lunch specials from $12.99, pickup ready when you arrive, and delivery where available.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
@@ -92,7 +92,7 @@ export default function ThaiFoodFountainValleyPage() {
           <h2>Lunch from Fountain Valley — <em>back at your desk in an hour</em></h2>
           <p>
             Monday through Friday, 11:30 AM to 3:00 PM, our <Link href="/lunch">lunch specials</Link>{' '}
-            start at $11.99: <Dish slug="og-pad-thai">Pad Thai</Dish>, <Dish slug="pad-see-ew">Pad See
+            start at $12.99: <Dish slug="og-pad-thai">Pad Thai</Dish>, <Dish slug="pad-see-ew">Pad See
             Ew</Dish>, <Dish slug="pad-kee-mao">Pad Kee Mao</Dish>, <Dish slug="krapow-over-rice">Krapow</Dish>,{' '}
             <Dish slug="garlic-pepper-over-rice">Garlic &amp; Pepper</Dish>, <Dish slug="cashew-nut">Cashew</Dish>,{' '}
             <Dish slug="mixed-vegetables">Mixed Vegetables</Dish>, or a <Dish slug="yellow-curry">Yellow</Dish> or{' '}

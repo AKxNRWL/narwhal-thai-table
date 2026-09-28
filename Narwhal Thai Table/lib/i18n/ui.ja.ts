@@ -26,10 +26,10 @@ export const ja: DeepPartial<UiDict> = {
       notFound: "お料理が見つかりません",
     },
     lunch: {
-      title: "ハンティントンビーチのタイ料理ランチスペシャル — 月–金 $11.99 から · Narwhal Thai Table",
-      description: "ハンティントンビーチ（Huntington Beach）、Beach Blvd の平日ランチスペシャル：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables、または Yellow か Panang のカレーが $11.99 から — フレッシュサラダとパリッと揚げた春巻き付き、店内でお召し上がりならスープも一杯。月曜日–金曜日、11:30 AM–3:00 PM。",
+      title: "ハンティントンビーチのタイ料理ランチスペシャル — 月–金 $12.99 から · Narwhal Thai Table",
+      description: "ハンティントンビーチ（Huntington Beach）、Beach Blvd の平日ランチスペシャル：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables、または Yellow か Panang のカレーが $12.99 から — フレッシュサラダとパリッと揚げた春巻き付き、店内でお召し上がりならスープも一杯。月曜日–金曜日、11:30 AM–3:00 PM。",
       ogTitle: "ランチスペシャル · Narwhal Thai Table",
-      ogDescription: "月–金 11:30–3 · $11.99 から · どのランチにもサラダと春巻き、店内ならスープも。",
+      ogDescription: "月–金 11:30–3 · $12.99 から · どのランチにもサラダと春巻き、店内ならスープも。",
     },
     about: {
       title: "Narwhal Thai Table について — 三人きょうだいと、ハンティントンビーチのひとつの食卓",
@@ -193,7 +193,7 @@ export const ja: DeepPartial<UiDict> = {
     title: "メニュー全品 — *一皿タップすれば、その物語が聞こえます*。",
     intro: "十三のカテゴリー、最初のひと口から最後の甘いひと口まで、ご注文をいただいてから作ります。★ は当店のシグネチャー。どの一皿にもそれぞれの物語があります — レシピの来歴、おいしい食べ方、そして隣に置くとよいもの。",
     lunchPill: "月–金 · 11:30–3",
-    lunchLine: "ランチスペシャルは $11.99 から — Pad Thai、カレー、krapow など。サラダと春巻き付き",
+    lunchLine: "ランチスペシャルは $12.99 から — Pad Thai、カレー、krapow など。サラダと春巻き付き",
     lunchGo: "ランチを見る",
     jsonLdName: "Narwhal Thai Table のメニュー",
     sidesDescription: "メイン食材（鶏肉、豚肉、豆腐、牛肉、エビ、シーフード）とサイド — ジャスミンライス、玄米ごはん、もち米ごはん、目玉焼き、オムレツ — をお選びください。",
@@ -237,7 +237,7 @@ export const ja: DeepPartial<UiDict> = {
   },
   lunch: {
     eyebrow: "ランチスペシャル · 月–金",
-    title: "平日のランチは、*ご注文を受けてから* — $11.99 から。",
+    title: "平日のランチは、*ご注文を受けてから* — $12.99 から。",
     lede: "月曜日から金曜日、11:30 AM から 3:00 PM まで。下から一皿お選びいただくと、フレッシュサラダとパリッと揚げた春巻きが付きます — 店内でお召し上がりなら、スープも一杯。手早く、居心地よく、場所は Beach Blvd 沿い。ほんとうに待ち遠しくなるお昼休みです。",
     hoursLine: "月–金 11:30 AM – 3:00 PM · 店内でも、お持ち帰りでも · ",
     trayLabel: "ランチスペシャルに付いてくるもの",
@@ -247,7 +247,7 @@ export const ja: DeepPartial<UiDict> = {
       "**店内なら、スープも。** 店内でお召し上がりなら、スープが一杯付きます — それにあと十分あるなら、Mango Sticky Rice がすぐそこに。",
     ],
     pickTitle: "選ぶのは、*あなたの一皿*。",
-    pickLede: "一皿タップすると、その物語が読めます。平日のランチスペシャルは $11.99 から — 気になっているお皿の値段は、どうぞお気軽にお尋ねください。",
+    pickLede: "一皿タップすると、その物語が読めます。平日のランチスペシャルは $12.99 から — 気になっているお皿の値段は、どうぞお気軽にお尋ねください。",
     from: "から",
     tag: "ランチスペシャル",
     spicy: "辛口",
@@ -265,7 +265,7 @@ export const ja: DeepPartial<UiDict> = {
     directions: "道順を見る",
     seeMenu: "メニュー全品を見る",
     jsonLdName: "Narwhal Thai Table のランチスペシャル",
-    jsonLdDescription: "平日のランチスペシャル、月曜日–金曜日 11:30 AM–3:00 PM、$11.99 から。どのランチにもフレッシュサラダとパリッと揚げた春巻きが付き、店内でお召し上がりならスープも一杯付きます。",
+    jsonLdDescription: "平日のランチスペシャル、月曜日–金曜日 11:30 AM–3:00 PM、$12.99 から。どのランチにもフレッシュサラダとパリッと揚げた春巻きが付き、店内でお召し上がりならスープも一杯付きます。",
     jsonLdSection: "ランチスペシャル（月曜日–金曜日、11:30 AM–3:00 PM）",
     jsonLdSectionDescription: "一皿お選びください。フレッシュサラダとパリッと揚げた春巻き付き。店内でお召し上がりの場合は、スープが一杯付きます。",
     jsonLdItem: "ランチスペシャル — {name}",
@@ -289,7 +289,7 @@ export const ja: DeepPartial<UiDict> = {
       "**私たち家族から。** [{email}](mailto:{email}) に届いたメッセージは、必ず三人のうちの誰かが読みます。レビューにお返事するのも、きょうだいの誰か — 代行サービスではありません。",
     ],
     h2Order: "何を*頼むか*",
-    order: "まずは [Narwhal Chicken Wings](/menu/narwhal-chicken-wings) から。そのあとは、カレーと鍋料理をひとつずつ分け合うのがおすすめです。[Panang Curry](/menu/panang-curry) と [OG Pad Thai](/menu/og-pad-thai) が、いちばんよく聞かれる二皿。シーフード好きの方は [Super Crab Fried Rice](/menu/crab-fried-rice)、あるいはテーブルみんなで [pompano の姿揚げ](/menu/fried-whole-pompano)を。故郷が恋しいときは Isaan（イサーン）の一角へ — [som tum](/menu/som-tum-thai)、[larb](/menu/larb)、[crying tiger](/menu/crying-tiger) — または [boat noodles](/menu/thai-boat-noodles) を一杯。平日の 3 時までなら、[ランチスペシャル](/lunch)が $11.99 から。そして、自分たちの厨房も含めてタイ料理店をどう見ているのかを知りたい方のために、[Orange County で一番おいしいタイ料理（英語）](/thai-food-orange-county)という手引きを書きました。",
+    order: "まずは [Narwhal Chicken Wings](/menu/narwhal-chicken-wings) から。そのあとは、カレーと鍋料理をひとつずつ分け合うのがおすすめです。[Panang Curry](/menu/panang-curry) と [OG Pad Thai](/menu/og-pad-thai) が、いちばんよく聞かれる二皿。シーフード好きの方は [Super Crab Fried Rice](/menu/crab-fried-rice)、あるいはテーブルみんなで [pompano の姿揚げ](/menu/fried-whole-pompano)を。故郷が恋しいときは Isaan（イサーン）の一角へ — [som tum](/menu/som-tum-thai)、[larb](/menu/larb)、[crying tiger](/menu/crying-tiger) — または [boat noodles](/menu/thai-boat-noodles) を一杯。平日の 3 時までなら、[ランチスペシャル](/lunch)が $12.99 から。そして、自分たちの厨房も含めてタイ料理店をどう見ているのかを知りたい方のために、[Orange County で一番おいしいタイ料理（英語）](/thai-food-orange-county)という手引きを書きました。",
     factsTitle: "手短に、*記録のために*",
     facts: [
       {
@@ -322,7 +322,7 @@ export const ja: DeepPartial<UiDict> = {
       },
       {
         k: "価格",
-        v: "ほとんどのお皿が $12–20、シーフードのお皿は $35 まで · [ランチスペシャル](/lunch)は $11.99 から",
+        v: "ほとんどのお皿が $12–20、シーフードのお皿は $35 まで · [ランチスペシャル](/lunch)は $12.99 から",
       },
       {
         k: "店内",
@@ -350,7 +350,7 @@ export const ja: DeepPartial<UiDict> = {
       "**2026年以前 —** Thai Gulf Restaurant が 19072 Beach Blvd で近所の人たちに料理を出していました。",
       "**2026年7月 —** 私たち家族が店を買い取り、Narwhal Thai Table と名づけました。新しいレシピ、新しい厨房の習慣、同じ住所。",
       "**2026年8月9日（日） —** ソフトオープン。以来、毎日営業しています。",
-      "**2026年8月下旬 —** 平日の[ランチスペシャル](/lunch)がスタート。月曜日–金曜日、$11.99 から。",
+      "**2026年8月下旬 —** 平日の[ランチスペシャル](/lunch)がスタート。月曜日–金曜日。",
       "**これから —** グランドオープンと、シェフのお披露目。見逃さないように [@narwhalthaitablehb](https://www.instagram.com/narwhalthaitablehb/) をフォローしてください。",
     ],
     seeMenu: "メニューを見る",
@@ -405,7 +405,7 @@ export const ja: DeepPartial<UiDict> = {
       },
       {
         q: "ランチスペシャルはありますか？",
-        a: "あります — 月曜日から金曜日の 11:30 AM から 3 PM まで、[ランチスペシャル](/lunch)は $11.99 から：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables、または Yellow か Panang のカレー。どのランチにもフレッシュサラダとパリッと揚げた春巻きが付き、店内でお召し上がりならスープも一杯。お受け取りをご希望なら、[(714) 378-6003](tel:+17143786003) へ事前にお電話ください。",
+        a: "あります — 月曜日から金曜日の 11:30 AM から 3 PM まで、[ランチスペシャル](/lunch)は $12.99 から：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables、または Yellow か Panang のカレー。どのランチにもフレッシュサラダとパリッと揚げた春巻きが付き、店内でお召し上がりならスープも一杯。お受け取りをご希望なら、[(714) 378-6003](tel:+17143786003) へ事前にお電話ください。",
       },
       {
         q: "辛さはどのくらいですか？",

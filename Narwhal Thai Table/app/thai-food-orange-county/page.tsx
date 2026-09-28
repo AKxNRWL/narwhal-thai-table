@@ -266,7 +266,7 @@ export default function ThaiFoodOrangeCountyPage() {
           <p>
             Yes — Beach Boulevard has had Thai kitchens for years, ours included. Narwhal Thai
             Table is open every day for dine-in, pickup and delivery, with a dog-friendly patio
-            and <Link href="/lunch">weekday lunch specials</Link> from $11.99, Monday to Friday
+            and <Link href="/lunch">weekday lunch specials</Link> from $12.99, Monday to Friday
             until 3 PM. Here is <Link href="/menu">the full menu</Link>.
           </p>
         </div>

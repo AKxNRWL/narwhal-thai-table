@@ -264,7 +264,7 @@ export default function PromoEditor({ images: library }: { images: PromoImageOpt
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div>
               <div style={label}>ราคา / ป้ายราคา</div>
-              <input value={draft.price} maxLength={LIMITS.price} onChange={(e) => set('price', e.target.value)} placeholder="from $11.99" style={field} />
+              <input value={draft.price} maxLength={LIMITS.price} onChange={(e) => set('price', e.target.value)} placeholder="from $12.99" style={field} />
             </div>
             <div>
               <div style={label}>ข้อความบนปุ่ม</div>

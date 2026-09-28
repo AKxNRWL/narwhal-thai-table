@@ -26,10 +26,10 @@ export const zhTW: DeepPartial<UiDict> = {
       notFound: "找不到這道菜",
     },
     lunch: {
-      title: "杭廷頓海灘泰式平日午間特餐 — 週一–週五 $11.99 起 · Narwhal Thai Table",
-      description: "杭廷頓海灘（Huntington Beach）Beach Blvd 上的平日泰式午間特餐：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables，或 Yellow、Panang 咖哩，$11.99 起 — 每份附新鮮沙拉和一條酥脆春捲，內用再加一小碗湯。週一至週五，11:30 AM–3:00 PM。",
+      title: "杭廷頓海灘泰式平日午間特餐 — 週一–週五 $12.99 起 · Narwhal Thai Table",
+      description: "杭廷頓海灘（Huntington Beach）Beach Blvd 上的平日泰式午間特餐：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables，或 Yellow、Panang 咖哩，$12.99 起 — 每份附新鮮沙拉和一條酥脆春捲，內用再加一小碗湯。週一至週五，11:30 AM–3:00 PM。",
       ogTitle: "午間特餐 · Narwhal Thai Table",
-      ogDescription: "週一–週五 11:30–3 · $11.99 起 · 每份午餐附沙拉 + 春捲，內用另加一小碗湯。",
+      ogDescription: "週一–週五 11:30–3 · $12.99 起 · 每份午餐附沙拉 + 春捲，內用另加一小碗湯。",
     },
     about: {
       title: "關於 Narwhal Thai Table — 三兄妹，杭廷頓海灘的一張餐桌",
@@ -193,7 +193,7 @@ export const zhTW: DeepPartial<UiDict> = {
     title: "完整菜單 — *點一道菜，聽它說說自己*。",
     intro: "十三個類別，從第一口到最後一口甜，全部現點現做。★ 標記的是本店招牌。每一道菜都帶著自己的故事 — 這份配方的來歷、怎麼吃才好吃，以及該配上什麼。",
     lunchPill: "週一–週五 · 11:30–3",
-    lunchLine: "午間特餐 $11.99 起 — Pad Thai、各式咖哩、Krapow 等，附沙拉和一條春捲",
+    lunchLine: "午間特餐 $12.99 起 — Pad Thai、各式咖哩、Krapow 等，附沙拉和一條春捲",
     lunchGo: "查看午餐",
     jsonLdName: "Narwhal Thai Table 菜單",
     sidesDescription: "自選主食材（雞肉、豬肉、豆腐、牛肉、蝦、海鮮）與配菜 — 茉莉香米飯、糙米飯、糯米飯、煎蛋、泰式煎蛋。",
@@ -237,7 +237,7 @@ export const zhTW: DeepPartial<UiDict> = {
   },
   lunch: {
     eyebrow: "午間特餐 · 週一–週五",
-    title: "平日午餐，*現點現做* — $11.99 起。",
+    title: "平日午餐，*現點現做* — $12.99 起。",
     lede: "週一到週五，11:30 AM 到 3:00 PM。在下面挑一道主菜，附上新鮮沙拉和一條酥脆春捲 — 內用再加一小碗湯。快、舒服，就在 Beach 大道邊上：一段您會真心期待的午休。",
     hoursLine: "週一–週五 11:30 AM – 3:00 PM · 內用或外帶 · ",
     trayLabel: "每份午間特餐都包含什麼",
@@ -247,7 +247,7 @@ export const zhTW: DeepPartial<UiDict> = {
       "**留下來吃，就有湯。** 內用含一小碗湯 — 如果您還有十分鐘，Mango Sticky Rice（芒果糯米飯）就在旁邊等著。",
     ],
     pickTitle: "挑一道*您的主菜*。",
-    pickLede: "點一道菜，讀讀它的故事。平日午間特餐 $11.99 起 — 看中了哪一道，問我們價格就好。",
+    pickLede: "點一道菜，讀讀它的故事。平日午間特餐 $12.99 起 — 看中了哪一道，問我們價格就好。",
     from: "起價",
     tag: "午間特餐",
     spicy: "辣",
@@ -265,7 +265,7 @@ export const zhTW: DeepPartial<UiDict> = {
     directions: "查看路線",
     seeMenu: "查看完整菜單",
     jsonLdName: "Narwhal Thai Table 午間特餐",
-    jsonLdDescription: "平日午間特餐，週一至週五 11:30 AM–3:00 PM，$11.99 起。每份午餐附新鮮沙拉和一條酥脆春捲，內用再加一小碗湯。",
+    jsonLdDescription: "平日午間特餐，週一至週五 11:30 AM–3:00 PM，$12.99 起。每份午餐附新鮮沙拉和一條酥脆春捲，內用再加一小碗湯。",
     jsonLdSection: "午間特餐（週一至週五，11:30 AM–3:00 PM）",
     jsonLdSectionDescription: "挑一道主菜。附新鮮沙拉和一條酥脆春捲；內用另含一小碗湯。",
     jsonLdItem: "午間特餐 — {name}",
@@ -289,7 +289,7 @@ export const zhTW: DeepPartial<UiDict> = {
       "**來自我們一家。** 每一封寄到 [{email}](mailto:{email}) 的信，都會到我們三個人中某一個的手裡；您留下的評價，也是我們兄妹親自回覆 — 不是交給什麼服務商。",
     ],
     h2Order: "該*點些什麼*",
-    order: "先來一份 [Narwhal Chicken Wings](/menu/narwhal-chicken-wings)，再點一道咖哩和一道鍋炒菜分著吃：[Panang Curry](/menu/panang-curry) 和 [OG Pad Thai](/menu/og-pad-thai) 是大家問得最多的兩道。愛海鮮的話，就給整桌點一份 [Super Crab Fried Rice](/menu/crab-fried-rice)，或是一條[香炸 pompano 全魚](/menu/fried-whole-pompano)。如果想家了，就去 Isaan 那一角 — [som tum](/menu/som-tum-thai)、[larb](/menu/larb)、[crying tiger](/menu/crying-tiger) — 或者來一碗[船麵](/menu/thai-boat-noodles)。平日下午 3 點前，[午間特餐](/lunch) $11.99 起。如果您想知道我們是怎麼評判一間泰國廚房的（包括我們自己這間），我們寫過一份實地指南：[Orange County 最好的泰國菜（英文）](/thai-food-orange-county)。",
+    order: "先來一份 [Narwhal Chicken Wings](/menu/narwhal-chicken-wings)，再點一道咖哩和一道鍋炒菜分著吃：[Panang Curry](/menu/panang-curry) 和 [OG Pad Thai](/menu/og-pad-thai) 是大家問得最多的兩道。愛海鮮的話，就給整桌點一份 [Super Crab Fried Rice](/menu/crab-fried-rice)，或是一條[香炸 pompano 全魚](/menu/fried-whole-pompano)。如果想家了，就去 Isaan 那一角 — [som tum](/menu/som-tum-thai)、[larb](/menu/larb)、[crying tiger](/menu/crying-tiger) — 或者來一碗[船麵](/menu/thai-boat-noodles)。平日下午 3 點前，[午間特餐](/lunch) $12.99 起。如果您想知道我們是怎麼評判一間泰國廚房的（包括我們自己這間），我們寫過一份實地指南：[Orange County 最好的泰國菜（英文）](/thai-food-orange-county)。",
     factsTitle: "簡短版本，*供您查證*",
     facts: [
       {
@@ -322,7 +322,7 @@ export const zhTW: DeepPartial<UiDict> = {
       },
       {
         k: "價格",
-        v: "多數菜品 $12–20，海鮮類最高 $35 · [午間特餐](/lunch) $11.99 起",
+        v: "多數菜品 $12–20，海鮮類最高 $35 · [午間特餐](/lunch) $12.99 起",
       },
       {
         k: "店裡",
@@ -350,7 +350,7 @@ export const zhTW: DeepPartial<UiDict> = {
       "**2026 年以前 —** Thai Gulf Restaurant 在 19072 Beach Blvd 服務街坊。",
       "**2026 年 7 月 —** 我們家買下這門生意，更名為 Narwhal Thai Table。新的配方，新的廚房規矩，還是原來的地址。",
       "**2026 年 8 月 9 日星期日 —** 試營運。此後每天營業。",
-      "**2026 年 8 月下旬 —** 平日[午間特餐](/lunch)開始供應，週一至週五 $11.99 起。",
+      "**2026 年 8 月下旬 —** 平日[午間特餐](/lunch)開始供應，週一至週五。",
       "**即將到來 —** 正式開幕儀式，以及主廚的正式亮相。追蹤 [@narwhalthaitablehb](https://www.instagram.com/narwhalthaitablehb/)，別錯過。",
     ],
     seeMenu: "查看菜單",
@@ -405,7 +405,7 @@ export const zhTW: DeepPartial<UiDict> = {
       },
       {
         q: "你們有午間特餐嗎？",
-        a: "有 — 週一到週五，11:30 AM 到 3 PM，[午間特餐](/lunch) $11.99 起：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables，或 Yellow、Panang 咖哩。每份午餐附新鮮沙拉和一條酥脆春捲，內用再加一小碗湯。想自取的話，請提前打 [(714) 378-6003](tel:+17143786003)。",
+        a: "有 — 週一到週五，11:30 AM 到 3 PM，[午間特餐](/lunch) $12.99 起：Pad Thai、Pad See Ew、Pad Kee Mao、Krapow、Garlic & Pepper、Cashew、Mixed Vegetables，或 Yellow、Panang 咖哩。每份午餐附新鮮沙拉和一條酥脆春捲，內用再加一小碗湯。想自取的話，請提前打 [(714) 378-6003](tel:+17143786003)。",
       },
       {
         q: "你們的菜有多辣？",

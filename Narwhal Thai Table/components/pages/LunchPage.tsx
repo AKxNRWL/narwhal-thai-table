@@ -16,8 +16,8 @@ import Rich, { fmt } from '@/lib/i18n/rich';
 /**
  * /lunch and /vi/lunch — weekday Lunch Specials.
  *
- * WHY THIS PAGE EXISTS: the team launched Lunch Specials (Mon–Fri 11:30–3,
- * from $11.99) on the Google Business Profile on 28 Aug 2026, but nothing on
+ * WHY THIS PAGE EXISTS: the team launched Lunch Specials (Mon–Fri 11:30–3)
+ * on the Google Business Profile on 28 Aug 2026, but nothing on
  * the website or in the ads mentioned lunch at all — and "thai lunch special
  * near me" / "thai lunch huntington beach" are exactly the searches a
  * weekday office crowd types at 11:45. This page is the landing spot for
@@ -26,8 +26,9 @@ import Rich, { fmt } from '@/lib/i18n/rich';
  * FACTS ONLY from the owner's own GBP post (verified 1 Sep 2026) + owner
  * confirmation 2 Sep 2026 that Mixed Vegetables is a lunch plate too (nine
  * plates total; lib/lunchPhotos.ts LUNCH.plates is the shared list), the
- * hours, "from $11.99", salad + spring roll with every lunch, cup of soup
- * when dining in. Per-plate prices are not published here until the owner
+ * hours, salad + spring roll with every lunch, cup of soup when dining in.
+ * The owner confirmed the $12.99 starting price for dine-in and Toast on
+ * 28 Sep 2026. Per-plate prices are not published here until the owner
  * sends them — never guess a price.
  */
 
@@ -98,7 +99,7 @@ function lunchJsonLd(locale: Locale) {
           description: t.jsonLdSectionDescription,
           offers: {
             '@type': 'AggregateOffer',
-            lowPrice: '11.99',
+            lowPrice: '12.99',
             priceCurrency: 'USD',
             offerCount: items.length,
             availabilityStarts: '11:30:00',
@@ -113,7 +114,7 @@ function lunchJsonLd(locale: Locale) {
             offers: {
               '@type': 'Offer',
               priceCurrency: 'USD',
-              priceSpecification: { '@type': 'PriceSpecification', minPrice: 11.99, priceCurrency: 'USD' },
+              priceSpecification: { '@type': 'PriceSpecification', minPrice: 12.99, priceCurrency: 'USD' },
               availabilityStarts: '11:30:00',
               availabilityEnds: '15:00:00',
             },
@@ -227,7 +228,7 @@ export default function LunchPage({ locale = 'en' }: { locale?: Locale }) {
                         <span lang="th" className="mt-1 block font-serif text-[13px] italic text-cream/55">{d.thai}</span>
                       </div>
                       <span className="shrink-0 whitespace-nowrap font-display text-[17px] font-medium leading-tight text-brass-light">
-                        <span className="font-sans text-[10px] font-medium uppercase tracking-[0.18em] text-cream/55">{t.from}</span> $11.99
+                        <span className="font-sans text-[10px] font-medium uppercase tracking-[0.18em] text-cream/55">{t.from}</span> $12.99
                       </span>
                     </div>
                     <p className="line-clamp-3 text-[14.5px] leading-relaxed text-cream/70">{d.description}</p>

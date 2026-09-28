@@ -117,7 +117,7 @@ export default function OrderPage() {
             </a>
           </p>
           <p className={cn('mt-2.5', hoursLine)}>
-            Weekday lunch? <Link href="/lunch" className={inlineLink}>Lunch specials from $11.99, Mon–Fri 11:30–3 →</Link>
+            Weekday lunch? <Link href="/lunch" className={inlineLink}>Lunch specials from $12.99, Mon–Fri 11:30–3 →</Link>
           </p>
 
           <ol aria-label="How pickup works" className="mt-14 grid gap-6 md:grid-cols-3 lg:mt-20 lg:gap-8">
