@@ -3,6 +3,7 @@ import { CATEGORIES, getCategoryLabel } from './categories';
 import { ORDER_ONLINE_URL } from './site';
 import { dishFactsLine } from './dishFacts';
 import { closuresForPrompt } from './closures';
+import { eventsForPrompt } from './events';
 
 /* Build the live menu text straight from lib/dishes.ts so the bot is
    always in sync with the real menu (names, prices, spice, allergens). */
@@ -132,16 +133,18 @@ STYLE: Plain, lively, human text that sounds a little different each time - vary
 `.trim();
 
 /**
- * RESTAURANT_FACTS plus any one-off closure (lib/closures.ts), slotted right
+ * RESTAURANT_FACTS plus any one-off closure (lib/closures.ts) and any local
+ * event in progress (lib/events.ts — an airshow weekend, say), slotted right
  * after the official hours so the host never books or invites anyone on a day
- * the doors are shut. Evaluated per call, so a passed closure drops out on its
- * own — use this (not the raw constant) wherever a prompt is built.
+ * the doors are shut and can warn about traffic / waits while an event is on.
+ * Evaluated per call, so a passed closure or event drops out on its own — use
+ * this (not the raw constant) wherever a prompt is built.
  */
 export function restaurantFacts(now: Date = new Date()): string {
   const closures = closuresForPrompt(now);
-  return closures
-    ? RESTAURANT_FACTS.replace('LUNCH SPECIALS (weekdays):', `SPECIAL CLOSURE: ${closures}\nLUNCH SPECIALS (weekdays):`)
-    : RESTAURANT_FACTS;
+  const events = eventsForPrompt(now);
+  const extra = [closures && `SPECIAL CLOSURE: ${closures}`, events && `LOCAL EVENT THIS WEEK: ${events}`].filter(Boolean).join('\n');
+  return extra ? RESTAURANT_FACTS.replace('LUNCH SPECIALS (weekdays):', `${extra}\nLUNCH SPECIALS (weekdays):`) : RESTAURANT_FACTS;
 }
 
 export function buildSystemPrompt(): string {
