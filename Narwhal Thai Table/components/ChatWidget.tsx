@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { serviceWindowNow } from '@/lib/serviceHours';
+import { canonTable, openRewards } from '@/lib/rewards';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -342,6 +343,27 @@ export default function ChatWidget() {
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+
+        {/* Narwhal Rewards (Oct 2026): at a QR table during service, one tap opens the
+            points sheet (components/rewards/RewardsSheet) for this table's bill. Display
+            only — the seat context above (timeout / geo / hours) decides `table`. */}
+        {table && canonTable(table) && serviceWindowNow() && (
+          <button
+            type="button"
+            onClick={() => openRewards({ table })}
+            className="mx-3 mt-3 flex items-center gap-2.5 rounded-full border border-[rgba(156,122,51,0.38)] bg-white py-2 pl-2 pr-4 text-left text-[13.5px] leading-snug text-[#0B1F33] shadow-[0_8px_20px_-12px_rgba(11,31,51,0.4)] transition-colors hover:bg-[#FFF8E8]"
+          >
+            <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#C8A24E] text-[#0B1F33]">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5">
+                <path d="M12 2.6l2.75 5.82 6.35.78-4.68 4.37 1.22 6.28L12 16.77l-5.64 3.08 1.22-6.28L2.9 9.2l6.35-.78L12 2.6z" />
+              </svg>
+            </span>
+            <span className="flex-1">
+              Earn <strong className="font-semibold">Narwhal Rewards</strong> points on this meal
+            </span>
+            <span aria-hidden="true" className="text-[#9C7A33]">→</span>
+          </button>
+        )}
 
         <div className="nara-msgs" data-lenis-prevent ref={scrollRef}>
           {/* Messaging-app layout (owner, 11 Sep 2026): Aileen's bubbles carry a

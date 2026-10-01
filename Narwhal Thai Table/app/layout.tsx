@@ -6,6 +6,7 @@ import ComingSoonTicker from '@/components/ComingSoonTicker';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
+import RewardsSheet from '@/components/rewards/RewardsSheet';
 import PromoCard from '@/components/PromoCard';
 import MobileActionBar from '@/components/MobileActionBar';
 import AdsConversions from '@/components/AdsConversions';
@@ -232,6 +233,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LangSync />
         <LangSuggestBar />
         <ChatWidget />
+        {/* Narwhal Rewards sheet (dine-in points) — opens via openRewards() from the menu strip, the chat chip and /points. */}
+        <RewardsSheet />
         {/* Owner-managed promo pop-up (content from /api/promo; edited in /stats). */}
         <PromoCard />
         <AdsConversions />

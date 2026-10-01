@@ -3,6 +3,7 @@ import Link from 'next/link';
 import MenuSections from '@/components/MenuSections';
 import { toMenuCard } from '@/lib/menuCard';
 import ArtBand from '@/components/fx/ArtBand';
+import TableRewardsCard from '@/components/rewards/TableRewardsCard';
 import { Section, Container, Eyebrow, Heading } from '@/components/ui/Section';
 import { cn } from '@/lib/cn';
 import { DISHES } from '@/lib/dishes';
@@ -128,6 +129,8 @@ export default function MenuPage({ locale = 'en' }: { locale?: Locale }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd(locale)) }}
       />
       <Container>
+        {/* Narwhal Rewards (Oct 2026): guests who scanned a table QR can add this meal's bill to their points. */}
+        <TableRewardsCard className="mb-10 lg:mb-12" />
         <p className="mx-auto max-w-2xl text-center text-[16.5px] leading-[1.75] text-cream/75">{t.intro}</p>
         {/* Weekday lunch specials (launched late Aug 2026) live on their own page —
             this strip is the pointer for the 11:45-on-a-Tuesday visitor. */}
