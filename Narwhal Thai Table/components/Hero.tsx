@@ -8,7 +8,6 @@ import { upcomingClosure, type Closure } from '@/lib/closures';
 import { activeEvents, type LocalEvent } from '@/lib/events';
 import Button, { Arrow } from '@/components/ui/Button';
 import Particles from '@/components/fx/Particles';
-import Airshow from '@/components/fx/Airshow';
 import Ripple from '@/components/fx/Ripple';
 import Tilt from '@/components/fx/Tilt';
 import CircularText from '@/components/fx/CircularText';
@@ -50,10 +49,10 @@ export default function Hero({
   // client paint never disagree about "today".
   const [closure, setClosure] = useState<Closure | null>(null);
   useEffect(() => { setClosure(upcomingClosure() ?? null); }, []);
-  // Local event in progress (lib/events.ts) — same after-mount rule. Carries
-  // an optional sky decoration (fx) and a chip under the hours.
+  // Local event in progress (lib/events.ts) — same after-mount rule. Its chip
+  // goes under the hours; the sky decoration is site-wide (AirshowLayer).
   const [event, setEvent] = useState<LocalEvent | null>(null);
-  useEffect(() => { setEvent(activeEvents().find((e) => e.fx || e.chip) ?? null); }, []);
+  useEffect(() => { setEvent(activeEvents().find((e) => e.chip) ?? null); }, []);
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
@@ -185,8 +184,7 @@ export default function Hero({
 
       {/* z1 — drifting brass embers over the lanterns (desktop-weight only) */}
       <Particles className="z-[1]" quantity={70} />
-      {/* z1 — the flying display while a local airshow is on (lib/events.ts fx) */}
-      {event?.fx === 'airshow' && <Airshow className="z-[1]" />}
+      {/* The airshow jets fly site-wide from app/layout.tsx (AirshowLayer), not here. */}
       <div ref={spotRef} aria-hidden="true" className="hero-spot pointer-events-none absolute inset-0 z-[1] hidden lg:block" />
 
       {/* z2 — content */}

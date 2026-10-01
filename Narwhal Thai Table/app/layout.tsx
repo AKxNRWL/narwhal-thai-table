@@ -13,6 +13,7 @@ import NotoTickerFonts from '@/components/NotoTickerFonts';
 import CardGlow from '@/components/fx/CardGlow';
 import SmoothScroll from '@/components/fx/SmoothScroll';
 import Ambience from '@/components/fx/Ambience';
+import AirshowLayer from '@/components/fx/AirshowLayer';
 import LangSync from '@/components/i18n/LangSync';
 import LangSuggestBar from '@/components/i18n/LangSuggestBar';
 import { htmlLangScript } from '@/lib/i18n/locales';
@@ -240,6 +241,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         {/* Scroll progress hairline, cursor aura, film grain. */}
         <Ambience />
+        {/* Jets over the top of every guest page while a local airshow is on (lib/events.ts). */}
+        <AirshowLayer />
         {/* Google Analytics 4 — property "narwhalthaihb.com", stream "Narwhal Thai Table Website" (welcome@ account)
             + Google Ads conversion tag AW-18329609126 — one shared gtag loader, two configs. */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-XJF37GZ4NB" strategy="afterInteractive" />

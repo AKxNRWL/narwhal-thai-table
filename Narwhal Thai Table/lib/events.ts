@@ -17,8 +17,12 @@ export type LocalEvent = {
   to: string; // YYYY-MM-DD, last day the note shows
   label: string;
   note: string;
-  /** Optional hero decoration while the event is on (components/fx). */
+  /** Optional site-wide decoration while the event is on (components/fx/AirshowLayer). */
   fx?: 'airshow';
+  /** Last day of the decoration when it should outlive the event itself
+   *  (YYYY-MM-DD, inclusive). Defaults to `to`. The AI note and the chip
+   *  always stop at `to` — only the decoration runs on. */
+  fxTo?: string;
   /** Optional one-line chip under the hero hours, with where it links. */
   chip?: { text: string; href: string };
 };
@@ -29,6 +33,7 @@ export const EVENTS: LocalEvent[] = [
     to: '2026-10-04',
     label: 'Pacific Airshow weekend',
     fx: 'airshow',
+    fxTo: '2026-10-11', // owner (1 Oct): jets on every page "ถึงอาทิตย์หน้า" — through Sunday the 11th
     chip: { text: 'Pacific Airshow weekend, Oct 2–4 — open all weekend, parking on site. Reserve a table →', href: '/contact/reservation' },
     note:
       'The Pacific Airshow is on at Huntington Beach Friday–Sunday, October 2–4, 2026, flying about 10:30 AM – 4:30 PM each day, centred at Huntington St & Pacific Coast Highway, about five minutes down Beach Blvd from us. We are OPEN with normal hours all weekend. Expect very heavy traffic on Beach Blvd and PCH, especially 8–11 AM heading to the beach and 4:30–7:30 PM leaving it; downtown and beach parking is scarce. Our plaza lot is for our guests — mention it as a plus (park once, eat, no PCH traffic). Dinner right after the last flight (about 4:30–8 PM) is the busiest time: warmly suggest reserving a table for the evening or ordering pickup ahead through the online ordering page, and be honest that walk-in waits and delivery times can run longer than usual that weekend.',
@@ -39,6 +44,12 @@ export const EVENTS: LocalEvent[] = [
 export function activeEvents(now: Date = new Date()): LocalEvent[] {
   const today = todayPT(now);
   return EVENTS.filter((e) => e.from <= today && today <= e.to);
+}
+
+/** The decoration to show today, if any — an event's `fx` within from..(fxTo ?? to). */
+export function activeFx(now: Date = new Date()): LocalEvent['fx'] | undefined {
+  const today = todayPT(now);
+  return EVENTS.find((e) => e.fx && e.from <= today && today <= (e.fxTo ?? e.to))?.fx;
 }
 
 /** Prompt lines for the AI hosts. Empty when no event window is active. */
