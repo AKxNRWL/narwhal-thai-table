@@ -17,6 +17,10 @@ export type LocalEvent = {
   to: string; // YYYY-MM-DD, last day the note shows
   label: string;
   note: string;
+  /** Optional hero decoration while the event is on (components/fx). */
+  fx?: 'airshow';
+  /** Optional one-line chip under the hero hours, with where it links. */
+  chip?: { text: string; href: string };
 };
 
 export const EVENTS: LocalEvent[] = [
@@ -24,6 +28,8 @@ export const EVENTS: LocalEvent[] = [
     from: '2026-09-30', // a day early so the phone prompt synced tonight already carries it
     to: '2026-10-04',
     label: 'Pacific Airshow weekend',
+    fx: 'airshow',
+    chip: { text: 'Pacific Airshow weekend, Oct 2–4 — open all weekend, parking on site. Reserve a table →', href: '/contact/reservation' },
     note:
       'The Pacific Airshow is on at Huntington Beach Friday–Sunday, October 2–4, 2026, flying about 10:30 AM – 4:30 PM each day, centred at Huntington St & Pacific Coast Highway, about five minutes down Beach Blvd from us. We are OPEN with normal hours all weekend. Expect very heavy traffic on Beach Blvd and PCH, especially 8–11 AM heading to the beach and 4:30–7:30 PM leaving it; downtown and beach parking is scarce. Our plaza lot is for our guests — mention it as a plus (park once, eat, no PCH traffic). Dinner right after the last flight (about 4:30–8 PM) is the busiest time: warmly suggest reserving a table for the evening or ordering pickup ahead through the online ordering page, and be honest that walk-in waits and delivery times can run longer than usual that weekend.',
   },

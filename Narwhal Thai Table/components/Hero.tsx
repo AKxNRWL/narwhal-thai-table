@@ -5,8 +5,10 @@ import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
 import { ORDER_ONLINE_URL } from '@/lib/site';
 import { upcomingClosure, type Closure } from '@/lib/closures';
+import { activeEvents, type LocalEvent } from '@/lib/events';
 import Button, { Arrow } from '@/components/ui/Button';
 import Particles from '@/components/fx/Particles';
+import Airshow from '@/components/fx/Airshow';
 import Ripple from '@/components/fx/Ripple';
 import Tilt from '@/components/fx/Tilt';
 import CircularText from '@/components/fx/CircularText';
@@ -48,6 +50,10 @@ export default function Hero({
   // client paint never disagree about "today".
   const [closure, setClosure] = useState<Closure | null>(null);
   useEffect(() => { setClosure(upcomingClosure() ?? null); }, []);
+  // Local event in progress (lib/events.ts) — same after-mount rule. Carries
+  // an optional sky decoration (fx) and a chip under the hours.
+  const [event, setEvent] = useState<LocalEvent | null>(null);
+  useEffect(() => { setEvent(activeEvents().find((e) => e.fx || e.chip) ?? null); }, []);
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
@@ -179,6 +185,8 @@ export default function Hero({
 
       {/* z1 — drifting brass embers over the lanterns (desktop-weight only) */}
       <Particles className="z-[1]" quantity={70} />
+      {/* z1 — the flying display while a local airshow is on (lib/events.ts fx) */}
+      {event?.fx === 'airshow' && <Airshow className="z-[1]" />}
       <div ref={spotRef} aria-hidden="true" className="hero-spot pointer-events-none absolute inset-0 z-[1] hidden lg:block" />
 
       {/* z2 — content */}
@@ -291,6 +299,18 @@ export default function Hero({
                 <span lang="th" className="block text-[12px] text-[#FFF1C9]/75">{closure.labelTh} — {closure.reopenTh}</span>
               </span>
             </p>
+          )}
+          {/* Local event chip (lib/events.ts) — e.g. the airshow weekend: one
+              line, links where the event copy points; gone after the window. */}
+          {event?.chip && (
+            <Link
+              href={href(event.chip.href)}
+              className="mt-4 inline-flex max-w-xl items-start gap-2.5 rounded-2xl border border-brass/45 bg-navy-deep/60 px-4 py-2.5 font-sans text-[13px] leading-snug text-cream/90 backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/80"
+              style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}
+            >
+              <span aria-hidden="true" className="mt-px shrink-0 text-brass-light">✈</span>
+              <span>{event.chip.text}</span>
+            </Link>
           )}
 
           <div className="mt-8 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
