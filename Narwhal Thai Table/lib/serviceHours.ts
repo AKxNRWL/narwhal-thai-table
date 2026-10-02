@@ -34,6 +34,43 @@ const GRACE_AFTER_CLOSE_MIN = 60; // finish the chat after close
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+/** "10 PM" / "11:30 AM" from minutes since midnight. */
+function clock(mins: number): string {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  const h12 = ((h + 11) % 12) + 1;
+  return `${h12}${m ? ':' + String(m).padStart(2, '0') : ''} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
+/**
+ * Open / closed right now (PT), with the line a status chip can show —
+ * "Open · until 10 PM" or "Opens 11:30 AM". Used by /watch (Narwhal TV).
+ * Pure clock logic, no grace windows; fail-safe to a neutral label.
+ */
+export function openStatus(now: Date = new Date()): { open: boolean; label: string; short: string } {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles',
+      weekday: 'short',
+      hour: 'numeric',
+      minute: 'numeric',
+      hourCycle: 'h23',
+    }).formatToParts(now);
+    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+    const dow = DOW.indexOf(get('weekday'));
+    const mins = Number(get('hour')) * 60 + Number(get('minute'));
+    if (dow < 0 || Number.isNaN(mins)) return { open: true, label: 'Open every day', short: 'Open daily' };
+    if (isClosedOn(todayPT(now))) return { open: false, label: 'Closed today', short: 'Closed today' };
+    const w = HOURS[dow];
+    if (mins >= w.open && mins < w.close) return { open: true, label: `Open · until ${clock(w.close)}`, short: `Open · to ${clock(w.close)}` };
+    if (mins < w.open) return { open: false, label: `Opens ${clock(w.open)}`, short: `Opens ${clock(w.open)}` };
+    const next = HOURS[(dow + 1) % 7];
+    return { open: false, label: `Opens tomorrow ${clock(next.open)}`, short: `Opens ${clock(next.open)}` };
+  } catch {
+    return { open: true, label: 'Open every day', short: 'Open daily' };
+  }
+}
+
 /** True while the restaurant is (about to be / just was) open, PT. Fail-open. */
 export function serviceWindowNow(now: Date = new Date()): boolean {
   try {
