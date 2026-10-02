@@ -26,7 +26,8 @@ const SEEN_KEY = 'nwh-promo-seen'; // sessionStorage: id shown this session
 const DISMISS_KEY = 'nwh-promo-dismiss'; // localStorage: { id, until }
 const DISMISS_DAYS = 3;
 const SHOW_DELAY_MS = 200; // just enough for the page's own first paint
-const SKIP_PATHS = ['/order', '/stats', '/orders', '/calls', '/cal', '/play'];
+// /watch = Narwhal TV, reached from the placemat QR: that guest is already seated — no "reserve a table" card
+const SKIP_PATHS = ['/order', '/stats', '/orders', '/calls', '/cal', '/play', '/watch'];
 
 const ss = (k: string, v?: string): string | null => {
   try {
