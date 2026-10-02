@@ -12,9 +12,9 @@ import { openStatus } from '@/lib/serviceHours';
 import SocialEmbed from './SocialEmbed';
 
 /**
- * Narwhal TV — the /watch page as a television home screen.
+ * Narwhal TV — the /socialmedia page (born /watch) as a television home screen.
  *
- * Owner, 1 Oct 2026: make /watch the restaurant's social hub, "ล้ำ ๆ", lots of
+ * Owner, 1 Oct 2026: make /socialmedia the restaurant's social hub, "ล้ำ ๆ", lots of
  * motion, like a Google TV / Vidaa launcher but ours. So: a status bar with the
  * live clock and open/closed chip; a SPOTLIGHT that auto-rotates through the
  * channel's films (poster with a slow Ken Burns drift, progress pills, press
@@ -28,13 +28,15 @@ import SocialEmbed from './SocialEmbed';
  */
 
 export type Channel = {
-  key: 'youtube' | 'instagram' | 'tiktok' | 'facebook';
+  key: 'youtube' | 'instagram' | 'tiktok' | 'facebook' | 'google' | 'yelp';
   label: string;
   handle: string;
   url: string;
   note: string;
   /** the platform's own public embed, when it has one */
   embed?: { src: string; height: number };
+  /** the "write a review" link, for the review platforms */
+  review?: string;
 };
 
 export type Pick = { slug: string; name: string; thai: string; price?: string; image: string | null };
@@ -47,6 +49,8 @@ const ACCENT: Record<Channel['key'] | 'house', { glow: string; from: string; to:
   instagram: { glow: 'rgba(255,122,184,0.5)', from: '#3a1232', to: '#170a1b' },
   tiktok: { glow: 'rgba(92,242,255,0.45)', from: '#0e2c36', to: '#0a1420' },
   facebook: { glow: 'rgba(106,163,255,0.5)', from: '#10213d', to: '#0a1424' },
+  google: { glow: 'rgba(66,133,244,0.5)', from: '#0f2a3c', to: '#0b1a24' },
+  yelp: { glow: 'rgba(255,26,26,0.45)', from: '#3a1414', to: '#160a0c' },
   house: { glow: 'rgba(200,162,78,0.5)', from: '#13304a', to: '#0a1a2b' },
 };
 
@@ -391,6 +395,7 @@ export default function NarwhalTV({ films, channels, picks }: { films: Film[]; c
   const byKey = (k: Channel['key']) => channels.find((c) => c.key === k);
   const yt = byKey('youtube');
   const panels = channels.filter((c) => c.embed);
+  const reviews = channels.filter((c) => c.review);
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden bg-navy-deep pb-16 pt-[calc(var(--cs-ticker-h)+84px)]">
@@ -408,6 +413,8 @@ export default function NarwhalTV({ films, channels, picks }: { films: Film[]; c
         {byKey('instagram') && <AppTile accent="instagram" label="Instagram" sub={byKey('instagram')!.handle} note="Reels" href={byKey('instagram')!.url} external />}
         {byKey('tiktok') && <AppTile accent="tiktok" label="TikTok" sub={byKey('tiktok')!.handle} note="Clips" href={byKey('tiktok')!.url} external />}
         {byKey('facebook') && <AppTile accent="facebook" label="Facebook" sub={byKey('facebook')!.handle} note="News" href={byKey('facebook')!.url} external />}
+        {byKey('google') && <AppTile accent="google" label="Google" sub="Reviews & directions" note="Reviews" href={byKey('google')!.review ?? byKey('google')!.url} external />}
+        {byKey('yelp') && <AppTile accent="yelp" label="Yelp" sub="Reviews & photos" note="Reviews" href={byKey('yelp')!.review ?? byKey('yelp')!.url} external />}
         <AppTile accent="house" label="The Menu" sub="75 dishes, with photos" note="House" href="/menu" />
         <AppTile accent="house" label="Reserve" sub="Save a seat" note="House" href="/contact/reservation" />
         <AppTile accent="house" label="Rewards" sub="Earn points at the table" note="House" href="/points" />
@@ -475,6 +482,49 @@ export default function NarwhalTV({ films, channels, picks }: { films: Film[]; c
         </section>
       )}
 
+      {/* reviews — the two places a guest's words carry the furthest */}
+      {reviews.length > 0 && (
+        <section className="mt-10 px-5 sm:px-8 lg:px-12">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <h2 className="font-display text-[clamp(20px,2.4vw,26px)] font-medium tracking-[-0.01em] text-cream">
+              Loved it? <em className="font-serif font-normal italic text-brass-light">Tell the next table</em>
+            </h2>
+            <span className="hidden font-sans text-[10px] uppercase tracking-[0.22em] text-cream/40 sm:block">A minute of your time, a world to a family kitchen</span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {reviews.map((ch) => {
+              const a = ACCENT[ch.key];
+              return (
+                <a
+                  key={ch.key}
+                  href={ch.review}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative isolate flex items-center justify-between gap-5 overflow-hidden rounded-[var(--radius-card)] border border-cream/10 px-6 py-6 shadow-card transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-brass/60 hover:shadow-lift focus-visible:border-brass-light focus-visible:outline-none sm:px-8 sm:py-7"
+                >
+                  <span aria-hidden="true" className="tv-tile absolute inset-0 -z-10" style={{ background: `linear-gradient(135deg, ${a.from}, ${a.to} 55%, ${a.from})` }} />
+                  <span aria-hidden="true" className="absolute -right-10 -top-14 -z-10 h-44 w-44 rounded-full opacity-60 blur-3xl transition-opacity duration-500 group-hover:opacity-100" style={{ background: a.glow }} />
+                  <span className="min-w-0">
+                    <span className="flex items-center gap-1" aria-label="five stars">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-brass-light transition-transform duration-500 group-hover:scale-110" style={{ transitionDelay: `${i * 40}ms` }} aria-hidden="true">
+                          <path d="M12 2.5l2.9 6.2 6.8.8-5 4.7 1.3 6.7L12 17.6l-6 3.3 1.3-6.7-5-4.7 6.8-.8z" />
+                        </svg>
+                      ))}
+                    </span>
+                    <span className="mt-3 block font-display text-[22px] leading-tight tracking-[0.02em] text-cream">Review us on {ch.label}</span>
+                    <span className="mt-1 block font-serif text-[14px] italic text-cream/60">{ch.note}</span>
+                  </span>
+                  <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-brass px-4 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy transition-colors duration-300 group-hover:bg-brass-light">
+                    Write ↗
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* picks */}
       {picks.length > 0 && (
         <Shelf
@@ -526,7 +576,7 @@ export default function NarwhalTV({ films, channels, picks }: { films: Film[]; c
         </Marquee>
       </div>
       <p className="mt-6 px-5 text-center font-serif text-[14px] italic text-cream/45 sm:px-8">
-        Scanned from the placemat? Welcome — this is Narwhal TV. Press play, and follow along for the next one.
+        Scanned from the placemat? Welcome — this is Narwhal TV, everything we post in one place. Press play, follow along, and if tonight was good, say so.
       </p>
     </div>
   );

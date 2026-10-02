@@ -52,10 +52,10 @@ export type SocialLink = { label: string; url: string; /** the public handle, wh
 
 /**
  * Real account URLs — paste each one as the account goes live.
- * Empty url = link hidden everywhere (footer + JSON-LD sameAs + /watch).
+ * Empty url = link hidden everywhere (footer + JSON-LD sameAs + /socialmedia).
  *   Instagram : e.g. 'https://www.instagram.com/narwhalthaitable/'
  *   Facebook  : e.g. 'https://www.facebook.com/narwhalthaitable'
- *   YouTube   : the restaurant's channel (welcome@ account, Sep 2026) — films live at /watch
+ *   YouTube   : the restaurant's channel (welcome@ account, Sep 2026) — films live at /socialmedia
  *   TikTok    : same handle as Instagram / Facebook
  *   Yelp      : our own listing, separated from Thai Gulf (Aug 2026) — slug -4
  *   Google    : Google Business Profile share link (g.page/…)
@@ -65,9 +65,20 @@ export const SOCIAL: SocialLink[] = [
   { label: 'YouTube', url: 'https://www.youtube.com/@NarwhalThaiTable', handle: '@NarwhalThaiTable' },
   { label: 'TikTok', url: 'https://www.tiktok.com/@narwhalthaitablehb', handle: '@narwhalthaitablehb' },
   { label: 'Facebook', url: 'https://www.facebook.com/Narwhalthaitablehb', handle: 'Narwhal Thai Table HB' },
-  { label: 'Yelp', url: 'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-4' },
-  { label: 'Google', url: 'https://maps.google.com/?cid=6790489916821266867' },
+  { label: 'Yelp', url: 'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-4', handle: 'Narwhal Thai Table' },
+  { label: 'Google', url: 'https://maps.google.com/?cid=6790489916821266867', handle: 'Narwhal Thai Table' },
 ];
+
+/**
+ * "Write a review" links — the real ones, owner-supplied (Aug 2026), the same
+ * ones every review QR (to-go stickers, counter signs) uses. Never rebuild
+ * these by hand: the Google one is the g.page short link for OUR listing, the
+ * Yelp one is the writeareview URL for our own (post-Thai-Gulf) business id.
+ */
+export const REVIEW_URLS = {
+  google: 'https://g.page/r/CbPhAA-aqjxeEBM/review',
+  yelp: 'https://www.yelp.com/writeareview/biz/jZicE8h0ZKhu4mEi47ToDg',
+} as const;
 
 /**
  * ENTITY IDENTITY — the stable id of this restaurant in Google's Knowledge Graph.

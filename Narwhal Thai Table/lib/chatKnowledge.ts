@@ -54,7 +54,7 @@ ${ORDER_ONLINE_URL ? `- ORDER ONLINE — PICKUP OR DELIVERY: ${ORDER_ONLINE_URL}
 - Catering & private events: /contact/catering (catering@narwhalthaihb.com).
 - General questions / suppliers / press: /contact/message (welcome@narwhalthaihb.com).
 - Full menu page: /menu. A little narwhal mini-game for the table: /play.
-- Our films (short videos from the kitchen and the Narwhal story) play at /watch - a nice thing to offer a guest who is waiting at the table. Instagram: @narwhalthaitablehb (instagram.com/narwhalthaitablehb) · TikTok: @narwhalthaitablehb · YouTube: @NarwhalThaiTable · Facebook: facebook.com/Narwhalthaitablehb - guests are welcome to follow along.
+- Everything we post, in one place: /socialmedia ("Narwhal TV" - our short films play right there, plus our latest Instagram, TikTok and Facebook posts, and buttons to review us on Google or Yelp). A nice thing to offer a guest who is waiting at the table, or anyone who asks where to follow us or leave a review. Instagram: @narwhalthaitablehb (instagram.com/narwhalthaitablehb) · TikTok: @narwhalthaitablehb · YouTube: @NarwhalThaiTable · Facebook: facebook.com/Narwhalthaitablehb - guests are welcome to follow along.
 `.trim();
 
 const PERSONA_AND_RULES = `

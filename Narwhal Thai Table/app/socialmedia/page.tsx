@@ -3,40 +3,43 @@ import NarwhalTV, { type Channel, type Pick } from '@/components/watch/NarwhalTV
 import { DISHES } from '@/lib/dishes';
 import { latestFilms, posterUrl, watchUrl, embedUrl } from '@/lib/films';
 import { getDishImage } from '@/lib/media';
-import { SITE_URL, SOCIAL, RESTAURANT_ID } from '@/lib/site';
+import { SITE_URL, SOCIAL, REVIEW_URLS, RESTAURANT_ID } from '@/lib/site';
 
 /**
- * /watch — "Narwhal TV", the restaurant's social hub as a television home screen.
+ * /socialmedia — "Narwhal TV", the restaurant's social hub as a television home screen.
+ * (Born as /watch on 1 Oct 2026; the owner renamed it the same night — /watch 301s here.)
  *
  * WHY THIS PAGE EXISTS: the paper placemat (Oct 2026) carries two QR codes —
  * THE MENU → /menu and WHILE YOU WAIT → here. A guest who has just ordered
  * scans it and lands on a launcher: the channel's films in a spotlight that
- * plays right here, app tiles for the four social channels and the house
- * (menu, reservations, rewards, the game), the platforms' own live embeds, and
- * a shelf of signature dishes. Everything that can update itself does:
- * films come from the YouTube channel feed (revalidated hourly), the channel
- * panels are Instagram's, TikTok's and Facebook's public embeds of our
- * accounts, the dish shelf reads lib/dishes.ts. Nothing here needs a deploy
- * when a new film or post goes up.
+ * plays right here, app tiles for every channel (YouTube, Instagram, TikTok,
+ * Facebook, Google, Yelp) and the house (menu, reservations, rewards, the
+ * game), the platforms' own live embeds, two "write a review" cards, and a
+ * shelf of signature dishes. Everything that can update itself does: films
+ * come from the YouTube channel feed (revalidated hourly), the channel panels
+ * are Instagram's, TikTok's and Facebook's public embeds of our accounts, the
+ * dish shelf reads lib/dishes.ts. Nothing here needs a deploy when a new film
+ * or post goes up.
  *
  * Owner, 1 Oct 2026: "ถ้า /watch เป็นเหมือนรวม Social Media ของร้าน … ทำหน้าให้ทันสมัย
- * แบบล้ำ ๆ … เหมือนหน้า Home ของ Google TV / Vidaa แต่เป็นของร้านเรา".
+ * แบบล้ำ ๆ … เหมือนหน้า Home ของ Google TV / Vidaa แต่เป็นของร้านเรา", then
+ * "ขอเป็น /socialmedia … เอา Yelp Google เข้าไปด้วย เผื่อเค้ากดเข้าไปรีวิวให้เรา".
  */
 
 export const revalidate = 3600; // the channel feed is re-read once an hour
 
-const TITLE = 'Narwhal TV — films, reels and clips from Narwhal Thai Table, Huntington Beach';
+const TITLE = 'Narwhal TV — films, reels, clips and reviews from Narwhal Thai Table, Huntington Beach';
 const DESCRIPTION =
-  'Narwhal TV: short films from the Narwhal Thai Table kitchen in Huntington Beach, CA, plus our latest Instagram, TikTok and Facebook posts — something to watch while you wait.';
+  'Narwhal TV: short films from the Narwhal Thai Table kitchen in Huntington Beach, CA, our latest Instagram, TikTok and Facebook posts, and where to leave a Google or Yelp review — something to watch while you wait.';
 
 export const metadata: Metadata = {
   title: { absolute: TITLE },
   description: DESCRIPTION,
-  alternates: { canonical: '/watch' },
+  alternates: { canonical: '/socialmedia' },
   openGraph: {
     title: 'Narwhal TV · while you wait',
     description: DESCRIPTION,
-    url: `${SITE_URL}/watch`,
+    url: `${SITE_URL}/socialmedia`,
     type: 'website',
   },
 };
@@ -69,14 +72,18 @@ function channelFor(label: string): Channel | null {
           height: 540,
         },
       };
+    case 'Google':
+      return { key: 'google', label, handle, url: s.url, note: 'Where most of Huntington Beach finds us', review: REVIEW_URLS.google };
+    case 'Yelp':
+      return { key: 'yelp', label, handle, url: s.url, note: 'Photos, reviews and the people who wrote them', review: REVIEW_URLS.yelp };
     default:
       return null;
   }
 }
 
-export default async function WatchPage() {
+export default async function SocialMediaPage() {
   const films = await latestFilms();
-  const channels = ['YouTube', 'Instagram', 'TikTok', 'Facebook'].map(channelFor).filter((c): c is Channel => !!c);
+  const channels = ['YouTube', 'Instagram', 'TikTok', 'Facebook', 'Google', 'Yelp'].map(channelFor).filter((c): c is Channel => !!c);
   const picks: Pick[] = DISHES.filter((d) => d.signature)
     .map((d) => ({ slug: d.slug, name: d.name, thai: d.thai, price: d.price, image: d.image?.src ?? getDishImage(d.slug) }))
     .filter((p) => p.image)
@@ -87,8 +94,8 @@ export default async function WatchPage() {
     '@graph': [
       {
         '@type': 'WebPage',
-        '@id': `${SITE_URL}/watch#page`,
-        url: `${SITE_URL}/watch`,
+        '@id': `${SITE_URL}/socialmedia#page`,
+        url: `${SITE_URL}/socialmedia`,
         name: TITLE,
         description: DESCRIPTION,
         inLanguage: 'en-US',
@@ -96,7 +103,7 @@ export default async function WatchPage() {
       },
       ...films.map((f) => ({
         '@type': 'VideoObject',
-        '@id': `${SITE_URL}/watch#${f.id}`,
+        '@id': `${SITE_URL}/socialmedia#${f.id}`,
         name: f.title,
         description: `${f.title} — a short film from Narwhal Thai Table, Huntington Beach.`,
         thumbnailUrl: [posterUrl(f.id, 'max'), posterUrl(f.id, 'hq')],

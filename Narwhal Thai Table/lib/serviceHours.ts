@@ -44,7 +44,7 @@ function clock(mins: number): string {
 
 /**
  * Open / closed right now (PT), with the line a status chip can show —
- * "Open · until 10 PM" or "Opens 11:30 AM". Used by /watch (Narwhal TV).
+ * "Open · until 10 PM" or "Opens 11:30 AM". Used by /socialmedia (Narwhal TV).
  * Pure clock logic, no grace windows; fail-safe to a neutral label.
  */
 export function openStatus(now: Date = new Date()): { open: boolean; label: string; short: string } {

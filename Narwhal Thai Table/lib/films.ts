@@ -1,7 +1,7 @@
 /**
  * The restaurant's films — the YouTube channel, read through its public RSS feed.
  *
- * WHY: the placemat carries a QR code "WHILE YOU WAIT" → /watch. That page must
+ * WHY: the placemat carries a QR code "WHILE YOU WAIT" → /socialmedia. That page must
  * never go stale and never need a deploy when a new film goes up, so it reads
  * the channel feed (no API key, no quota) and is revalidated once an hour.
  * If YouTube is unreachable at build or request time the page still renders

@@ -16,6 +16,12 @@ const nextConfig = {
   outputFileTracingIncludes: {
     '/api/owner/card': ['./public/fonts/*.ttf', './public/images/logo-mark-print.png', './public/images/cards/*.jpg', './public/images/cards/letter/*.jpg', './public/images/cards/backdrops/**/*.jpg', './public/images/cards/cast/*.png'],
   },
+  // Narwhal TV (the placemat's WHILE YOU WAIT page) lived at /watch for one
+  // day (1 Oct 2026) before the owner named it /socialmedia — keep the old
+  // address alive for anything that already points at it.
+  async redirects() {
+    return [{ source: '/watch', destination: '/socialmedia', permanent: true }];
+  },
 };
 
 export default nextConfig;
