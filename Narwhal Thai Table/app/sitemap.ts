@@ -40,6 +40,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...pages('/lunch', { lastModified: now, changeFrequency: 'weekly', priority: 0.9 }),
     ...pages('/about', { lastModified: now, changeFrequency: 'monthly', priority: 0.8 }),
     ...pages('/press', { lastModified: now, changeFrequency: 'monthly', priority: 0.5 }),
+    ...pages('/watch', { lastModified: now, changeFrequency: 'weekly', priority: 0.6 }),
     ...pages('/thai-food-orange-county', { lastModified: now, changeFrequency: 'monthly', priority: 0.8 }),
     ...pages('/thai-food-fountain-valley', { lastModified: now, changeFrequency: 'monthly', priority: 0.7 }),
     ...pages('/thai-food-westminster', { lastModified: now, changeFrequency: 'monthly', priority: 0.7 }),

@@ -48,19 +48,23 @@ export const RESTAURANT: RestaurantInfo = {
   },
 };
 
-export type SocialLink = { label: string; url: string };
+export type SocialLink = { label: string; url: string; /** the public handle, where the platform has one */ handle?: string };
 
 /**
  * Real account URLs — paste each one as the account goes live.
- * Empty url = link hidden everywhere (footer + JSON-LD sameAs).
+ * Empty url = link hidden everywhere (footer + JSON-LD sameAs + /watch).
  *   Instagram : e.g. 'https://www.instagram.com/narwhalthaitable/'
  *   Facebook  : e.g. 'https://www.facebook.com/narwhalthaitable'
+ *   YouTube   : the restaurant's channel (welcome@ account, Sep 2026) — films live at /watch
+ *   TikTok    : same handle as Instagram / Facebook
  *   Yelp      : our own listing, separated from Thai Gulf (Aug 2026) — slug -4
  *   Google    : Google Business Profile share link (g.page/…)
  */
 export const SOCIAL: SocialLink[] = [
-  { label: 'Instagram', url: 'https://www.instagram.com/narwhalthaitablehb/' },
-  { label: 'Facebook', url: 'https://www.facebook.com/Narwhalthaitablehb' },
+  { label: 'Instagram', url: 'https://www.instagram.com/narwhalthaitablehb/', handle: '@narwhalthaitablehb' },
+  { label: 'YouTube', url: 'https://www.youtube.com/@NarwhalThaiTable', handle: '@NarwhalThaiTable' },
+  { label: 'TikTok', url: 'https://www.tiktok.com/@narwhalthaitablehb', handle: '@narwhalthaitablehb' },
+  { label: 'Facebook', url: 'https://www.facebook.com/Narwhalthaitablehb', handle: 'Narwhal Thai Table HB' },
   { label: 'Yelp', url: 'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-4' },
   { label: 'Google', url: 'https://maps.google.com/?cid=6790489916821266867' },
 ];
@@ -99,6 +103,8 @@ export const RESTAURANT_ID = `${SITE_URL}/#restaurant`;
 export const PROFILE_URLS: string[] = [
   'https://www.instagram.com/narwhalthaitablehb/',
   'https://www.facebook.com/Narwhalthaitablehb',
+  'https://www.youtube.com/@NarwhalThaiTable',
+  'https://www.tiktok.com/@narwhalthaitablehb',
   'https://www.yelp.com/biz/narwhal-thai-table-huntington-beach-4',
   GBP_MAP_URL,
   'https://www.doordash.com/store/50580864',
