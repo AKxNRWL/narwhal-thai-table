@@ -8,7 +8,7 @@ import { getStore } from '@netlify/blobs';
 import { requireSession } from '@/lib/session';
 import { bizDate } from '@/lib/toast';
 
-export const MODEL = 'claude-sonnet-4-6';
+export const MODEL = 'claude-sonnet-5-5'; // owner, 6 Oct 2026: everything on Sonnet 5.5
 
 /* A richer draft item (a review reply, a social post) the owner reviews
    before it ever goes out. Agents only ever DRAFT — never auto-publish. */

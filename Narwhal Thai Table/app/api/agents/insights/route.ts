@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
    is connected. Trigger on demand (GET) now; point a Netlify Scheduled
    Function at this route to run it every morning. ?force=1 bypasses cache. */
 
-const MODEL = 'claude-sonnet-4-6';
+const MODEL = 'claude-sonnet-5-5'; // owner, 6 Oct 2026: everything on Sonnet 5.5
 
 const SYSTEM = `คุณคือ "ที่ปรึกษาการดำเนินงานประจำวัน" ของร้าน Narwhal Thai Table (อาหารไทยตำรับชาววัง ย่าน Huntington Beach รัฐแคลิฟอร์เนีย).
 ให้คำแนะนำที่ลงมือได้จริง เจาะจง มีตัวเลข กระชับ เป็นภาษาไทย เหมือนผู้จัดการร้านที่เก่งเรื่องตัวเลข.
