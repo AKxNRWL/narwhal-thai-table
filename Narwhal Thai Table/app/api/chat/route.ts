@@ -9,7 +9,7 @@ import { serviceWindowNow } from '@/lib/serviceHours';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = 'claude-sonnet-5'; // swap here (e.g. 'claude-haiku-4-5-20251001' to cut cost ~3x)
+const MODEL = 'claude-sonnet-5-5'; // owner, 6 Oct 2026: Sonnet 5 → 5.5. Swap here (e.g. 'claude-haiku-4-5-20251001' to cut cost ~3x)
 
 // --- Abuse guards (best-effort, per warm function instance) ---
 // Diners in the restaurant share one WiFi IP, so per-IP limits are generous.
