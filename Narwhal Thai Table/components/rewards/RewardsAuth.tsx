@@ -157,7 +157,8 @@ export default function RewardsAuth({
             {busy ? 'Sending…' : 'Text me a code'}
           </Button>
           <p id="nrw-phone-note" className="text-center text-[12px] leading-relaxed text-cream/45">
-            We text a one-time 6-digit code to confirm it&rsquo;s your number. Msg &amp; data rates may apply.
+            Your number is your Rewards account &mdash; use the same one every visit. We text a one-time 6-digit code to
+            confirm it&rsquo;s yours. Msg &amp; data rates may apply.
           </p>
         </form>
       ) : (

@@ -1,15 +1,23 @@
 /**
- * Narwhal Rewards — browser side of dine-in points (Oct 2026).
+ * Narwhal Rewards — browser side of dine-in points (Oct 2026, v2).
  *
  * The backend is the Supabase Edge Function `rewards` (project ccdjnpjmdrjceadftedd,
  * source kept with the loyalty runbook). A guest confirms their phone once with an
  * SMS code (Twilio Verify); the function hands back a device token that this file
  * keeps in localStorage and sends as `x-rewards-token`. Points: 100 per $1 of food
- * and soft drinks before tax and tip — the same rule as the nightly Toast sync.
+ * and soft drinks before tax and tip — the same rule as the Toast sync.
+ *
+ * v2 (the money rule): a bill earns only with proof of payment — the last 4 digits of
+ * the card that paid it, once Toast shows it paid in full. At the table the guest
+ * checks in (location, only to decide whether to show that table's bill), may link
+ * the bill while it is open, then proves it with the card digits. Cash bills: the
+ * server adds the guest's phone in Toast. Table calls send v: 2.
  *
  * Used by components/rewards/* (sheet, sign-in, menu strip, /points page) and the
  * chat chip in ChatWidget. Opening the sheet from anywhere: openRewards({ table }).
  */
+
+import { RESTAURANT } from '@/lib/site';
 
 export const REWARDS_API = 'https://ccdjnpjmdrjceadftedd.supabase.co/functions/v1/rewards';
 export const OPEN_EVENT = 'nrw:rewards';
@@ -49,6 +57,21 @@ export function fmtPoints(n: number): string {
 
 export function fmtMoney(n: number): string {
   return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
+/** Digits only, at most 4 — for the card-digits boxes. */
+export function last4Input(raw: string): string {
+  return raw.replace(/\D/g, '').slice(0, 4);
+}
+
+/** "7:42 PM" in restaurant time. */
+export function timeLA(iso: string | null | undefined): string {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' });
+  } catch {
+    return '';
+  }
 }
 
 /** Ask the sheet (components/rewards/RewardsSheet, mounted once in app/layout) to open. */
@@ -159,58 +182,117 @@ export function otpReady(): Promise<boolean> {
   return configPromise;
 }
 
-/**
- * The guest's location, but only if they already allowed it (the chat asks at a table).
- * Never triggers a permission prompt. The function only uses it to refuse a claim made
- * from clearly far away; nothing is stored.
- */
-export async function grantedGeo(): Promise<{ lat: number; lng: number; acc: number } | undefined> {
+/* ── location (check-in at a table) ─────────────────────────────────── */
+
+export type Geo = { lat: number; lng: number; acc: number };
+export type GeoPermission = 'granted' | 'prompt' | 'denied' | 'unknown';
+
+/** Has the guest already answered the location prompt for this site? Never prompts. */
+export async function geoPermission(): Promise<GeoPermission> {
   try {
-    if (!navigator.geolocation || !navigator.permissions) return undefined;
+    if (!navigator.geolocation) return 'denied';
+    if (!navigator.permissions) return 'unknown';
     const p = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
-    if (p.state !== 'granted') return undefined;
-    return await new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy }),
-        () => resolve(undefined),
-        { enableHighAccuracy: false, timeout: 6000, maximumAge: 300_000 },
-      );
-    });
+    return p.state === 'granted' || p.state === 'denied' ? p.state : 'prompt';
   } catch {
-    return undefined;
+    return 'unknown';
   }
+}
+
+/**
+ * The guest's location — asks for permission if needed, so call it from a tap. The
+ * function only uses it to decide whether to show a table's bill to this phone (someone
+ * across town shouldn't see it); it is never stored and never needed to earn points.
+ */
+export function requestGeo(): Promise<{ geo?: Geo; denied?: boolean }> {
+  return new Promise((resolve) => {
+    try {
+      if (!navigator.geolocation) return resolve({ denied: true });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ geo: { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy } }),
+        (err) => resolve(err.code === err.PERMISSION_DENIED ? { denied: true } : {}),
+        { enableHighAccuracy: true, timeout: 12_000, maximumAge: 60_000 },
+      );
+    } catch {
+      resolve({});
+    }
+  });
 }
 
 /* ── shapes returned by the function ───────────────────────────────── */
 
+/** What this guest sees of one check at their table (rewards v2 `table_bill`). */
+export type BillState =
+  | 'open' // unpaid — link it now, prove it after paying
+  | 'linked' // unpaid, linked by this guest (auto = linked for them)
+  | 'linked_other' // unpaid, linked by someone else — the card payer can still prove it
+  | 'paid' // paid while this guest was checked in — prove it with the card digits
+  | 'paid_earlier' // paid just before this guest checked in — no details, proof only
+  | 'yours' // on this guest's account
+  | 'other' // added by another member
+  | 'phone' // a phone number is on the check — it earns for that number
+  | 'receipt_only'; // paid over 2 hours ago — use the receipt form
+
 export type TableBill = {
   guid: string;
-  opened: string | null;
-  closed: boolean;
+  state: BillState;
+  auto: boolean;
+  linkedByYou: boolean;
+  split: boolean;
+  paid: boolean;
+  paidAt: string | null;
+  proof: 'card' | 'cash' | null;
   items: string[];
   itemCount: number;
-  subtotal: number;
-  points: number;
-  phoneOnBill: boolean;
-  claimed: 'none' | 'you' | 'other';
+  subtotal: number | null;
+  points: number | null;
+  movedTo?: string; // a bill of theirs that the server moved to another table ("Table 8")
 };
-export type TableBillResult =
-  | { found: true; table: string; label: string; bill: TableBill }
-  | { found: false; reason: 'no_open_bill' | 'no_tables' | 'far' | 'invalid_table'; table?: string; label?: string };
 
-export type ClaimResult = { ok: true; status: 'earned' | 'pending'; points: number };
+export type TableResult = {
+  found: boolean;
+  table: string;
+  label: string;
+  staff?: boolean;
+  /** Why there is no check-in: need_location / rough_location / far / table_limit / busy, or no_tables. */
+  reason?: string;
+  /** No check-in: the bill stays hidden, but a paid bill can still be added with the card digits. */
+  proofOnly?: boolean;
+  seat?: { since: string };
+  bills?: TableBill[];
+};
+
+export type ClaimResult = { ok: true; status: 'earned'; points: number };
+
+export type PendingLink = {
+  id: number;
+  date: string;
+  label: string;
+  table: string | null;
+  paid: boolean;
+  proof: 'card' | 'cash' | null;
+  movedTo?: string; // the server moved this bill to another table since it was linked
+};
 
 export type Balance = {
   phoneMasked: string;
   staff: boolean;
   points: number;
   history: { date: string; label: string; points: number }[];
-  pending: { date: string; label: string }[];
+  pending: PendingLink[];
 };
 
 export type SignInResult = { ok: true; token: string; phoneMasked: string; points: number; staff: boolean };
 
 /* ── wording ───────────────────────────────────────────────────────── */
+
+/** Shown under every card-digits box: wallet payments print the phone's own 4 digits. */
+export const WALLET_HINT = 'Paid with Apple Pay or Google Pay? Use the 4 digits printed on your receipt.';
+
+// "(714) 378-6003" kept on one line (no-break space and hyphen).
+const CALL_US = RESTAURANT.phone
+  ? ` (or call ${RESTAURANT.phone.replace(/^\+1\s*/, '').replace(/ /g, ' ').replace(/-/g, '‑')})`
+  : '';
 
 const ERRORS: Record<string, string> = {
   invalid_phone: "That doesn't look like a US mobile number.",
@@ -221,15 +303,36 @@ const ERRORS: Record<string, string> = {
   bad_code: "That code didn't match. Check the text and try again.",
   expired: 'That code has expired — tap “Send a new code”.',
   auth: 'Please sign in again.',
-  far: 'Points can only be added from the restaurant.',
+  need_location: 'Location is off, so we keep the bill hidden.',
+  rough_location: "Your location is too rough to tell you're at the restaurant, so we keep the bill hidden.",
+  far: "You don't seem to be at the restaurant, so we keep the bill hidden.",
+  table_limit: "You've checked in at 3 tables today — please ask your server.",
+  busy: 'Please try again in a moment.',
+  checkin_required: 'Tap Refresh to show your bill first.',
   staff: "Staff phones don't earn points.",
-  has_phone: 'This bill already has a phone number on it — the points go to that number.',
-  already_claimed: 'This bill was already added by someone else at the table.',
-  limit: "You've reached today's limit of 3 bills.",
+  has_phone: 'This bill already has a phone number on it, so the points go to that number on their own — if it’s yours, they’re on the way.',
+  already_claimed: 'Another member already added this bill. If it’s yours, tap “That’s my bill” and we’ll check.',
+  payment_used:
+    'This payment already earned points on another bill (a moved or combined bill earns once). If that looks wrong, show your receipt to our staff.',
+  link_limit: 'You already have 2 bills waiting — finish or remove one first.',
+  one_link: 'You already linked a bill at this table.',
+  not_linkable: 'That bill can’t be linked any more — tap Refresh.',
+  proof_mismatch:
+    'Those digits don’t match a card that paid a bill here in the last 2 hours. Check your receipt — paid with Apple Pay or Google Pay? Use the 4 digits printed on it. Moved tables? Scan the QR code on your new table.',
+  proof_mismatch_bill:
+    'Those digits don’t match the card that paid this bill. Check your receipt — paid with Apple Pay or Google Pay? Use the 4 digits printed on it.',
+  proof_locked: `Too many wrong tries on this bill, so it’s locked to keep it safe. Please show your receipt to our staff${CALL_US} — we’ll sort it out.`,
+  cash_bill:
+    'This bill was paid without a card. Ask your server to add your phone number (the one you sign in with) to it — your points land within 15 minutes.',
+  need_last4:
+    'Enter the last 4 digits of the card you paid with. Paid in cash? Ask us to add your phone number to the bill instead.',
+  limit: "You've reached today's limit for adding bills.",
+  receipt_limit: "You've added 6 receipts this week — that's the weekly limit.",
   not_found: "We couldn't find that bill anymore — tap Refresh.",
-  receipt_not_found: "We couldn't match that receipt. Check the check number, date and total.",
-  not_closed: 'That bill is still open — add it at your table, or try again once it is paid.',
-  not_eligible: "That order doesn't earn points (delivery-app orders and voided bills don't).",
+  receipt_not_found:
+    "We couldn't match that receipt. Check the check number, date, total (before or after tip) and the card's last 4.",
+  not_closed: 'That bill isn’t fully paid yet — try again once it’s settled.',
+  not_eligible: "That bill doesn't earn points (drinks only, refunded or voided, or a delivery-app order).",
   too_old: 'Receipts can be added up to 7 days after your visit.',
   bad_request: 'Please check the details and try again.',
   network: "Can't reach Narwhal Rewards — check your connection and try again.",

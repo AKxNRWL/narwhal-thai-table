@@ -8,7 +8,8 @@ import { canonTable, currentSession, onSessionChange, openRewards, tableLabel, t
 /**
  * "Earn points on this meal" strip at the top of /menu — only for guests who scanned
  * a table QR (/menu?t=7, P1–P5) during service hours. Opens the rewards sheet with
- * the table, which finds that table's open Toast bill.
+ * the table, which shows that table's Toast bill; after paying by card the guest adds
+ * it with the card's last 4 digits (rewards v2).
  */
 export default function TableRewardsCard({ className }: { className?: string }) {
   const [table, setTable] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export default function TableRewardsCard({ className }: { className?: string }) 
       <span className="relative flex-1 text-[15px] leading-relaxed text-cream/85 transition-colors duration-300 group-hover:text-cream">
         {session ? (
           <>
-            Add today&rsquo;s bill at {tableLabel(table)} to your points.
+            Add today&rsquo;s bill at {tableLabel(table)} to your points — after you pay, just enter your card&rsquo;s last 4 digits.
             <span className="mt-0.5 block font-sans text-[12px] tracking-[0.02em] text-cream/50">Signed in · {session.phoneMasked}</span>
           </>
         ) : (
@@ -59,7 +60,7 @@ export default function TableRewardsCard({ className }: { className?: string }) 
         )}
       </span>
       <span className="relative inline-flex shrink-0 items-center gap-1.5 font-sans text-[10.5px] font-semibold uppercase tracking-[0.18em] text-brass-light">
-        {session ? 'Add bill' : 'Earn points'}{' '}
+        {session ? 'My bill' : 'Earn points'}{' '}
         <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">
           →
         </span>
