@@ -29,8 +29,9 @@ function navLinks(t: ChromeDict['nav']) {
 
 /**
  * Primary navigation — a glass bar docked directly under the multilingual
- * ticker (top = --cs-ticker-h). Turns solid after 40px of scroll. On phones a
- * full-screen drawer slides in; body scroll is locked via data-nav-open.
+ * ticker (top = --cs-ticker-h). Turns solid after 40px of scroll. Below xl
+ * (phones, tablets, small laptops) a full-screen drawer slides in; body scroll
+ * is locked via data-nav-open.
  */
 export default function Nav() {
   const pathname = usePathname();
@@ -39,7 +40,7 @@ export default function Nav() {
   const NAV_LINKS = navLinks(t);
   const href = (p: string) => localePath(locale, p);
   // Translated labels run wider than English; tighten the desktop row so the
-  // six links + two CTAs + language switcher still fit the 1184px content box at 1280.
+  // seven links + two CTAs + language switcher still fit the ~1170px content box at 1280.
   const tight = locale !== 'en';
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -88,7 +89,7 @@ export default function Nav() {
   useEffect(() => { setOpen(false); }, [pathname]);
 
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth > 980) setOpen(false); };
+    const onResize = () => { if (window.innerWidth >= 1280) setOpen(false); };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
@@ -103,12 +104,13 @@ export default function Nav() {
     return false;
   };
 
-  // Seven links now (The Media joined, 9 Oct 2026): at lg (1024–1279) every
-  // edition runs at the tight size; English relaxes to the roomy size from xl.
+  // Seven links now (The Media joined, 9 Oct 2026): the full row needs ~1150px,
+  // so it starts at xl (1280) — below that every size gets the drawer — and runs
+  // at the tight size until 2xl, where English relaxes to the roomy size.
   const linkCls = (current: boolean) =>
     cn(
       'relative font-sans font-medium uppercase transition-colors duration-300 whitespace-nowrap',
-      tight ? 'text-[10.5px] tracking-[0.16em]' : 'text-[10.5px] tracking-[0.16em] xl:text-[11px] xl:tracking-[0.2em]',
+      tight ? 'text-[10.5px] tracking-[0.16em]' : 'text-[10.5px] tracking-[0.16em] 2xl:text-[11px] 2xl:tracking-[0.2em]',
       'after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brass-light after:transition-transform after:duration-300 after:content-[""]',
       'hover:text-brass-light hover:after:scale-x-100',
       current ? 'text-brass-light after:scale-x-100' : 'text-cream/80',
@@ -129,7 +131,7 @@ export default function Nav() {
             : 'border-transparent bg-gradient-to-b from-navy-deep/70 to-transparent',
         )}
       >
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-12 2xl:gap-6">
           <Link
             href={href('/')}
             aria-label={t.home}
@@ -142,12 +144,12 @@ export default function Nav() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/logo-mark.png" alt="" className="size-7 object-contain" />
             </span>
-            <span className="font-display text-[15px] font-medium tracking-[0.08em] text-cream">
+            <span className="whitespace-nowrap font-display text-[15px] font-medium tracking-[0.08em] text-cream">
               Narwhal <span className="font-serif italic font-normal tracking-normal text-brass-light">Thai Table</span>
             </span>
           </Link>
 
-          <div className={cn('hidden items-center lg:flex', tight ? 'gap-4 xl:gap-5' : 'gap-4 xl:gap-7')}>
+          <div className={cn('hidden items-center xl:flex', tight ? 'gap-3.5 2xl:gap-5' : 'gap-4 2xl:gap-7')}>
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}
@@ -160,14 +162,14 @@ export default function Nav() {
             ))}
           </div>
 
-          <div className="hidden items-center gap-3 lg:flex">
+          <div className="hidden items-center gap-3 xl:flex">
             {ORDER_ONLINE_URL && (
               <a
                 href={ORDER_ONLINE_URL}
                 target="_blank"
                 rel="noopener"
                 data-magnetic
-                className="btn-shine inline-flex items-center rounded-full bg-brass px-5 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-brass-light hover:shadow-[0_14px_30px_-12px_rgba(200,162,78,0.8)]"
+                className="btn-shine inline-flex items-center whitespace-nowrap rounded-full bg-brass px-4 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy 2xl:px-5 transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-brass-light hover:shadow-[0_14px_30px_-12px_rgba(200,162,78,0.8)]"
               >
                 {t.order}
               </a>
@@ -175,7 +177,7 @@ export default function Nav() {
             <Link
               href={href('/contact/reservation')}
               className={cn(
-                'inline-flex items-center rounded-full px-5 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] transition-[background-color,border-color,color,transform] duration-300 hover:-translate-y-0.5',
+                'inline-flex items-center whitespace-nowrap rounded-full px-4 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] transition-[background-color,border-color,color,transform] duration-300 hover:-translate-y-0.5 2xl:px-5',
                 ORDER_ONLINE_URL
                   ? 'border border-cream/25 text-cream hover:border-brass-light hover:text-brass-light'
                   : 'bg-brass text-navy hover:bg-brass-light',
@@ -188,7 +190,7 @@ export default function Nav() {
 
           {/* Phone header: flag button (language menu) right beside the hamburger —
               owner, 11 Sep 2026: the switcher must be visible without opening the menu. */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             <LanguageSwitch variant="icon" />
             <button
               type="button"
@@ -231,7 +233,7 @@ export default function Nav() {
         className={cn(
           // overflow-y-auto: on short phones (or the taller Thai/CJK line boxes) the
           // drawer scrolls instead of clipping its bottom buttons at the fold.
-          'fixed inset-0 z-[90] flex flex-col overflow-y-auto overscroll-contain bg-navy-deep/95 px-6 pb-10 pt-[calc(var(--cs-ticker-h)+96px)] backdrop-blur-2xl transition-[opacity,visibility] duration-300 lg:hidden',
+          'fixed inset-0 z-[90] flex flex-col overflow-y-auto overscroll-contain bg-navy-deep/95 px-6 pb-10 pt-[calc(var(--cs-ticker-h)+96px)] backdrop-blur-2xl transition-[opacity,visibility] duration-300 xl:hidden',
           open ? 'visible opacity-100' : 'invisible opacity-0',
         )}
       >
