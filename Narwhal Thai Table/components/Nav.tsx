@@ -20,8 +20,8 @@ function navLinks(t: ChromeDict['nav']) {
     { href: '/menu', label: t.menu },
     { href: '/lunch', label: t.lunch },
     { href: '/#experience', label: t.experience },
-    { href: '/play', label: t.play },
-    // owner, 9 Oct 2026: "The Media … ให้เป็นหัวข้อหัวข้อนึงเลย" — the social hub gets its own item
+    // owner, 9 Oct 2026: "The Media … ให้เป็นหัวข้อหัวข้อนึงเลย" — the social hub gets its own
+    // item, and Play leaves the bar ("เอา Play เลยครับ"); the game keeps its footer link.
     { href: '/socialmedia', label: t.media },
     { href: '/#contact', label: t.contact },
   ];
@@ -40,7 +40,7 @@ export default function Nav() {
   const NAV_LINKS = navLinks(t);
   const href = (p: string) => localePath(locale, p);
   // Translated labels run wider than English; tighten the desktop row so the
-  // seven links + two CTAs + language switcher still fit the ~1170px content box at 1280.
+  // six links + two CTAs + language switcher still fit the ~1170px content box at 1280.
   const tight = locale !== 'en';
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -98,13 +98,12 @@ export default function Nav() {
     const p = stripLocale(pathname ?? '/');
     if (href === '/menu') return p === '/menu' || p.startsWith('/menu/');
     if (href === '/lunch') return p === '/lunch';
-    if (href === '/play') return p === '/play';
     if (href === '/socialmedia') return p === '/socialmedia' || p === '/watch';
     if (href === '/contact') return p === '/contact' || p.startsWith('/contact/');
     return false;
   };
 
-  // Seven links now (The Media joined, 9 Oct 2026): the full row needs ~1150px,
+  // Six links (The Media in, Play out — 9 Oct 2026): the full row needs ~1100px,
   // so it starts at xl (1280) — below that every size gets the drawer — and runs
   // at the tight size until 2xl, where English relaxes to the roomy size.
   const linkCls = (current: boolean) =>
