@@ -21,6 +21,8 @@ function navLinks(t: ChromeDict['nav']) {
     { href: '/lunch', label: t.lunch },
     { href: '/#experience', label: t.experience },
     { href: '/play', label: t.play },
+    // owner, 9 Oct 2026: "The Media … ให้เป็นหัวข้อหัวข้อนึงเลย" — the social hub gets its own item
+    { href: '/socialmedia', label: t.media },
     { href: '/#contact', label: t.contact },
   ];
 }
@@ -96,14 +98,17 @@ export default function Nav() {
     if (href === '/menu') return p === '/menu' || p.startsWith('/menu/');
     if (href === '/lunch') return p === '/lunch';
     if (href === '/play') return p === '/play';
+    if (href === '/socialmedia') return p === '/socialmedia' || p === '/watch';
     if (href === '/contact') return p === '/contact' || p.startsWith('/contact/');
     return false;
   };
 
+  // Seven links now (The Media joined, 9 Oct 2026): at lg (1024–1279) every
+  // edition runs at the tight size; English relaxes to the roomy size from xl.
   const linkCls = (current: boolean) =>
     cn(
-      'relative font-sans font-medium uppercase transition-colors duration-300',
-      tight ? 'text-[10.5px] tracking-[0.16em]' : 'text-[11px] tracking-[0.2em]',
+      'relative font-sans font-medium uppercase transition-colors duration-300 whitespace-nowrap',
+      tight ? 'text-[10.5px] tracking-[0.16em]' : 'text-[10.5px] tracking-[0.16em] xl:text-[11px] xl:tracking-[0.2em]',
       'after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-brass-light after:transition-transform after:duration-300 after:content-[""]',
       'hover:text-brass-light hover:after:scale-x-100',
       current ? 'text-brass-light after:scale-x-100' : 'text-cream/80',
@@ -142,7 +147,7 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className={cn('hidden items-center lg:flex', tight ? 'gap-5 xl:gap-6' : 'gap-6 xl:gap-8')}>
+          <div className={cn('hidden items-center lg:flex', tight ? 'gap-4 xl:gap-5' : 'gap-4 xl:gap-7')}>
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}

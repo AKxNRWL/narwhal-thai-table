@@ -21,6 +21,7 @@ function explore(t: ChromeDict['footer']['links'], locale: Locale) {
     ...(locale === 'vi' ? [{ href: '/vi/nha-hang-thai-little-saigon', label: t.littleSaigon }] : []),
     { href: '/thai-food-orange-county', label: t.guide },
     { href: '/press', label: t.press },
+    { href: '/socialmedia', label: t.media },
     { href: '/play', label: t.play },
   ];
 }

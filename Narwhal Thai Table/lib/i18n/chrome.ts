@@ -26,6 +26,8 @@ const en = {
     lunch: 'Lunch',
     experience: 'Experience',
     play: 'Play',
+    /** /socialmedia — "Narwhal TV"; the owner's name for it (also on the placemat): The Media (9 Oct 2026) */
+    media: 'The Media',
     contact: 'Contact',
     order: 'Order Online',
     /** the drawer has room for the long form */
@@ -72,6 +74,7 @@ const en = {
       guide: 'Thai food guide',
       press: 'Press',
       play: 'Bubble Glide',
+      media: 'The Media',
       littleSaigon: 'Thai food near Little Saigon',
     },
   },
