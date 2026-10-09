@@ -22,14 +22,14 @@ function explore(t: ChromeDict['footer']['links'], locale: Locale) {
     { href: '/thai-food-orange-county', label: t.guide },
     { href: '/press', label: t.press },
     { href: '/socialmedia', label: t.media },
-    { href: '/play', label: t.play },
+    // the mini-game's only doorway is the tile on /socialmedia (owner, 9 Oct 2026: "เอาให้อยู่แค่ใน The Entertainment")
   ];
 }
 
 /**
  * Site footer — brand, hours, NAP line (consistent address + phone for local
  * SEO), social links (only those with a URL in lib/site.ts) and site map.
- * The /play link stays here on purpose: a discreet pointer to the mini-game.
+ * The /play link is NOT here any more (9 Oct 2026) — the game lives only on /socialmedia.
  * Client component only so it can pick EN / VI strings from the URL — it
  * renders on the server as before (no state, no effects).
  */
