@@ -415,9 +415,10 @@
      Italic ถูกตัดออก เพราะ CJK ไม่มี italic จริง — browser fake-skew
      เลยดูเพี้ยน. ใช้ upright + weight 500 แทน — เก๋กว่าและสม่ำเสมอกว่า. */
   /* 12 Oct 2026: the Noto webfonts are only hoisted on the non-Latin editions now;
-     English pages fall through to the device's own Thai / CJK faces (listed so
-     every platform picks a real one rather than a notdef box). */
-  font-family:"Noto Sans","Noto Sans Thai","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans JP",var(--font-sans),"Thonburi","Leelawadee UI","PingFang SC","PingFang TC","Hiragino Sans","Yu Gothic","Meiryo","Apple SD Gothic Neo","Malgun Gothic","Microsoft YaHei","Microsoft JhengHei","Noto Sans CJK SC","Noto Sans Thai UI",sans-serif;
+     English pages fall through to the device's own Thai / CJK faces via the
+     browser's per-script fallback. Do NOT list platform families here — a long
+     list × 8 lang attributes cost ~2 s of first paint on Lighthouse mobile. */
+  font-family:"Noto Sans","Noto Sans Thai","Noto Sans SC","Noto Sans TC","Noto Sans KR","Noto Sans JP",var(--font-sans),sans-serif;
   font-weight:500;
   font-size:14px;
   letter-spacing:0.04em;
