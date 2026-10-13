@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { ORDER_ONLINE_URL, DIRECTIONS_URL } from '@/lib/site';
+import { ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/site';
 import { chrome } from '@/lib/i18n/chrome';
 import { localePath } from '@/lib/i18n/locales';
 import { useLocale } from '@/lib/i18n/useLocale';
 
 const item =
-  'flex min-h-[58px] flex-col items-center justify-center gap-1 font-sans text-[9.5px] font-medium uppercase tracking-[0.18em] ' +
+  'flex min-h-[58px] flex-col items-center justify-center gap-1 px-0.5 font-sans text-[9px] font-medium uppercase tracking-[0.12em] max-[359px]:text-[8px] ' +
   'text-cream/80 transition-colors duration-200 active:bg-brass/10 active:text-brass-light [-webkit-tap-highlight-color:transparent] ' +
   '[&+&]:border-l [&+&]:border-brass/15 [&_svg]:size-5';
 
@@ -19,6 +19,9 @@ const item =
  *
  * Google Ads conversions rely on the literal Toast href + tel: scheme — keep
  * these as real anchors.
+ *
+ * 12 Oct 2026 (GA, 28 days): 53% of visitors go to the menu, only 4 ever tapped
+ * the phone — Menu and Call join the bar: Menu · Order · Call · Directions · Reserve.
  */
 export default function MobileActionBar() {
   const locale = useLocale();
@@ -28,6 +31,13 @@ export default function MobileActionBar() {
       aria-label={t.label}
       className="fixed inset-x-0 bottom-0 z-[60] grid auto-cols-fr grid-flow-col border-t border-brass/25 bg-navy-deep/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-xl min-[761px]:hidden"
     >
+      <Link className={item} href={localePath(locale, '/menu')}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">
+          <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z" />
+          <path d="M5 4v13a3 3 0 0 0 3 3M9 8h6M9 12h6" />
+        </svg>
+        <span>{t.menu}</span>
+      </Link>
       {ORDER_ONLINE_URL && (
         <a className={`${item} text-brass-light [&_svg]:text-brass`} href={ORDER_ONLINE_URL} target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">
@@ -37,6 +47,12 @@ export default function MobileActionBar() {
           <span>{t.order}</span>
         </a>
       )}
+      <a className={item} href={`tel:${RESTAURANT.phone.replace(/[^\d+]/g, '')}`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">
+          <path d="M5.5 4h3l1.6 4-2 1.3a11 11 0 0 0 6.6 6.6l1.3-2 4 1.6v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 3.5 6.2 2 2 0 0 1 5.5 4Z" />
+        </svg>
+        <span>{t.call}</span>
+      </a>
       <a className={item} href={DIRECTIONS_URL} target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">
           <path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z" />

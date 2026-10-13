@@ -112,7 +112,7 @@ export default function MenuPage({ locale = 'en' }: { locale?: Locale }) {
         speed={0.12}
         fade="bottom"
         dim={0.18}
-        height="h-[64vh] min-h-[440px] max-h-[760px]"
+        height="h-[46vh] min-h-[330px] max-h-[760px] sm:h-[64vh] sm:min-h-[440px]"
       >
         <div className="flex max-w-3xl flex-col items-center gap-5 px-6 text-center">
           <Eyebrow>{t.eyebrow}</Eyebrow>
@@ -123,7 +123,7 @@ export default function MenuPage({ locale = 'en' }: { locale?: Locale }) {
       </ArtBand>
     {/* overflow-clip (not hidden): the aurora layer still clips, but the section no longer
         becomes a scroll container — which is what kept the sticky course bar from sticking. */}
-    <Section tone="aurora" className="overflow-clip pt-10 sm:pt-12 lg:pt-16">
+    <Section tone="aurora" className="overflow-clip pt-6 sm:pt-10 lg:pt-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd(locale)) }}
@@ -131,13 +131,16 @@ export default function MenuPage({ locale = 'en' }: { locale?: Locale }) {
       <Container>
         {/* Narwhal Rewards (Oct 2026): guests who scanned a table QR can add this meal's bill to their points. */}
         <TableRewardsCard className="mb-10 lg:mb-12" />
-        <p className="mx-auto max-w-2xl text-center text-[16.5px] leading-[1.75] text-cream/75">{t.intro}</p>
+        {/* 12 Oct 2026: the course pills come first (inside MenuSections); the intro
+            and the lunch strip render under them via `lead`. */}
+        <MenuSections dishes={cards} photos={photos} locale={locale} lead={<>
+        <p className="mx-auto mt-8 max-w-2xl text-center text-[15px] leading-[1.7] text-cream/75 sm:text-[16.5px] sm:leading-[1.75]">{t.intro}</p>
         {/* Weekday lunch specials (launched late Aug 2026) live on their own page —
             this strip is the pointer for the 11:45-on-a-Tuesday visitor. */}
         <Link
           href={localePath(locale, '/lunch')}
           className={cn(
-            'group mt-10 flex flex-col gap-3 rounded-[var(--radius-card)] border border-brass/25 bg-white/[0.035] px-5 py-4 shadow-card backdrop-blur-md lg:mt-12',
+            'group mt-8 flex flex-col gap-3 rounded-[var(--radius-card)] border border-brass/25 bg-white/[0.035] px-5 py-4 shadow-card backdrop-blur-md lg:mt-10',
             'sm:flex-row sm:items-center sm:gap-5 sm:px-6',
             'transition-[transform,border-color,background-color] duration-300 ease-out-soft hover:-translate-y-0.5 hover:border-brass-light/60 hover:bg-brass/[0.07]',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-light focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep',
@@ -154,7 +157,7 @@ export default function MenuPage({ locale = 'en' }: { locale?: Locale }) {
             {t.lunchGo} <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
           </span>
         </Link>
-        <MenuSections dishes={cards} photos={photos} locale={locale} />
+        </>} />
       </Container>
     </Section>
     </>

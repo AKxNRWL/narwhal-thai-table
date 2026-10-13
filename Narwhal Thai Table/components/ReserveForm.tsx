@@ -9,6 +9,7 @@ import { forms } from '@/lib/i18n/forms';
 import type { Locale } from '@/lib/i18n/locales';
 import Rich, { fmt } from '@/lib/i18n/rich';
 import { closureFor, upcomingClosure } from '@/lib/closures';
+import { RESTAURANT } from '@/lib/site';
 
 /** Reservation time slots: 11:00 AM → 10:00 PM, every 30 minutes
  *  (last seating about an hour before the 11:00 PM close). */
@@ -82,6 +83,22 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
   // Upcoming one-off closure → hint under the date field (client-only, after mount)
   const [notice, setNotice] = useState<ReturnType<typeof upcomingClosure> | null>(null);
   useEffect(() => { setNotice(upcomingClosure(new Date(), 30) ?? null); }, []);
+  // 12 Oct 2026 (GA: 85% of Maps visitors left the page within 5 s, only 15% ever
+  // started the form): five required fields up front, the rest folded away.
+  const [more, setMore] = useState(false);
+  const tel = `tel:${RESTAURANT.phone.replace(/[^\d+]/g, '')}`;
+
+  /** GA4 `reservation_submit` — the key event the funnel was missing (form_start existed, no submit). */
+  function trackSubmit(form: HTMLFormElement, via: 'api' | 'netlify') {
+    const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+    if (typeof w.gtag !== 'function') return;
+    const fd = new FormData(form);
+    w.gtag('event', 'reservation_submit', {
+      party_size: String(fd.get('party_size') || ''),
+      occasion: String(fd.get('occasion') || 'none'),
+      via,
+    });
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -130,12 +147,12 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
         }
         if (!r.ok) throw new Error(String(r.status));
         setSending(false);
-        setSubmitted(true); fireConfetti();
+        setSubmitted(true); fireConfetti(); trackSubmit(form, 'api');
       })
       .catch(() =>
         // Fallback: the plain Netlify form post, so the restaurant still gets it.
         submitNetlifyForm(form)
-          .then(() => { setSending(false); setSubmitted(true); fireConfetti(); })
+          .then(() => { setSending(false); setSubmitted(true); fireConfetti(); trackSubmit(form, 'netlify'); })
           .catch(() => {
             setSending(false);
             setError(t.error);
@@ -159,16 +176,18 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
       </div>
       <div className="mt-2 font-serif text-[16px] italic leading-relaxed text-cream/70">{t.sub}</div>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2">
+      {/* Tonight? The phone is faster than any form — a real tel: link so AdsConversions counts it. */}
+      <a
+        href={tel}
+        className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-brass/35 bg-navy-deep/50 px-4 py-3 font-sans text-[13px] text-cream transition-colors duration-300 hover:border-brass-light hover:bg-navy-deep/70"
+      >
+        <span className="leading-snug">{t.callNow}</span>
+        <span className="shrink-0 whitespace-nowrap font-medium tracking-[0.08em] text-brass-light">{RESTAURANT.phone} ↗</span>
+      </a>
+
+      <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <Field id="rsv-first" label={t.firstName} required>
           <input id="rsv-first" name="first_name" type="text" autoComplete="given-name" required className={field} />
-        </Field>
-        <Field id="rsv-last" label={t.lastName} required>
-          <input id="rsv-last" name="last_name" type="text" autoComplete="family-name" required className={field} />
-        </Field>
-
-        <Field id="rsv-email" label={t.email} required>
-          <input id="rsv-email" name="email" type="email" autoComplete="email" required className={field} />
         </Field>
         <Field id="rsv-phone" label={t.phone} required>
           <input id="rsv-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required className={field} />
@@ -204,24 +223,44 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
           </SelectShell>
         </Field>
 
-        <Field id="rsv-occasion" label={t.occasion} full>
-          <SelectShell>
-            {/* values are lib/occasions.ts keys — the card artwork and the team's email key off them */}
-            <select id="rsv-occasion" name="occasion" defaultValue="" className={selectField}>
-              <option value="">{t.occasions.none}</option>
-              <option value="birthday">{t.occasions.birthday}</option>
-              <option value="anniversary">{t.occasions.anniversary}</option>
-              <option value="celebration">{t.occasions.celebration}</option>
-              <option value="family">{t.occasions.family}</option>
-              <option value="friends">{t.occasions.friends}</option>
-              <option value="business">{t.occasions.business}</option>
-            </select>
-          </SelectShell>
-        </Field>
-
-        <Field id="rsv-notes" label={t.notes} full>
-          <textarea id="rsv-notes" name="notes" rows={4} placeholder={t.notesPlaceholder} className={textareaField}></textarea>
-        </Field>
+        {/* The optional half of the form, folded until asked for */}
+        <div className="sm:col-span-2">
+          <button
+            type="button"
+            onClick={() => setMore((v) => !v)}
+            aria-expanded={more}
+            aria-controls="rsv-more"
+            className="inline-flex items-center gap-2 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-brass-light transition-colors hover:text-cream"
+          >
+            <span aria-hidden="true" className={cn('inline-block transition-transform duration-300', more && 'rotate-90')}>›</span>
+            {t.more}
+          </button>
+        </div>
+        <div id="rsv-more" className={more ? 'contents' : 'hidden'}>
+          <Field id="rsv-last" label={t.lastName}>
+            <input id="rsv-last" name="last_name" type="text" autoComplete="family-name" className={field} />
+          </Field>
+          <Field id="rsv-email" label={t.email}>
+            <input id="rsv-email" name="email" type="email" autoComplete="email" className={field} />
+          </Field>
+          <Field id="rsv-occasion" label={t.occasion} full>
+            <SelectShell>
+              {/* values are lib/occasions.ts keys — the card artwork and the team's email key off them */}
+              <select id="rsv-occasion" name="occasion" defaultValue="" className={selectField}>
+                <option value="">{t.occasions.none}</option>
+                <option value="birthday">{t.occasions.birthday}</option>
+                <option value="anniversary">{t.occasions.anniversary}</option>
+                <option value="celebration">{t.occasions.celebration}</option>
+                <option value="family">{t.occasions.family}</option>
+                <option value="friends">{t.occasions.friends}</option>
+                <option value="business">{t.occasions.business}</option>
+              </select>
+            </SelectShell>
+          </Field>
+          <Field id="rsv-notes" label={t.notes} full>
+            <textarea id="rsv-notes" name="notes" rows={3} placeholder={t.notesPlaceholder} className={textareaField}></textarea>
+          </Field>
+        </div>
       </div>
 
       {/* Honeypot for spam bots — never visible/focusable for real users */}

@@ -10,7 +10,6 @@ import RewardsSheet from '@/components/rewards/RewardsSheet';
 import PromoCard from '@/components/PromoCard';
 import MobileActionBar from '@/components/MobileActionBar';
 import AdsConversions from '@/components/AdsConversions';
-import NotoTickerFonts from '@/components/NotoTickerFonts';
 import CardGlow from '@/components/fx/CardGlow';
 import SmoothScroll from '@/components/fx/SmoothScroll';
 import Ambience from '@/components/fx/Ambience';
@@ -83,17 +82,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: htmlLangScript() }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Noto Sans family — used by the Coming Soon ticker so every
-            language (Thai/Vietnamese/Chinese/Korean/Japanese/Latin) shares
-            the SAME design weight + x-height. Without this the browser
-            falls back to whatever system font handles each script and the
-            line ends up visually uneven across phrases. */}
-        {/* Loaded async by <NotoTickerFonts/> (body) so this CSS never blocks
-            first paint; the <noscript> keeps a no-JS fallback. Keep both URLs
-            in sync with components/NotoTickerFonts.tsx. */}
-        <noscript>
-          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&family=Noto+Sans+Thai:wght@400;500&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+TC:wght@400;500&family=Noto+Sans+KR:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet" />
-        </noscript>
+        {/* The ticker's Noto Sans webfonts are no longer loaded on the English
+            pages (12 Oct 2026): ~500 KB of CJK/Thai subsets per first visit for
+            one decorative line, on a 72%-mobile audience. The ticker falls back
+            to each phone's own Thai/CJK system font; the Thai/Chinese/Korean/
+            Japanese editions still hoist Noto in app/[locale]/layout.tsx. */}
         {/* SEO: Restaurant structured data (Google rich results) */}
         <script
           type="application/ld+json"
@@ -223,7 +216,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ComingSoonTicker />
-        <NotoTickerFonts />
         <Nav />
         <main id="main">{children}</main>
         <Footer />

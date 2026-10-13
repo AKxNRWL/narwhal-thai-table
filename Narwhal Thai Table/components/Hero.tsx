@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { HeroMedia } from '@/lib/media';
 import { ORDER_ONLINE_URL } from '@/lib/site';
+import { openStatus } from '@/lib/serviceHours';
 import { upcomingClosure, type Closure } from '@/lib/closures';
 import { activeEvents, type LocalEvent } from '@/lib/events';
 import Button, { Arrow } from '@/components/ui/Button';
@@ -57,6 +58,18 @@ export default function Hero({
   const videoRef = useRef<HTMLVideoElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
+
+  // Live eyebrow (12 Oct 2026): the static "Now Open · Every Day" read NOW OPEN at
+  // midnight. English pages swap in the real clock after mount (same source as the
+  // /socialmedia chip); SSR keeps the dictionary text so hydration matches.
+  const [live, setLive] = useState<string | null>(null);
+  useEffect(() => {
+    if (locale !== 'en') return;
+    const tick = () => { const s = openStatus(); setLive(`${s.short} · Every day`); };
+    tick();
+    const id = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(id);
+  }, [locale]);
 
   // Spotlight: a soft brass light follows the pointer across the hero.
   const onSpot = (e: React.PointerEvent<HTMLElement>) => {
@@ -191,13 +204,15 @@ export default function Hero({
       <div className="relative z-[2] mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-24 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:px-12 lg:pb-28 lg:pt-6">
         {/* min-w-0: a grid item defaults to min-width:auto, so a wide inline
             chip would stretch the column past the phone's viewport */}
-        <div className="min-w-0 max-w-2xl">
+        {/* flex-col so the CTA row can jump above the note on phones (12 Oct 2026:
+            GA says 72% of visitors are on phones and the buttons sat 1.5 screens down) */}
+        <div className="flex min-w-0 max-w-2xl flex-col">
           <span
-            className="inline-flex items-center gap-3 font-sans text-[11px] font-medium uppercase tracking-[0.34em] text-brass-light"
+            className="inline-flex items-center gap-3 self-start font-sans text-[11px] font-medium uppercase tracking-[0.34em] text-brass-light"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) both' }}
           >
             <span aria-hidden="true" className="size-1.5 rounded-full bg-brass-light shadow-[0_0_12px_rgba(227,197,129,0.9)] animate-pulse-dot" />
-            <span className="shiny-text">{t.eyebrow}</span>
+            <span className="shiny-text">{live ?? t.eyebrow}</span>
           </span>
 
           {/* Featured-dish chip — owner (9 Sep 2026): the weekday-lunch pill that
@@ -262,15 +277,15 @@ export default function Hero({
               room around it, every guest loved and respected; SEO terms kept
               (Thai restaurant · Beach Boulevard · Huntington Beach · royal-court
               Thai recipes · made fresh). Do not paraphrase without the owner. */}
-          <p
-            className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]"
-            style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.24s both' }}
-          >
+          {/* This paragraph is the page's LCP element — it must paint at once, so no
+              opacity animation here (12 Oct 2026: Lighthouse mobile showed a 2.4 s
+              "element render delay" and a 17 s LCP on slow 4G with it animated). */}
+          <p className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 max-[760px]:order-2 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]">
             <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">{t.noteLead}</strong>{' '}
             {t.note}
           </p>
           <p
-            className="mt-4 font-sans text-[12px] font-medium uppercase tracking-[0.28em] text-brass-light"
+            className="mt-4 font-sans text-[12px] font-medium uppercase tracking-[0.28em] text-brass-light max-[760px]:order-2"
             style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.3s both' }}
           >
             {t.signed}
@@ -288,7 +303,7 @@ export default function Hero({
           {closure && (
             <p
               role="status"
-              className="mt-4 inline-flex max-w-xl items-start gap-2.5 rounded-2xl border border-[#E3C581]/50 bg-[#2A1F14]/85 px-4 py-2.5 font-sans text-[13px] leading-snug text-[#FFF1C9] backdrop-blur-md"
+              className="mt-4 inline-flex max-w-xl items-start gap-2.5 self-start rounded-2xl border border-[#E3C581]/50 bg-[#2A1F14]/85 px-4 py-2.5 font-sans text-[13px] leading-snug text-[#FFF1C9] backdrop-blur-md max-[760px]:order-2"
               style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}
             >
               <span aria-hidden="true" className="mt-px shrink-0">⚠</span>
@@ -303,7 +318,7 @@ export default function Hero({
           {event?.chip && (
             <Link
               href={href(event.chip.href)}
-              className="mt-4 inline-flex max-w-xl items-start gap-2.5 rounded-2xl border border-brass/45 bg-navy-deep/60 px-4 py-2.5 font-sans text-[13px] leading-snug text-cream/90 backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/80"
+              className="mt-4 inline-flex max-w-xl items-start gap-2.5 self-start rounded-2xl border border-brass/45 bg-navy-deep/60 px-4 py-2.5 font-sans text-[13px] leading-snug text-cream/90 backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/80 max-[760px]:order-2"
               style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}
             >
               <span aria-hidden="true" className="mt-px shrink-0 text-brass-light">✈</span>
@@ -311,7 +326,8 @@ export default function Hero({
             </Link>
           )}
 
-          <div className="mt-8 flex flex-wrap gap-3" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
+          {/* Phones: this row sits right under the headline (order-1), the note follows */}
+          <div className="mt-8 flex flex-wrap gap-3 max-[760px]:order-1 max-[760px]:mt-7" style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}>
             {ORDER_ONLINE_URL && (
               <Button href={ORDER_ONLINE_URL} target="_blank" rel="noopener" variant="primary" size="lg" arrow data-magnetic>
                 {t.order}

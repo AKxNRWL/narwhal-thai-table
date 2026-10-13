@@ -80,7 +80,9 @@ const en = {
   },
   mobileBar: {
     label: 'Quick actions',
+    menu: 'Menu',
     order: 'Order',
+    call: 'Call',
     directions: 'Directions',
     reserve: 'Reserve',
   },

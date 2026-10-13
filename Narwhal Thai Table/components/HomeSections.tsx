@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LazyVideo from '@/components/LazyVideo';
 import type { ReactNode } from 'react';
 import FadeUp from './FadeUp';
 import ReserveForm from './ReserveForm';
@@ -470,18 +471,13 @@ export function RoomSection({ locale = 'en' }: LocaleProp) {
             aria-label={t.videoLabel}
             className="relative isolate m-0 aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-frame)] border border-brass/20 bg-navy shadow-card sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:h-full lg:aspect-auto"
           >
-            <video
+            {/* 1.4 MB loop — fetched only when the room scrolls near (components/LazyVideo.tsx) */}
+            <LazyVideo
+              src="/media/room.mp4"
               className="absolute inset-0 h-full w-full object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
               poster="/images/room/room-poster.jpg"
               aria-hidden="true"
-            >
-              <source src="/media/room.mp4" type="video/mp4" />
-            </video>
+            />
           </figure>
           <MediaFrame
             ratio="16/10"

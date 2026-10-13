@@ -1,8 +1,8 @@
 /**
  * Google Fonts CSS for the Noto Sans families (Latin / Thai / SC / TC / KR /
- * JP, 400 + 500). One URL, two users: the multilingual ticker loads it lazily
- * after hydration (components/NotoTickerFonts.tsx) on every page, and the
- * Thai / Chinese / Korean / Japanese editions hoist it into <head>
+ * JP, 400 + 500). Since 12 Oct 2026 only the Thai / Chinese / Korean /
+ * Japanese editions hoist it into <head> (the English pages' ticker uses the
+ * device's own fonts instead — components/NotoTickerFonts.tsx is retired)
  * (app/[locale]/layout.tsx) so their body text never paints in a fallback
  * font first. The families are sliced by unicode-range, so a page only
  * downloads the glyph blocks it actually uses.

@@ -4,6 +4,9 @@
  * Loads the Noto Sans families (Latin/Thai/SC/TC/KR/JP) used by the
  * multi-language ticker — asynchronously, after hydration.
  *
+ * RETIRED from app/layout.tsx on 12 Oct 2026 (≈500 KB of CJK/Thai subsets per
+ * first visit for one decorative line); kept only in case a page wants it back.
+ *
  * Why: as a plain <link rel="stylesheet"> in <head> this Google Fonts CSS was
  * the last render-blocking third-party request on every page. The ticker is
  * decorative-priority text, so it's fine for it to paint in fallback fonts for

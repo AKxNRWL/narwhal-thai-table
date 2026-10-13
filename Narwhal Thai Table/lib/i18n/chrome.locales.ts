@@ -68,6 +68,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "Thực đơn",
+      call: "Gọi",
       label: "Thao tác nhanh",
       order: "Đặt món",
       directions: "Chỉ đường",
@@ -191,6 +193,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "เมนู",
+      call: "โทร",
       label: "ทางลัด",
       order: "สั่งอาหาร",
       directions: "นำทาง",
@@ -314,6 +318,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "菜单",
+      call: "致电",
       label: "快捷操作",
       order: "点餐",
       directions: "路线",
@@ -437,6 +443,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "메뉴",
+      call: "전화",
       label: "빠른 메뉴",
       order: "주문",
       directions: "길 안내",
@@ -560,6 +568,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "メニュー",
+      call: "電話",
       label: "クイック操作",
       order: "注文",
       directions: "道順",
@@ -683,6 +693,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "Menú",
+      call: "Llamar",
       label: "Acciones rápidas",
       order: "Ordenar",
       directions: "Cómo llegar",
@@ -806,6 +818,8 @@ export const CHROME_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'z
       },
     },
     mobileBar: {
+      menu: "菜單",
+      call: "致電",
       label: "快速操作",
       order: "點餐",
       directions: "路線",

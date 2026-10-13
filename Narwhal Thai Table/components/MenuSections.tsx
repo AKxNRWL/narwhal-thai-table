@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLenis } from 'lenis/react';
 import { CATEGORIES, type CategoryId } from '@/lib/categories';
 import { Arrow } from '@/components/ui/Button';
@@ -33,12 +33,16 @@ export default function MenuSections({
   dishes,
   photos = {},
   locale = 'en',
+  lead,
 }: {
   /** every dish, in menu order, already localised (see components/pages/MenuPage.tsx) */
   dishes: MenuCard[];
   /** slug → public image URL, built server-side in app/menu/page.tsx */
   photos?: Record<string, string>;
   locale?: Locale;
+  /** intro copy / lunch strip — rendered UNDER the course bar so the pills are the
+      first thing after the hero (12 Oct 2026: on phones the first dish sat 1.6 screens down) */
+  lead?: ReactNode;
 }) {
   const t = chrome(locale).menuList;
   const [open, setOpen] = useState<Record<string, boolean>>(() =>
@@ -115,7 +119,7 @@ export default function MenuSections({
           while the nav is hidden on a downward scroll). Pills jump to a course. */}
       <div
         ref={barRef}
-        className="sticky top-[calc(var(--cs-ticker-h)+var(--nav-offset,72px))] z-30 -mx-5 mt-12 border-y border-cream/10 bg-navy-deep/80 backdrop-blur-xl transition-[top] duration-500 sm:-mx-8 lg:-mx-12 lg:mt-16"
+        className="sticky top-[calc(var(--cs-ticker-h)+var(--nav-offset,72px))] z-30 -mx-5 border-y border-cream/10 bg-navy-deep/80 backdrop-blur-xl transition-[top] duration-500 sm:-mx-8 lg:-mx-12"
       >
         <nav
           aria-label={t.jump}
@@ -145,6 +149,8 @@ export default function MenuSections({
           })}
         </nav>
       </div>
+
+      {lead}
 
       {CATEGORIES.map((cat) => {
         const inCourse = dishes.filter((d) => d.category === cat.id);
