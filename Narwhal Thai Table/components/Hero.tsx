@@ -388,7 +388,7 @@ export default function Hero({
 }
 
 /** Word-by-word blur reveal (Magic UI "TextAnimate" feel) — pure CSS, SEO-safe. */
-function Words({ text, start = 0, step = 0.07 }: { text: string; start?: number; step?: number }) {
+function Words({ text, start = 0, step = 0.05 }: { text: string; start?: number; step?: number }) {
   return (
     <>
       {text.split(' ').map((w, i) => (

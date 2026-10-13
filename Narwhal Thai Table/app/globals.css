@@ -85,8 +85,11 @@
 }
 
 /* ---------------- keyframes referenced by the @theme animations ---------------- */
+/* Entrance reveals start at opacity .02, not 0 (12 Oct 2026): Chrome drops an
+   opacity-0 element from the LCP race until its animation ends, which made the
+   hero's first paint count 2–3 s late on phones. The eye can't tell .02 from 0. */
 @keyframes heroIn {
-  from { opacity: 0; transform: translateY(26px); }
+  from { opacity: 0.02; transform: translateY(26px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes hero-pill-pulse {
@@ -201,7 +204,7 @@
 }
 
 /* word-by-word blur reveal for the hero headline (Hero.tsx) */
-.word-in { display: inline-block; opacity: 0; filter: blur(12px); transform: translateY(0.35em); animation: word-in 0.9s var(--ease-out-soft) forwards; }
+.word-in { display: inline-block; opacity: 0.02; filter: blur(12px); transform: translateY(0.35em); animation: word-in 0.7s var(--ease-out-soft) forwards; }
 /* end on `filter: none` (not blur(0)) — a leftover filter on a child breaks a
    parent's background-clip:text (gold gradient headings) in Chromium */
 @keyframes word-in { to { opacity: 1; filter: none; transform: none; } }
