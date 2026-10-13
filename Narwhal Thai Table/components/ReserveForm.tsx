@@ -179,10 +179,10 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
       {/* Tonight? The phone is faster than any form — a real tel: link so AdsConversions counts it. */}
       <a
         href={tel}
-        className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-brass/35 bg-navy-deep/50 px-4 py-3 font-sans text-[13px] text-cream transition-colors duration-300 hover:border-brass-light hover:bg-navy-deep/70"
+        className="mt-5 flex flex-col items-start gap-1 rounded-2xl border border-brass/35 bg-navy-deep/50 px-4 py-3 font-sans text-[13px] text-cream transition-colors duration-300 hover:border-brass-light hover:bg-navy-deep/70 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
       >
         <span className="leading-snug">{t.callNow}</span>
-        <span className="shrink-0 whitespace-nowrap font-medium tracking-[0.08em] text-brass-light">{RESTAURANT.phone} ↗</span>
+        <span className="shrink-0 whitespace-nowrap text-[15px] font-medium tracking-[0.08em] text-brass-light sm:text-[13px]">{RESTAURANT.phone} ↗</span>
       </a>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
