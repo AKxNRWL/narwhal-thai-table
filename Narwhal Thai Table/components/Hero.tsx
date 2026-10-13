@@ -280,7 +280,9 @@ export default function Hero({
           {/* This paragraph is the page's LCP element — it must paint at once, so no
               opacity animation here (12 Oct 2026: Lighthouse mobile showed a 2.4 s
               "element render delay" and a 17 s LCP on slow 4G with it animated). */}
-          <p className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/80 max-[760px]:order-2 sm:text-[19px] [text-shadow:0_1px_12px_rgba(6,18,31,0.7)]">
+          {/* No blurred text-shadow here either: this paragraph is in the first frame now,
+              and a 12 px shadow on ten italic lines is a heavy raster on a slow phone. */}
+          <p className="mt-7 max-w-xl font-serif text-[17px] italic leading-relaxed text-cream/85 max-[760px]:order-2 sm:text-[19px] [text-shadow:0_1px_2px_rgba(6,18,31,0.8)]">
             <strong className="not-italic font-sans text-[15px] font-semibold uppercase tracking-[0.06em] text-cream">{t.noteLead}</strong>{' '}
             {t.note}
           </p>
