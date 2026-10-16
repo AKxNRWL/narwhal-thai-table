@@ -1,44 +1,27 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { serviceWindowNow } from '@/lib/serviceHours';
 import { canonTable, openRewards } from '@/lib/rewards';
+import { chat, seatLabel, type ChatDict } from '@/lib/i18n/chat';
+import { pathLocale } from '@/lib/i18n/locales';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
-const GREETINGS = [
-  "Hi, I'm Aileen — your host at Narwhal Thai Table. 🌿 Ask me about the menu, what to order, our hours, or book a table. What are you in the mood for?",
-  "Sawasdee ka! 🙏 I'm Aileen, the host here at Narwhal Thai Table. Curious about a dish, our hours, or want me to save you a seat?",
-  "Hey there — I'm Aileen, your Narwhal Thai Table host. 🐳 I can help you pick a dish, plan a visit, or book a table. Where shall we start?",
-  "Welcome in! I'm Aileen. Want a recommendation from our menu, our hours, or a table booked? Just say the word. 🌿",
-  "So glad you stopped by — Aileen here, hosting at Narwhal Thai Table. Hungry for ideas, checking hours, or booking a table?",
-  "Hi! Aileen, your host at Narwhal Thai Table. 🐳 Ask me anything about the menu or your visit — I can even pass a note to the team for you.",
-];
+// Greetings, the seat wording ("7" -> table 7, "P3" -> patio table 3, spare
+// cards -> "your table") and the widget chrome all come from lib/i18n/chat.ts
+// in the edition's language (16 Oct 2026 — before that every edition opened
+// in English). The locale is read from the pathname, like the nav does.
 
-function pickGreeting(): string {
-  return GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
-}
-
-// A guest who scanned a table QR is already seated. Turn the raw ?t= value into
-// something we can say out loud: "7" -> table 7, "P3" -> patio table 3,
-// anything else (spare cards) -> a neutral "your table".
-function seatLabel(t: string): string {
-  if (/^\d+$/.test(t)) return `table ${t}`;
-  const patio = t.match(/^p-?(\d+)$/i);
-  if (patio) return `patio table ${patio[1]}`;
-  return 'your table';
+function pickGreeting(d: ChatDict): string {
+  return d.greetings[Math.floor(Math.random() * d.greetings.length)];
 }
 
 // Outside service hours a table QR is a saved link from an old visit, so
 // don't greet them as seated. The schedule lives in lib/serviceHours.ts
 // (shared with the server gate in route.ts — the server enforces the real
 // rules, this only picks the right greeting).
-
-const CLOSED_GREETING =
-  "Sawasdee ka! 🌙 We're closed at the moment, but I'm still here — happy to help with menu questions, booking a table, or leaving a note for the team. What can I do for you?";
-
-const TOGO_GREETING =
-  "Sawasdee ka! 🥡 I'm Aileen — ordering to-go today? Browse the menu right up there and tell me what you'd like. I'll just need a name for the order, and you pay at the counter when it's in!";
 
 // Every page load of ?t=N counts as a fresh scan — guests rescan the card each
 // visit and the clock simply restarts. The stamp tracks this seat's LAST
@@ -101,8 +84,8 @@ function stampSeat(t: string) {
 // Dine-in flow (since Jul 21 2026): Aileen guides the menu but does NOT take
 // dine-in orders in chat — servers take every order at the table on the Toast
 // handheld, so the greeting steers to the call_server tool instead.
-function tableGreeting(t: string): string {
-  return `Sawasdee ka — welcome to ${seatLabel(t)}! 🐳 I'm Aileen, your host. Browse the menu just up there and I'll help you pick. When you're ready to order — or need anything at all — just tell me and I'll send a server right over. What are you in the mood for?`;
+function tableGreeting(t: string, d: ChatDict): string {
+  return d.table.replace('{seat}', seatLabel(t, d));
 }
 
 // Little narwhal mark (monochrome, inherits currentColor).
@@ -135,7 +118,10 @@ export default function ChatWidget() {
   // input (typing) expands it back.
   const [mini, setMini] = useState(false);
   const [table, setTable] = useState<string | null>(null);
-  const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: GREETINGS[0] }]);
+  const pathname = usePathname();
+  const locale = pathLocale(pathname);
+  const t = useMemo(() => chat(locale), [locale]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ role: 'assistant', content: t.greetings[0] }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -221,16 +207,16 @@ export default function ChatWidget() {
             role: 'assistant',
             content:
               table && !serviceWindowNow()
-                ? CLOSED_GREETING
+                ? t.closed
                 : table && /^togo$/i.test(table)
-                ? TOGO_GREETING
+                ? t.togo
                 : table
-                ? tableGreeting(table)
-                : pickGreeting(),
+                ? tableGreeting(table, t)
+                : pickGreeting(t),
           }]
         : m,
     );
-  }, [open, table]);
+  }, [open, table, t]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -273,18 +259,19 @@ export default function ChatWidget() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        // drop the canned greeting (index 0) before sending
-        body: JSON.stringify({ messages: next.slice(1), table }),
+        // drop the canned greeting (index 0) before sending; `locale` tells the
+        // host which edition the guest is reading so the first reply matches it
+        body: JSON.stringify({ messages: next.slice(1), table, locale }),
       });
       const data = (await res.json()) as { reply?: string };
       setMsgs((m) => [
         ...m,
-        { role: 'assistant', content: data.reply || "Sorry, I didn't catch that." },
+        { role: 'assistant', content: data.reply || t.errNoReply },
       ]);
     } catch {
       setMsgs((m) => [
         ...m,
-        { role: 'assistant', content: "Sorry — I couldn't connect. Please try again in a moment." },
+        { role: 'assistant', content: t.errConnect },
       ]);
     } finally {
       setLoading(false);
@@ -303,7 +290,7 @@ export default function ChatWidget() {
       <button
         className={`nara-fab${open ? ' is-open' : ''}`}
         type="button"
-        aria-label={open ? 'Close chat' : 'Chat with Aileen, our host'}
+        aria-label={open ? t.fabClose : t.fabOpen}
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
       >
@@ -317,19 +304,19 @@ export default function ChatWidget() {
       <div
         className={`nara-panel${open ? ' is-open' : ''}${mini ? ' is-mini' : ''}`}
         role="dialog"
-        aria-label="Chat with Narwhal Thai Table"
+        aria-label={t.dialog}
         aria-hidden={!open}
       >
         <div className="nara-head">
           <div className="nara-head-mark" aria-hidden="true"><NarwhalIcon style={{ width: 24, height: 24 }} /></div>
           <div className="nara-head-id">
             <div className="nara-head-name">Aileen</div>
-            <div className="nara-head-sub">Narwhal Thai Table &middot; host</div>
+            <div className="nara-head-sub">{t.headSub}</div>
           </div>
           <button
             className="nara-mini"
             type="button"
-            aria-label={mini ? 'Expand chat to full screen' : 'Minimize chat to browse the menu'}
+            aria-label={mini ? t.expand : t.minimize}
             onClick={() => {
               if (!mini) inputRef.current?.blur(); // drop the keyboard so the sheet really shrinks
               setMini(!mini);
@@ -339,7 +326,7 @@ export default function ChatWidget() {
               {mini ? <path d="M6 14l6-6 6 6" /> : <path d="M5 17h14" />}
             </svg>
           </button>
-          <button className="nara-close" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
+          <button className="nara-close" type="button" aria-label={t.fabClose} onClick={() => setOpen(false)}>
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -359,7 +346,7 @@ export default function ChatWidget() {
               </svg>
             </span>
             <span className="flex-1">
-              Earn <strong className="font-semibold">Narwhal Rewards</strong> points on this meal
+              {t.rewards.split('{brand}')[0]}<strong className="font-semibold">Narwhal Rewards</strong>{t.rewards.split('{brand}')[1] ?? ''}
             </span>
             <span aria-hidden="true" className="text-[#9C7A33]">→</span>
           </button>
@@ -381,7 +368,7 @@ export default function ChatWidget() {
           {loading && (
             <div className="nara-row">
               <span className="nara-ava" aria-hidden="true"><NarwhalIcon /></span>
-              <div className="nara-msg nara-assistant nara-typing" aria-label="Aileen is typing">
+              <div className="nara-msg nara-assistant nara-typing" aria-label={t.typing}>
                 <span /><span /><span />
               </div>
             </div>
@@ -396,23 +383,23 @@ export default function ChatWidget() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             onFocus={() => setMini(false)}
-            placeholder="Ask about the menu, hours, booking&hellip;"
+            placeholder={t.placeholder}
             maxLength={1500}
-            aria-label="Type your message"
+            aria-label={t.inputLabel}
           />
           <button
             className="nara-send"
             type="button"
             onClick={send}
             disabled={loading || !input.trim()}
-            aria-label="Send message"
+            aria-label={t.send}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
               <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
             </svg>
           </button>
         </div>
-        <div className="nara-foot">Aileen is an AI host &mdash; details may vary; the team confirms by email.</div>
+        <div className="nara-foot">{t.foot}</div>
       </div>
     </>
   );

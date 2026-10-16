@@ -42,7 +42,7 @@ export const FORMS_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'zh
       topics: {
         general: "Câu hỏi chung",
         reservation: "Đặt bàn",
-        catering: "Đặt tiệc & sự kiện riêng",
+        catering: "Đặt tiệc và sự kiện riêng",
         supplier: "Nhà cung cấp",
         press: "Báo chí / truyền thông",
         careers: "Tuyển dụng",
@@ -56,7 +56,7 @@ export const FORMS_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'zh
       error: "Có lỗi xảy ra — vui lòng email welcome@narwhalthaihb.com.",
     },
     catering: {
-      title: "Đặt tiệc & *sự kiện riêng*",
+      title: "Đặt tiệc và *sự kiện riêng*",
       sub: "Bao trọn nhà hàng, tiệc nếm thử kiểu gia đình, nấu tiệc tận nơi — kể chúng tôi nghe về sự kiện của bạn.",
       name: "Họ tên",
       email: "Email",
@@ -132,7 +132,7 @@ export const FORMS_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'zh
       topics: {
         general: "คำถามทั่วไป",
         reservation: "จองโต๊ะ",
-        catering: "จัดเลี้ยง & อีเวนต์ส่วนตัว",
+        catering: "จัดเลี้ยงและอีเวนต์ส่วนตัว",
         supplier: "ซัพพลายเออร์ / ผู้จำหน่าย",
         press: "สื่อ / นักข่าว",
         careers: "ร่วมงานกับเรา",
@@ -146,7 +146,7 @@ export const FORMS_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'zh
       error: "เกิดข้อผิดพลาด — อีเมลมาที่ welcome@narwhalthaihb.com ได้เลย",
     },
     catering: {
-      title: "จัดเลี้ยง & *อีเวนต์ส่วนตัว*",
+      title: "จัดเลี้ยง *และอีเวนต์ส่วนตัว*",
       sub: "เหมาร้าน ชิมอาหารแบบครอบครัว จัดเลี้ยงนอกสถานที่ — เล่าเรื่องงานของคุณให้เราฟัง",
       name: "ชื่อ",
       email: "อีเมล",
@@ -312,7 +312,7 @@ export const FORMS_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'zh
       topics: {
         general: "일반 문의",
         reservation: "예약",
-        catering: "케이터링 & 프라이빗 이벤트",
+        catering: "케이터링 및 프라이빗 이벤트",
         supplier: "납품 · 거래처",
         press: "언론 / 미디어",
         careers: "채용",
@@ -326,7 +326,7 @@ export const FORMS_LOCALES: Record<'vi' | 'th' | 'zh' | 'ko' | 'ja' | 'es' | 'zh
       error: "문제가 발생했습니다 — welcome@narwhalthaihb.com으로 이메일을 보내 주세요.",
     },
     catering: {
-      title: "케이터링 & *프라이빗 이벤트*",
+      title: "케이터링 및 *프라이빗 이벤트*",
       sub: "전관 대관, 가족식 시식, 출장 케이터링 — 이벤트에 대해 알려 주세요.",
       name: "성함",
       email: "이메일",

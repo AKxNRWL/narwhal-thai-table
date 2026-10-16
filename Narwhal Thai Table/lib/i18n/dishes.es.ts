@@ -17,14 +17,14 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "thai-fish-cake": {
-    description: "Tortitas de pescado elásticas y tiernas, fritas hasta un bronce profundo — encurtido fresco de pepino con chile & cacahuate martajado.",
+    description: "Tortitas de pescado elásticas y tiernas, fritas hasta un bronce profundo — encurtido fresco de pepino con chile y cacahuate martajado.",
     story: {
       lede: "Un clásico de día de mercado del país de los ríos tailandés — elástico, salpicado de hierbas, frito hasta un bronce profundo.",
       history: "El tod mun pla viene de las Llanuras Centrales, donde los ríos y los canales le daban a cada pueblo más pescado del que podía comerse. Los cocineros machacaban la pesca del día con pasta de curry rojo, hoja de lima kaffir en hilitos y ejotes bien firmes, y luego freían cucharada tras cucharada hasta que las orillas se ampollaban. Ese rebote elástico es la marca más presumida de un cocinero paciente. El encurtido fresco de pepino y cacahuate, el ajat, es su pareja de toda la vida: una mordida caliente, una mordida fría.",
     },
   },
   "crispy-spring-rolls": {
-    description: "Las hojas enrolladas a mano truenan y dan paso a un corazón sabroso de puerco molido & verduras.",
+    description: "Las hojas enrolladas a mano truenan y dan paso a un corazón sabroso de puerco molido y verduras.",
     story: {
       lede: "Un paquetito crujiente con pasaporte — nació en la provincia china de Fujian y se perfeccionó en las cocinas tailandesas.",
       history: "Los rollitos primavera llegaron a Siam con los inmigrantes hokkien y teochew, cuyas suaves crepas de popiah anunciaban en su día la llegada de la primavera. Los cocineros tailandeses hicieron lo que siempre hacen: le subieron al fuego. Al freírse a fuego bravo, la masa se quiebra sobre un corazón sabroso de puerco molido, fideos de vidrio y verduras. Hoy el po pia tod es tan tailandés como cualquier cosa en este menú — el sonido de la primera mordida es el mismo en Bangkok que aquí.",
@@ -52,7 +52,7 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "fresh-spring-rolls": {
-    description: "Rollos frescos de papel de arroz con lechuga crujiente, pepino, hierbabuena & zanahoria — salsa cremosa de cacahuate para remojar.",
+    description: "Rollos frescos de papel de arroz con lechuga crujiente, pepino, hierbabuena y zanahoria — salsa cremosa de cacahuate para remojar.",
     story: {
       lede: "El personaje tranquilo de la mesa — sin freidora, sin crujido, solo un manojo fresco que se come como un secreto.",
       history: "Los rollos frescos son la respuesta del Sudeste Asiático a una ensalada que puedes agarrar con la mano: papel de arroz estirado alrededor de fideos de vidrio, hierbas y verduras frías. Vienen de la misma tradición popiah que dio el rollito frito — solo que la versión fresca se niega al aceite. La nuestra envuelve pollo molido y tofu con lechuga crujiente, pepino, zanahoria y albahaca: el contrapunto calmado y frío de una mesa picosa.",
@@ -73,21 +73,21 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "house-salad": {
-    description: "Hojas verdes crujientes, pepino & jitomate frescos, arándanos secos dulces y masticables, aderezo tailandés bien vivo.",
+    description: "Hojas verdes crujientes, pepino y jitomate frescos, arándanos secos dulces y masticables, aderezo tailandés bien vivo.",
     story: {
       lede: "Verduras conocidas, aderezo inconfundiblemente tailandés — nuestro puente discreto entre dos culturas de mesa.",
       history: "Todo restaurante tailandés en el extranjero termina inventando su propia House Salad; esta es la nuestra. Las hojas son puro California, el aderezo es puro Tailandia — hondura salada, brillo de limón, la dulzura justa para darle la mano a los arándanos secos. Es el plato que le servimos al amigo que jura que “a él no le va la comida tailandesa”. Para la última mordida, ya le va.",
     },
   },
   "rib-eye-salad": {
-    description: "Rib-eye asado al carbón, rebanado tibio sobre hojas frescas, rábano, cebollín & hierbabuena — un aderezo ácido y fragante de hierbas tailandesas.",
+    description: "Rib-eye asado al carbón, rebanado tibio sobre hojas frescas, rábano, cebollín y hierbabuena — un aderezo ácido y fragante de hierbas tailandesas.",
     story: {
       lede: "En Tailandia no se estilan las ensaladas calladas — esta llega con rib-eye asado al carbón y un aderezo que muerde de vuelta.",
       history: "Yam quiere decir revolver o mezclar, y toda la familia yam es la respuesta tailandesa al capítulo de las ensaladas: el aderezo — limón, salsa de pescado, chile, un soplo de azúcar — importa más que cualquier hoja. El yam nuea yang, el yam de carne asada, es lo que se les antoja a los cocineros tailandeses cuando una ensalada tiene que comerse como una comida completa. Rebanamos el rib-eye tibio recién salido de la parrilla sobre hojas frescas, rábano, cebollín y hierbabuena, para que cada bocado venga caliente y frío al mismo tiempo.",
     },
   },
   "som-tum-thai": {
-    description: "Papaya verde crujiente machacada al momento con camarón seco — ácida, dulce & picosa en un solo crujido luminoso.",
+    description: "Papaya verde crujiente machacada al momento con camarón seco — ácida, dulce y picosa en un solo crujido luminoso.",
     story: {
       lede: "Machacada al momento en el mortero, como se hace desde que la papaya llegó a Siam — ácida, dulce, salada y picosa en un solo crujido luminoso.",
       history: "La papaya no es originaria de Tailandia: los comerciantes ibéricos la trajeron de América en el siglo XVII y para 1693 ya crecía por todo Siam. Los cocineros de Laos e Isaan sumaron esa fruta verde y crujiente a su tradición mucho más antigua de ensaladas machacadas, y así nació el tam mak hoong. Conquistó Bangkok apenas a mediados del siglo XX: llegó con los trabajadores de Isaan y se vendía afuera de los estadios de boxeo antes de arrasar con el país. El Som Tum Thai es la versión de la capital — camarón seco, cacahuate, un toque más dulce, y el fuego intacto.",
@@ -108,21 +108,21 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "larb": {
-    description: "Carne molida tibia, cebolla morada & hojuelas de chile en un aderezo picoso y ácido, con polvo de arroz tostado para un crujido ahumado.",
+    description: "Carne molida tibia, cebolla morada y hojuelas de chile en un aderezo picoso y ácido, con polvo de arroz tostado para un crujido ahumado.",
     story: {
       lede: "El platillo de la buena suerte de Isaan — “larb” suena igual que la palabra tailandesa para fortuna, y ninguna celebración del noreste ocurre sin él.",
       history: "El Larb bajó por el Mekong desde Laos hasta Isaan y se volvió el platillo de las bodas, los años nuevos y los regresos a casa — su nombre suena a laap, fortuna, así que comerlo ya es medio camino andado hacia una bendición. La carne molida tibia se revuelve con limón, salsa de pescado, hojuelas de chile, hierbabuena y khao khua: arroz crudo tostado en un sartén seco y luego martajado, ese crujido ahumado que hace que el Larb sea Larb. La tradición le da al jefe de la familia el honor de revolverlo. El nuestro se revuelve en la cocina — la suerte se transfiere de todos modos.",
     },
   },
   "nam-tok-salad": {
-    description: "Carne “cascada” — rib-eye asado rebanado delgado & jugoso, revuelto con limón, chile, hierbas tailandesas & arroz tostado. Un gajo de col para domar el fuego.",
+    description: "Carne “cascada” — rib-eye asado rebanado delgado y jugoso, revuelto con limón, chile, hierbas tailandesas y arroz tostado. Un gajo de col para domar el fuego.",
     story: {
       lede: "Carne “cascada” — el nombre viene del chisporroteo de los jugos cayendo sobre las brasas mientras el rib-eye se asa.",
       history: "Nam tok quiere decir cascada, y la poesía aquí es de lo más práctica: mientras la carne se asa sobre el carbón, sus jugos escurren y chisporrotean en las brasas — de ese sonido salió el nombre del platillo. Clásico de las parrillas de Isaan, aplica todo lo que sabe el Larb — limón, chile, hierbas, el crujido del arroz tostado — a la carne rebanada en vez de la molida. Asamos el rib-eye, lo rebanamos delgado y todavía sonrojado, y lo mandamos con un gajo de col para domar el fuego entre bocado y bocado.",
     },
   },
   "thai-sausage": {
-    description: "Tres salchichas de molienda gruesa recién salidas de la parrilla — tripa que truena, centro jugoso. Muérdelas con jengibre fresco, chile, limón & cacahuate.",
+    description: "Tres salchichas de molienda gruesa recién salidas de la parrilla — tripa que truena, centro jugoso. Muérdelas con jengibre fresco, chile, limón y cacahuate.",
     story: {
       lede: "La famosa salchicha agria de Isaan — días enteros de paciencia en cada tronido.",
       history: "El sai krok Isan es el tesoro de carretera del noreste: puerco de molienda gruesa y arroz glutinoso (sticky rice) sazonados con ajo, embutidos a mano y dejados fermentar hasta que los cultivos lácticos naturales los vuelven suave y adictivamente agrios — cosa de días, nunca de horas. Hueles el carbón antes de ver la carreta. La tradición manda una escolta de col cruda, jengibre fresco, chile ojo de pájaro (chile tailandés) y cacahuate: alterna las mordidas y deja que lo agrio, lo picoso y lo fresco se sigan turnando el lugar.",
@@ -155,7 +155,7 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "tom-yum": {
-    description: "El famoso caldo picante & agrio — hierba limón, galanga & lima kaffir humeando en un caldo rojo de chile con hongos de paja.",
+    description: "El famoso caldo picante y agrio — hierba limón, galanga y lima kaffir humeando en un caldo rojo de chile con hongos de paja.",
     story: {
       lede: "La olla más famosa de Tailandia — el caldo picante y agrio que le enseñó al mundo a decir hierba limón y galanga.",
       history: "Tom quiere decir hervir; yam es la gran familia tailandesa de las mezclas agrias y picosas. El matrimonio ocurrió en las Llanuras Centrales, tierra de ríos, donde la pesca del día se encontró con la hierba limón, la galanga y la lima kaffir que crecían en cada orilla. El Tom Yum Kung, la versión con camarón, subió junto con Bangkok en la era Rattanakosin y terminó por convertirse en la tarjeta de presentación del país ante el mundo. El nuestro humea con hongos de paja en un caldo encendido de chile — claro, feroz, reparador.",
@@ -169,7 +169,7 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "tom-kha": {
-    description: "La leche de coco sedosa suaviza lo picante & lo agrio hasta volverlo cremoso, cítrico & peligrosamente fácil de tomar.",
+    description: "La leche de coco sedosa suaviza lo picante y lo agrio hasta volverlo cremoso, cítrico y peligrosamente fácil de tomar.",
     ingredients: [
       "Leche de coco fresca y crema de coco",
       "Galanga (kha) — en rebanadas gruesas; la sopa lleva su nombre",
@@ -190,42 +190,42 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "tom-kha-seafood": {
-    description: "Caldo cremoso de coco, picante & agrio, atiborrado de mariscos — olla para compartir.",
+    description: "Caldo cremoso de coco, picante y agrio, atiborrado de mariscos — olla para compartir.",
     story: {
       lede: "El caldo más sedoso de la casa se encuentra con la pesca del día — coco, galanga y mar en una sola olla.",
       history: "El Tom Kha se hizo de un nombre como sopa de pollo, pero las cocinas de la costa tailandesa siempre han sabido lo que la leche de coco le hace a los mariscos: los suaviza, los redondea, los favorece. La galanga no se negocia — es el kha del nombre — y el limón sigue cayendo justo al final. Se sirve al centro de la mesa, como en Tailandia: lo bastante cremoso para los precavidos, lo bastante aromático para los devotos.",
     },
   },
   "po-tak-seafood": {
-    description: "“Se revienta la trampa de pesca” — un caldo claro, ardiente, picante & agrio, atiborrado de mariscos & hierbas tailandesas. Olla.",
+    description: "“Se revienta la trampa de pesca” — un caldo claro, ardiente, picante y agrio, atiborrado de mariscos y hierbas tailandesas. Olla.",
     story: {
       lede: "“Se revienta la trampa de pesca” — una sopa que es el alarde de un pescador, tan cargada que el equipo no aguantó.",
       history: "Un po es la trampa de pesca sobre estacas que los pescadores de la costa tailandesa llevan generaciones clavando en las aguas bajas; taek quiere decir que se rompe. El po taek es la sopa del día en que la pesca le gana al equipo — todo va a dar a un caldo claro y ardiente de hierba limón, galanga y albahaca tailandesa, sin leche de coco que amortigüe el golpe. El primo más flaco y más salado del Tom Yum: puro mar, pura hierba, puro picor.",
     },
   },
   "wonton-soup": {
-    description: "Wontones sedosos de puerco & camarón en un caldo limpio, con germen de soya & cebollín — el platillo más tierno de la mesa.",
+    description: "Wontones sedosos de puerco y camarón en un caldo limpio, con germen de soya y cebollín — el platillo más tierno de la mesa.",
     story: {
       lede: "El platillo más tierno de la mesa — paquetitos sedosos en un caldo limpio, un regalo del barrio chino de Bangkok.",
       history: "Los wontones navegaron hasta Siam con los inmigrantes cantoneses y teochew, cuyos puestos de fideos convirtieron la calle Yaowarat de Bangkok en una de las grandes calles para comer de Asia — y el nombre, en cantonés, tiene fama de evocar el gesto de “tragarse las nubes”. Los cocineros tailandeses mantuvieron el caldo claro y honesto, le sumaron germen de soya y cebollín, e hicieron del kiao nam el platillo que una familia tailandesa ordena para los niños, para los abuelos y para cualquiera que necesite que lo cuiden.",
     },
   },
   "panang-curry": {
-    description: "Panang espeso y dulce-salado que abraza cada bocado en crema de coco, con pimiento morrón rojo & albahaca sagrada.",
+    description: "Panang espeso y dulce-salado que abraza cada bocado en crema de coco, con pimiento morrón rojo y albahaca sagrada.",
     story: {
       lede: "El curry de terciopelo — más espeso, más callado y más rico que su primo rojo, y presente en los recetarios tailandeses desde 1889.",
       history: "El phanaeng aparece impreso en Tailandia desde 1889, ya instalado con toda naturalidad en las mesas de la era Rattanakosin. Su nombre es un misterio feliz — unos oyen ahí el malayo panggang, asado; otros oyen la isla de Penang; otros juran que es tailandés hasta los huesos. Su carácter, en cambio, no se discute: más crema de coco, menos chiles, cacahuate trabajado dentro de la pasta y un hervor lento hasta que el aceite sube a la superficie y la salsa se pega como terciopelo. Lo terminamos con pimiento morrón rojo y albahaca sagrada (kaprao).",
     },
   },
   "yellow-curry": {
-    description: "Dorado, suave & reconfortante — pollo cocido despacio y papa tierna en un curry cremoso y tibio de cúrcuma.",
+    description: "Dorado, suave y reconfortante — pollo cocido despacio y papa tierna en un curry cremoso y tibio de cúrcuma.",
     story: {
       lede: "El dorado, el amable — donde la ruta india de las especias se encuentra con la crema de coco tailandesa.",
       history: "El kaeng kari es lo que siglos de comercio por el océano Índico dejaron dentro de la olla tailandesa: cúrcuma, comino y semilla de cilantro que llegaron a lomo de los vientos del monzón, y que las cocinas tailandesas musulmanas fueron envolviendo en leche de coco hasta volverlos redondos y reconfortantes. Pollo cocido despacio, papa tierna, cebolla dulce. Es el curry que los papás tailandeses ordenan para sus hijos — y el que ordenan para sí mismos los tailandeses que extrañan su casa.",
     },
   },
   "green-curry": {
-    description: "Verde de hierbas & fragante — calabacita, berenjena, pimiento morrón & albahaca en un curry de coco bien vivo.",
+    description: "Verde de hierbas y fragante — calabacita, berenjena, pimiento morrón y albahaca en un curry de coco bien vivo.",
     story: {
       lede: "El curry “verde dulce” — el nombre le viene del color, no del azúcar — y apenas rebasa el siglo de vida.",
       history: "El kaeng khiao wan es un clásico joven: se registró por primera vez entre 1908 y 1926, ya tarde en la era real de Siam. El nombre engaña a los traductores: wan, dulce, describe ese tono pálido y cremoso que los tailandeses llaman “verde dulce” — no el sabor, que pica más que el curry rojo. Los chiles ojo de pájaro (chile tailandés) verdes y frescos le dan a la pasta tanto su color como su temperamento; la leche de coco, la berenjena, la calabacita y la albahaca lo redondean hasta convertirlo en uno de los curries más queridos del planeta.",
@@ -239,28 +239,28 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "house-fried-rice": {
-    description: "Arroz rojo salteado al wok con huevo & cebollín, y pepino fresco al lado.",
+    description: "Arroz rojo salteado al wok con huevo y cebollín, y pepino fresco al lado.",
     story: {
       lede: "El mejor segundo acto del mundo — arroz humilde que renace brillante en un wok al rojo vivo.",
       history: "El arroz frito bajó hacia el sur con los inmigrantes chinos y encontró su alma gemela en el arroz aromático de Tailandia — más seco, más perfumado, hecho a la medida del wok. El khao pad se volvió el consuelo universal del país: cada fonda de barrio, cada abuela, cada antojo de medianoche. El nuestro saltea arroz rojo al wok con huevo y cebollín hasta que cada grano queda brillante, con pepino fresco al lado — el signo de puntuación de toda mesa tailandesa.",
     },
   },
   "spicy-basil-fried-rice": {
-    description: "El fuego del Krapow con el consuelo del arroz frito — chile, ajo & albahaca sagrada en cada cucharada.",
+    description: "El fuego del Krapow con el consuelo del arroz frito — chile, ajo y albahaca sagrada en cada cucharada.",
     story: {
       lede: "Dos leyendas tailandesas en un solo wok — el fuego del krapow envuelto en el consuelo del arroz frito.",
       history: "Cuando el pad kaphrao se volvió el almuerzo de cajón de Tailandia, la versión en arroz frito llegó con la misma certeza con que el mediodía sigue a la mañana: el mismo chile, el mismo ajo y la misma albahaca sagrada (kaprao), ahora cargados por un arroz que también pasó por la llama. Es la lógica de las fondas de arroz — un wok, dos antojos, cero concesiones. Ponle un huevo estrellado encima y ya estás comiendo como cliente de siempre en Bangkok.",
     },
   },
   "pineapple-fried-rice": {
-    description: "Piña dulce, pasas, jitomate & nuez de la India revueltos en arroz frito con huevo — dulce-salado & adictivo.",
+    description: "Piña dulce, pasas, jitomate y nuez de la India revueltos en arroz frito con huevo — dulce-salado y adictivo.",
     story: {
       lede: "El arroz de fiesta — piña dulce, pasas y nuez de la India revueltas entre granos hilvanados de huevo.",
       history: "El khao pad sapparot es el arroz frito tailandés con su vestido de fiesta — servido, como manda su fama, dentro de una piña ahuecada cuando hay algo que celebrar. La idea es sabiduría tailandesa de la vieja escuela: la fruta tiene su lugar en la comida salada, y la acidez dulce de la piña despierta al arroz salteado igual que el limón despierta a un curry. Las pasas, el jitomate y la nuez de la India mantecosa rematan un plato que ha convertido a más escépticos que ningún otro que conozcamos.",
     },
   },
   "narwhal-garlic-beef": {
-    description: "Nuestro arroz frito de la casa — res sellada con una cantidad gloriosa de ajo dorado, cada grano brillante & sabroso.",
+    description: "Nuestro arroz frito de la casa — res sellada con una cantidad gloriosa de ajo dorado, cada grano brillante y sabroso.",
     story: {
       lede: "Nuestro arroz de la casa, nuestra regla de la casa: el ajo dorado nunca es demasiado.",
       history: "Este es puro Narwhal. En las pruebas de receta, nuestra chef siguió duplicando el ajo frito sobre un arroz frito con res nomás por ver qué pasaba — y el plato seguía regresando vacío. La versión final sella la carne a fuego bravo, la envuelve en arroz brillante con huevo y remata con un derrumbe de ajo frito al segundo exacto en que se vuelve dorado y dulce. Nunca existió en Tailandia. Solo pudo haber pasado aquí — y eso nos da un poquito de orgullo.",
@@ -274,21 +274,21 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "garlic-pepper-over-rice": {
-    description: "Ajo dorado & pimienta quebrada sobre arroz al vapor — sencillo, sabroso, bien hecho.",
+    description: "Ajo dorado y pimienta quebrada sobre arroz al vapor — sencillo, sabroso, bien hecho.",
     story: {
       lede: "El recuerdo de sabor más antiguo de Tailandia — ajo y pimienta blanca, el picor que existía desde antes del chile mismo.",
       history: "Los chiles no llegaron a Siam sino hasta el siglo XVII, a bordo de los barcos portugueses. Antes de eso, el picor tailandés era cosa de pimienta blanca en grano y ajo — y el pad kratiem prik thai mantiene encendida esa llama más antigua. Ajo dorado, pimienta quebrada y un glaseado sabroso sobre arroz al vapor: el sabor de la cocina tailandesa antes de que llegara América, y que todavía ordena a diario cualquiera que quiera que el almuerzo se sienta como un acto de cariño.",
     },
   },
   "krapow-over-rice": {
-    description: "La leyenda del almuerzo tailandés — chile ardiente & albahaca sagrada bien fragante sobre arroz.",
+    description: "La leyenda del almuerzo tailandés — chile ardiente y albahaca sagrada bien fragante sobre arroz.",
     story: {
       lede: "La leyenda del almuerzo tailandés — el platillo que los tailandeses ordenan cuando no logran decidir qué ordenar.",
       history: "El pad kaphrao surgió en los años veinte y treinta, cuando la técnica china del wok se topó con el bai kaphrao — esa albahaca sagrada de aroma a pimienta y clavo que los tailandeses cultivan desde hace siglos — y a partir de los cincuenta arrasó con el país. Hoy es el almuerzo nacional no oficial, tan universal que krapow es la respuesta de cajón a la pregunta “¿qué como?”. Wok al rojo vivo, chile, ajo, albahaca sagrada, arroz. Ponle el huevo estrellado crujiente; todo el mundo lo hace.",
     },
   },
   "og-pad-thai": {
-    description: "Fideos de arroz elásticos en salsa dulce de tamarindo, germen de soya & cebollín — limón para el chispazo, cacahuate para el crujido.",
+    description: "Fideos de arroz elásticos en salsa dulce de tamarindo, germen de soya y cebollín — limón para el chispazo, cacahuate para el crujido.",
     ingredients: [
       "Fideos de arroz chantaboon cortados a mano (jantaboon)",
       "Concentrado de tamarindo de la casa, azúcar de palma, salsa de pescado",
@@ -309,21 +309,21 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "pad-see-ew": {
-    description: "Fideos de arroz anchos, sellados ahumados y dulces en un wok caliente, con brócoli chino & huevo.",
+    description: "Fideos de arroz anchos, sellados ahumados y dulces en un wok caliente, con brócoli chino y huevo.",
     story: {
       lede: "El fideo del consuelo, ahumado y dulce — las orillas chamuscadas son justo el chiste.",
       history: "Pad see ew quiere decir “frito con salsa de soya”, y es la rama tailandesa de una familia de fideos que va del chow fun cantonés al char kway teow de Singapur — sembrada dondequiera que se asentaron los cocineros chinos de wok. Los fideos de arroz anchos se encuentran con la soya oscura, el huevo y el brócoli chino (gai lan) en un wok al rojo vivo; los azúcares se queman y los fideos se ampollan. Ese amargor tenue y ahumado — el aliento del wok — es lo que separa a lo verdadero de un simple salteado. Los nuestros se ampollan como se debe.",
     },
   },
   "pad-kee-mao": {
-    description: "Salidos de un wok al rojo vivo — chile tailandés, pimiento morrón & albahaca sagrada. Picosos en serio.",
+    description: "Salidos de un wok al rojo vivo — chile tailandés, pimiento morrón y albahaca sagrada. Picosos en serio.",
     story: {
       lede: "Los fideos del borracho — nada de alcohol en el sartén, tres leyendas detrás del nombre y un nivel de picor que va en serio.",
       history: "Nadie se pone del todo de acuerdo sobre por qué pad kee mao quiere decir “fideos del borracho”. Unos dicen que es el platillo que se avienta de prisa después de una noche larga, con lo que todavía quede en la cocina; otros, que el chile está calibrado para atravesar un paladar adormecido; una versión le echa la culpa a una esposa que enchiló la cena de su marido hasta convertirla en lección. En lo que todos coinciden es en la medicina misma: fideos anchos, un wok violento, chile tailandés y albahaca sagrada (kaprao). Nosotros los cocinamos picosos en serio.",
     },
   },
   "thai-boat-noodles": {
-    description: "Caldo de res hervido despacio, oscuro & herbal — trozos suaves de res, albóndigas, brócoli chino & germen de soya.",
+    description: "Caldo de res hervido despacio, oscuro y herbal — trozos suaves de res, albóndigas, brócoli chino y germen de soya.",
     story: {
       lede: "Un tazón con cien años de río por debajo — vendido desde cocinas flotantes en los canales del viejo Siam.",
       history: "Antes de que Tailandia tuviera carreteras, tenía canales; y antes de tener plazas de comida, tenía los Boat Noodles: vendedores remando por los khlong con una olla de carbón equilibrada a media barca, sirviendo con cucharón un caldo de res oscuro y hondo de hierbas en tazones chicos — chicos, para que nada se derramara cuando pasaba el oleaje de otra lancha. Los canales de Rangsit, cerca de Bangkok, hicieron famoso el platillo; con el tiempo las carreteras dejaron varadas a las barcas, pero el tazón sobrevivió. El nuestro le rinde homenaje con caldo hervido despacio, trozos de res, albóndigas y verduras.",
@@ -337,21 +337,21 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "chow-mein": {
-    description: "Fideos yakisoba bien elásticos revueltos con huevo, col, apio & zanahoria.",
+    description: "Fideos yakisoba bien elásticos revueltos con huevo, col, apio y zanahoria.",
     story: {
       lede: "El viajero cantonés que se quedó a vivir en todos los puertos del mundo — fideos elásticos, wok caliente, cero fronteras.",
       history: "Chow mein quiere decir, sin más, “fideos fritos”, y pocos platillos han viajado tan lejos con apenas dos palabras. Los cocineros cantoneses lo llevaron cruzando el Pacífico hace más de un siglo, y echó raíces en cada lugar donde aterrizó — la cultura del wok en Tailandia lo adoptó sin pensárselo dos veces. El nuestro revuelve fideos elásticos estilo yakisoba con huevo, col, apio y zanahoria: un platillo de cruce de caminos para una mesa de cruce de caminos.",
     },
   },
   "spaghetti-kee-mao": {
-    description: "Los fideos del borracho a la italiana — spaghetti por un wok al rojo vivo, chile tailandés, pimiento morrón & albahaca sagrada.",
+    description: "Los fideos del borracho a la italiana — spaghetti por un wok al rojo vivo, chile tailandés, pimiento morrón y albahaca sagrada.",
     story: {
       lede: "El giro italiano favorito de Bangkok — un spaghetti que se escapó de casa y se fue con el wok.",
       history: "Tailandia se enamoró del spaghetti hace décadas y luego hizo algo que Italia jamás autorizó: lo echó a un wok en llamas con chile, ajo y albahaca sagrada. Hoy el spaghetti kee mao es un clásico moderno muy querido en todo Bangkok — la pasta al dente aguanta de maravilla el fuego de los fideos del borracho y conserva su mordida a pesar del chamuscado. Nuestra cocina lo prepara tailandés y sin pedir perdón. En algún lugar una abuela italiana frunce el ceño; en algún otro, una abuela tailandesa guiña el ojo.",
     },
   },
   "spaghetti-tom-yum": {
-    description: "Spaghetti al dente revuelto en el famoso picante & agrio — pasta de chile, hierba limón, lima kaffir & galanga.",
+    description: "Spaghetti al dente revuelto en el famoso picante y agrio — pasta de chile, hierba limón, lima kaffir y galanga.",
     story: {
       lede: "El caldo más famoso convertido en salsa — hierba limón, lima kaffir y pasta de chile pegadas a cada hebra.",
       history: "Cuando los cocineros tailandeses descubrieron que el spaghetti sobrevive al wok, la siguiente pregunta era inevitable: ¿aguantaría también el Tom Yum? Este plato es la respuesta — pasta de chile, hierba limón, lima kaffir y galanga, reducidos desde la sopa más famosa de Tailandia hasta volverse una capa brillante sobre pasta al dente. La cocina tailandesa moderna en su versión más segura de sí misma: sabores de tesoro nacional sobre una espina dorsal italiana prestada. Nuestra cocina de pruebas se negó a dejarlo ir.",
@@ -365,14 +365,14 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "garlic-pepper-alacarte": {
-    description: "Ajo dorado & pimienta blanca quebrada, sellados y sabrosos.",
+    description: "Ajo dorado y pimienta blanca quebrada, sellados y sabrosos.",
     story: {
       lede: "La vieja guardia de los salteados tailandeses — ajo y pimienta blanca, firmes en su puesto desde antes de que el chile llegara a Siam.",
       history: "El pad kratiem prik thai se levanta sobre el trío fundador de la cocina tailandesa: ajo, pimienta blanca en grano y raíz de cilantro, machacados juntos desde mucho antes de que los comerciantes portugueses trajeran el chile en el siglo XVII. Esa pasta antiquísima todavía sostiene la mitad de la cocina tailandesa; aquí da un paso al frente y se queda con todo el escenario, sellada hasta quedar dorada y sabrosa. Sencillo, antiguo, exactamente como debe ser.",
     },
   },
   "spicy-basil-alacarte": {
-    description: "El clásico Krapow — chile & albahaca sagrada, escandaloso & fragante.",
+    description: "El clásico Krapow — chile y albahaca sagrada, escandaloso y fragante.",
     story: {
       lede: "El clásico krapow servido como lo quiere el purista — todo el fuego dentro del wok.",
       history: "Nacido en los años veinte, cuando la técnica china del wok abrazó la sagrada albahaca kaprao de Tailandia, el pad kaphrao se convirtió en la orden de cajón del país — el platillo que le responde a todo almuerzo indeciso. Esta es la versión a la carta para la mesa que quiere la leyenda en estado puro: chile, ajo, la proteína que elijas y una tormenta de bai kaphrao de verdad, escandalosa y fragante. El huevo estrellado es opcional, pero la historia lo recomienda.",
@@ -386,14 +386,14 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "spicy-basil-dino-rib": {
-    description: "Dino rib de res cocida despacio y salteada con albahaca sagrada, ajo & chile.",
+    description: "Dino rib de res cocida despacio y salteada con albahaca sagrada, ajo y chile.",
     story: {
       lede: "El tratamiento krapow sobre una dino rib de res entera, cocida despacio — fuego, ajo, chile y una tormenta de albahaca sagrada.",
       history: "El pad kaphrao se inventó para carne rápida y wok caliente; este plato le baja la velocidad a una mitad de la ecuación. La dino rib — una costilla corta de res entera, con hueso — se cuece a fuego bajo durante horas hasta quedar tan suave que se deshace con el tenedor, y luego se termina en el wok con ajo, chile ojo de pájaro (chile tailandés) y bai kaphrao de verdad, para que la salsa se selle sobre la carne en vez de quedarse debajo. Es el platillo para la mesa que quiere el krapow a todo volumen y quiere compartirlo.",
     },
   },
   "chinese-broccoli": {
-    description: "Verdura de tallo crujiente, sellada al wok con ajo & salsa de ostión.",
+    description: "Verdura de tallo crujiente, sellada al wok con ajo y salsa de ostión.",
     story: {
       lede: "Gai lan, ajo, salsa de ostión y fuego — cuatro ingredientes que levantaron la mitad de la cocina tailandesa-china.",
       history: "El pad khana es lo que pasa cuando nadie le da demasiadas vueltas a una verdura. El brócoli chino (gai lan) llegó con los cocineros inmigrantes que le cambiaron la cara a la comida de Bangkok hace un siglo, y los tailandeses se enamoraron de sus tallos crujientes y su mordida mineral. Sellado en segundos con ajo y salsa de ostión, es la verdura de cajón lo mismo en los puestos callejeros que en los salones de banquetes — y el platillo que ordena un cocinero tailandés para averiguar si una cocina respeta las verduras.",
@@ -407,21 +407,21 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "mixed-vegetables": {
-    description: "Verduras del mercado al wok bien caliente, crujientes & brillosas.",
+    description: "Verduras del mercado al wok bien caliente, crujientes y brillosas.",
     story: {
       lede: "El clásico de la mesa familiar — lo mejor que dio el mercado hoy, revuelto hasta quedar brilloso en un wok bien caliente.",
       history: "El pad pak ruam es menos una receta que una filosofía: la cocinera tailandesa de casa primero va al mercado y después decide, y las mejores verduras del día se encuentran en un mismo wok con ajo y una salsa ligera y brillosa. En una mesa atiborrada de curry y chile, este es el respiro verde — el platillo que deja lucir a todos los demás. El nuestro cambia con el mercado, tal como debe ser.",
     },
   },
   "ong-choy": {
-    description: "Espinaca de agua (morning glory) al fuego rugiente — ajo, salsa de ostión, tallos crujientes & hojas brillosas.",
+    description: "Espinaca de agua (morning glory) al fuego rugiente — ajo, salsa de ostión, tallos crujientes y hojas brillosas.",
     story: {
       lede: "Espinaca de agua (morning glory) sobre llama rugiente — un salteado tan teatral que en un pueblo tailandés acabaron aventándolo por los aires.",
       history: "Pad pak boong fai daeng — espinaca de agua, llama roja — se llama así por el fuego que brinca cuando la verdura cae en el aceite hirviendo. En Phitsanulok se volvió teatro callejero literal: los famosos vendedores de la “verdura voladora” lanzan el wok en llamas de un lado a otro de la calle, hacia un atrapador que equilibra un plato. Debajo del espectáculo hay un platillo serio — hojas de tallo hueco que se mantienen crujientes, ajo, pasta de soya y salsa de ostión, todo cocinado en segundos. Nosotros dejamos el fuego en la cocina; el sabor vuela de todos modos.",
     },
   },
   "cashew-nut": {
-    description: "Nueces de la India tostadas y mantequillosas, cebollín & chiles tostados — el clásico dulce-salado del wok.",
+    description: "Nueces de la India tostadas y mantequillosas, cebollín y chiles tostados — el clásico dulce-salado del wok.",
     story: {
       lede: "El consentido de los banquetes, bautizado con el nombre de un bosque mítico — la herencia china más acogedora de Tailandia.",
       history: "En tailandés, la nuez de la India se llama med mamuang himmaphan — semilla del mango de Himmaphan, el bosque encantado de la mitología — porque la nuez cuelga debajo de su fruta como si la hubiera inventado un cuentacuentos. El salteado desciende de la cocina de banquete china, suavizada al gusto tailandés: nueces tostadas y mantequillosas, cebollín y chiles secos tostados que cambian el ardor por el aroma. Dulce y salado a la vez, y capaz de poner a toda la mesa de acuerdo, es el plato que se vacía primero en cualquier mesa familiar.",
@@ -442,7 +442,7 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "narwhal-sundae": {
-    description: "Escoge tú el final — vainilla, chocolate o fresa, un barquillo crujiente & nubes de crema batida.",
+    description: "Escoge tú el final — vainilla, chocolate o fresa, un barquillo crujiente y nubes de crema batida.",
     story: {
       lede: "El gran final de la casa — tu helado, tu final, y nuestro sistema meteorológico de crema batida.",
       history: "Todo restaurante familiar necesita un postre que no requiera explicación y que provoque un silencio instantáneo. El nuestro es el Narwhal Sundae: vainilla, chocolate o fresa, un barquillo crujiente y nubes de crema batida — hecho para el niño de la mesa y para el adulto que jura que solo va a darle una probadita. Le pusimos nuestro propio nombre porque, igual que el narval, es sencillo, tantito mágico e imposible de mirar sin sonreír.",
@@ -477,7 +477,7 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "thai-tea": {
-    description: "De infusión cargada, ámbar anaranjado, dulce & cremoso sobre hielo.",
+    description: "De infusión cargada, ámbar anaranjado, dulce y cremoso sobre hielo.",
     story: {
       lede: "El ícono ámbar — nació del comercio de té del barrio chino de Bangkok en 1945, y desde entonces se sirve en vaso alto sobre hielo.",
       history: "El té tailandés empezó en la calle Yaowarat, donde una familia teochew de comerciantes de té descubrió que en el trópico el té chino caliente costaba trabajo de vender. En 1945 mezclaron un té rojo pensado para prepararse bien cargado, endulzarse y servirse sobre hielo — el nacimiento del cha yen. La leche condensada y la evaporada, que aguantan el calor en la alacena, le pusieron la corona cremosa; las notas tostadas y especiadas de la mezcla le dan ese famoso resplandor ámbar. Un trago, y ya estás parado en una banqueta de Bangkok.",
@@ -505,7 +505,7 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "iced-tea": {
-    description: "Limpio, frío & sin fondo.",
+    description: "Limpio, frío y sin fondo.",
     story: {
       lede: "El trago sin complicaciones — preparado limpio, servido en vaso alto, imposible de discutir.",
     },
@@ -518,13 +518,13 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "hot-coffee": {
-    description: "Tueste oscuro de la vieja escuela, caliente & sin adornos.",
+    description: "Tueste oscuro de la vieja escuela, caliente y sin adornos.",
     story: {
       lede: "Para el tradicionalista — una taza caliente y sin prisas para cerrar la comida.",
     },
   },
   "hot-tea": {
-    description: "Té tailandés, humeante & aromático.",
+    description: "Té tailandés, humeante y aromático.",
     story: {
       lede: "La despedida tibia — té tailandés sin el hielo, con todo el aroma.",
     },
@@ -543,13 +543,13 @@ export const DISHES_ES: Record<string, DishL10n> = {
     },
   },
   "passion-fruit": {
-    description: "Agridulce & soleado.",
+    description: "Agridulce y soleado.",
     story: {
       lede: "Agridulce y soleado — aquí habla el trópico.",
     },
   },
   "fresh-cucumber": {
-    description: "Frío, verde & para la sed.",
+    description: "Frío, verde y para la sed.",
     story: {
       lede: "Frío, verde y hecho para la sed — el vaso más tranquilo del menú.",
     },

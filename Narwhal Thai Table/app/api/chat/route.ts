@@ -5,6 +5,7 @@ import { submitMessage, type MessageInput } from '@/lib/message';
 import { submitOrder, type OrderInput, type OrderItem } from '@/lib/orders';
 import { submitCall } from '@/lib/calls';
 import { serviceWindowNow } from '@/lib/serviceHours';
+import { isLocale, type Locale } from '@/lib/i18n/locales';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -150,7 +151,21 @@ function seatLabel(t: string): string {
 // replay, so the seated/to-go context is dropped server-side. The actual
 // schedule lives in ONE place: lib/serviceHours.ts (per-day open/close).
 
-async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null, staleClosed = false) {
+// Which edition of the website the guest is reading (ChatWidget sends the
+// pathname locale). Aileen always answers in the language the guest writes;
+// this only sets the language of the FIRST reply, before they have written
+// much — a /ja visitor who types "pad thai?" should hear back in Japanese.
+const EDITION_LANGUAGE: Record<Exclude<Locale, 'en'>, string> = {
+  th: 'Thai',
+  vi: 'Vietnamese',
+  zh: 'Simplified Chinese',
+  'zh-tw': 'Traditional Chinese',
+  ko: 'Korean',
+  ja: 'Japanese',
+  es: 'Spanish',
+};
+
+async function callAnthropic(key: string, messages: ApiMsg[], table?: string | null, staleClosed = false, locale: Locale = 'en') {
   return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -163,6 +178,12 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
       max_tokens: MAX_TOKENS,
       system: [
         { type: 'text', text: buildSystemPrompt(), cache_control: { type: 'ephemeral' } },
+        ...(locale !== 'en'
+          ? [{
+              type: 'text',
+              text: `EDITION: This guest opened the ${EDITION_LANGUAGE[locale]} edition of the website, so greet and reply in ${EDITION_LANGUAGE[locale]} unless they write to you in another language — then follow their language as usual.`,
+            }]
+          : []),
         ...(table
           ? [{
               type: 'text',
@@ -207,9 +228,9 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { messages?: Msg[]; table?: string };
+  let body: { messages?: Msg[]; table?: string; locale?: string };
   try {
-    body = (await req.json()) as { messages?: Msg[] };
+    body = (await req.json()) as { messages?: Msg[]; table?: string; locale?: string };
   } catch {
     return Response.json({ error: 'bad request' }, { status: 400 });
   }
@@ -226,6 +247,7 @@ export async function POST(req: Request) {
 
   const table =
     typeof body.table === 'string' && /^[a-zA-Z0-9-]{1,12}$/.test(body.table) ? body.table : null;
+  const locale: Locale = isLocale(body.locale) ? body.locale : 'en';
   // Stale-link guard: a table QR opened outside service hours is a replay from
   // an old visit — keep the chat, drop the seated context and table tools.
   const staleClosed = Boolean(table) && !serviceWindowNow();
@@ -253,7 +275,7 @@ export async function POST(req: Request) {
   const lastUserText = typeof lastUser?.content === 'string' ? lastUser.content : '';
 
   try {
-    let r = await callAnthropic(key, apiMessages, table, staleClosed);
+    let r = await callAnthropic(key, apiMessages, table, staleClosed, locale);
     if (!r.ok) {
       const detail = await r.text();
       console.error('Anthropic API error', r.status, detail);
@@ -370,7 +392,7 @@ export async function POST(req: Request) {
         content: [{ type: 'tool_result', tool_use_id: toolUse.id, content: resultText }],
       });
 
-      r = await callAnthropic(key, apiMessages, table, staleClosed);
+      r = await callAnthropic(key, apiMessages, table, staleClosed, locale);
       if (!r.ok) {
         const detail = await r.text();
         console.error('Anthropic API error (post-tool)', r.status, detail);

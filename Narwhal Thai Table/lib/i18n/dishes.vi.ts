@@ -29,14 +29,14 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "thai-fish-cake": {
-    description: "Chả cá dai mềm, chiên tới màu đồng sậm — đồ chua dưa leo ớt mát lạnh & đậu phộng giã cho giòn.",
+    description: "Chả cá dai mềm, chiên tới màu đồng sậm — đồ chua dưa leo ớt mát lạnh và đậu phộng giã cho giòn.",
     story: {
       lede: "Món kinh điển của những phiên chợ miền sông nước Thái Lan — dai bật, lấm tấm rau thơm, chiên tới màu đồng sậm.",
       history: "Tod mun pla (chả cá Thái) ra đời ở đồng bằng miền Trung Thái Lan, nơi sông rạch một thời cho mỗi thị trấn nhiều cá hơn sức người ăn. Người ta giã cá chung với sốt cà ri đỏ, lá chanh Thái xắt sợi và đậu que giòn, rồi múc từng muỗng thả vào chảo dầu, chiên tới khi rìa bánh phồng rộp lên. Cái độ dai bật ấy mới là dấu ấn đáng giá của một tay bếp chịu khó. Còn đồ chua dưa leo trộn đậu phộng, tức món ajat mát lạnh, mới là bạn đời trọn kiếp của nó: một miếng nóng, một miếng mát.",
     },
   },
   "crispy-spring-rolls": {
-    description: "Vỏ cuốn tay giòn rôm rốp, cắn vào là tới ngay phần nhân thịt heo bằm & rau củ đậm đà.",
+    description: "Vỏ cuốn tay giòn rôm rốp, cắn vào là tới ngay phần nhân thịt heo bằm và rau củ đậm đà.",
     story: {
       lede: "Một cuốn chả giò giòn tan có hộ chiếu — sinh ra ở tỉnh Phúc Kiến bên Trung Quốc, hoàn thiện trong bếp Thái.",
       history: "Chả giò theo chân những người Phúc Kiến và Triều Châu di cư mà đến Xiêm La, thuở đó còn là bánh popiah cuốn mềm, ăn để mừng mùa xuân sang. Rồi đầu bếp Thái làm đúng cái việc mà đầu bếp Thái vẫn làm: họ vặn lửa lên. Chiên thật già, lớp vỏ vỡ tan trên phần nhân thịt heo bằm, miến và rau củ. Po pia tod (chả giò chiên) bây giờ Thái không kém bất cứ món nào trên thực đơn này — tiếng giòn của miếng cắn đầu tiên ở Bangkok cũng y hệt như ở đây.",
@@ -64,7 +64,7 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "fresh-spring-rolls": {
-    description: "Gỏi cuốn bánh tráng mát lạnh với xà lách giòn, dưa leo, húng lủi & cà rốt — chấm nước sốt đậu phộng béo ngậy.",
+    description: "Gỏi cuốn bánh tráng mát lạnh với xà lách giòn, dưa leo, húng lủi và cà rốt — chấm nước sốt đậu phộng béo ngậy.",
     story: {
       lede: "Kẻ điềm tĩnh của bàn ăn — không chảo dầu, không tiếng giòn, chỉ là một cuốn tươi mát ăn như đang giấu một điều bí mật.",
       history: "Gỏi cuốn là câu trả lời của Đông Nam Á cho món xà lách mà bạn có thể cầm trên tay: bánh tráng căng quanh miến, rau thơm và rau củ mát lạnh. Nó đi ra từ cùng một dòng popiah đã sinh ra cuốn chả giò chiên — chỉ khác ở chỗ bản tươi này nhất quyết từ chối dầu. Cuốn của chúng tôi gói gà bằm và đậu hũ chung với xà lách giòn, dưa leo, cà rốt và húng quế: một nốt trầm mát lạnh đối lại cả bàn ăn đang cay.",
@@ -85,21 +85,21 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "house-salad": {
-    description: "Xà lách giòn, dưa leo & cà chua mát lạnh, nam việt quất sấy dẻo ngọt, rưới nước trộn Thái chua thanh dậy vị.",
+    description: "Xà lách giòn, dưa leo và cà chua mát lạnh, nam việt quất sấy dẻo ngọt, rưới nước trộn Thái chua thanh dậy vị.",
     story: {
       lede: "Rau xanh quen thuộc, nước trộn thì Thái không lẫn vào đâu được — nhịp cầu lặng lẽ chúng tôi bắc giữa hai nền ẩm thực.",
       history: "Nhà hàng Thái nào ở xứ người rồi cũng tự nghĩ ra một dĩa xà lách của riêng mình; dĩa này là của chúng tôi. Rau thì California trăm phần trăm, nước trộn thì Thái Lan trăm phần trăm — đậm đà chiều sâu, chanh tươi rói, ngọt vừa đủ để nắm tay mấy trái nam việt quất sấy dẻo. Đây là dĩa chúng tôi đưa cho người bạn cứ khăng khăng rằng mình không ăn được đồ Thái. Tới miếng cuối cùng thì người bạn đó ăn được rồi.",
     },
   },
   "rib-eye-salad": {
-    description: "Thịt bò rib-eye nướng xém cạnh, xắt lát còn ấm, đặt trên xà lách mát, củ cải, hành lá & húng lủi — chan nước trộn chua thanh, thơm rau Thái.",
+    description: "Thịt bò rib-eye nướng xém cạnh, xắt lát còn ấm, đặt trên xà lách mát, củ cải, hành lá và húng lủi — chan nước trộn chua thanh, thơm rau Thái.",
     story: {
       lede: "Người Thái vốn không quen làm gỏi hiền lành — dĩa này ra bàn với thịt bò rib-eye nướng xém cạnh và một thứ nước trộn biết cắn lại.",
       history: "Yam nghĩa là trộn, và cả họ nhà yam chính là câu trả lời của người Thái cho món gỏi: phần nước trộn — chanh, nước mắm, ớt, thoáng một chút đường — quan trọng hơn bất cứ cọng rau nào. Yam nuea yang, món yam bò nướng, là thứ đầu bếp Thái thèm khi cần một dĩa gỏi ăn no như một bữa cơm. Chúng tôi xắt thịt bò rib-eye còn ấm hơi lửa, rải lên xà lách mát, củ cải, hành lá và húng lủi, để mỗi miếng gắp lên vừa nóng vừa mát cùng một lúc.",
     },
   },
   "som-tum-thai": {
-    description: "Đu đủ xanh giòn giã tại chỗ cùng tôm khô — chua, ngọt & cay gói trong một tiếng giòn tươi rói.",
+    description: "Đu đủ xanh giòn giã tại chỗ cùng tôm khô — chua, ngọt và cay gói trong một tiếng giòn tươi rói.",
     story: {
       lede: "Giã trong cối đá theo từng phần gọi, y như từ thuở trái đu đủ mới đặt chân tới Xiêm La — chua, ngọt, mặn và cay gói trong một tiếng giòn tươi rói.",
       history: "Đu đủ vốn không phải cây bản địa của Thái Lan: thương nhân bán đảo Iberia mang nó từ châu Mỹ sang hồi những năm 1600, và tới năm 1693 thì đu đủ đã mọc khắp Xiêm La. Đầu bếp Lào và vùng Isaan (Đông Bắc Thái Lan) đem trái xanh giòn ấy nhập vào truyền thống gỏi giã cối vốn có từ lâu đời hơn nhiều của họ, và tam mak hoong (gỏi đu đủ giã) ra đời. Mãi tới giữa thế kỷ 20 nó mới chinh phục được Bangkok, theo chân những người lao động Isaan lên thành phố, bán trước cổng các sân đấu quyền Thái rồi càn quét cả nước. Som Tum Thai là bản của thủ đô — tôm khô, đậu phộng, ngọt hơn một chút, nhưng lửa thì vẫn nguyên.",
@@ -120,21 +120,21 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "larb": {
-    description: "Thịt bằm còn ấm, hành tây tím & ớt bột trong nước trộn chua cay, thính gạo rang giã cho tiếng giòn thơm mùi khói.",
+    description: "Thịt bằm còn ấm, hành tây tím và ớt bột trong nước trộn chua cay, thính gạo rang giã cho tiếng giòn thơm mùi khói.",
     story: {
       lede: "Món cầu may của vùng Isaan (Đông Bắc Thái Lan) — chữ “larb” nghe gần như chữ chỉ vận may trong tiếng Thái, và lễ lạt nào ở miền Đông Bắc cũng không thể thiếu nó.",
       history: "Larb (gỏi thịt bằm kiểu Isaan) theo dòng Mekong từ Lào xuôi về vùng Isaan (Đông Bắc Thái Lan) rồi trở thành món của đám cưới, của năm mới, của những ngày con cháu về nhà — cái tên nghe gần như chữ laap, nghĩa là vận may, nên ăn một miếng cũng coi như đã nhận được nửa lời chúc phúc. Thịt bằm còn ấm được trộn với chanh, nước mắm, ớt bột, húng lủi và khao khua: gạo sống rang khô trong chảo rồi giã nhỏ, chính cái giòn thơm mùi khói ấy mới làm cho larb ra larb. Theo lệ xưa, người được vinh dự trộn món này là chủ gia đình. Món của chúng tôi thì trộn trong bếp — nhưng vận may vẫn cứ truyền qua như thường.",
     },
   },
   "nam-tok-salad": {
-    description: "Bò “thác đổ” — thịt bò rib-eye nướng, xắt lát mỏng mọng nước, trộn chanh, ớt, rau thơm Thái & thính gạo rang. Kèm một miếng bắp cải để dịu lửa.",
+    description: "Bò “thác đổ” — thịt bò rib-eye nướng, xắt lát mỏng mọng nước, trộn chanh, ớt, rau thơm Thái và thính gạo rang. Kèm một miếng bắp cải để dịu lửa.",
     story: {
       lede: "Bò “thác đổ” — cái tên đến từ tiếng xèo của nước thịt rơi xuống than hồng lúc miếng rib-eye đang nướng.",
       history: "Nam tok nghĩa là thác nước, mà chất thơ ở đây lại rất thực tế: thịt bò nướng trên than, nước thịt nhỏ giọt xuống và xèo lên giữa đám than hồng — chính âm thanh đó đặt tên cho món ăn. Là món nướng kinh điển của vùng Isaan (Đông Bắc Thái Lan), nó đem tất cả những gì larb đã biết — chanh, ớt, rau thơm, cái giòn của thính gạo rang — áp vào thịt bò xắt lát thay vì thịt bằm. Chúng tôi nướng rib-eye, xắt mỏng lúc miếng thịt còn ửng hồng, rồi kèm theo một miếng bắp cải để bạn dịu lửa giữa các miếng gắp.",
     },
   },
   "thai-sausage": {
-    description: "Ba khúc xúc xích xay thô vừa lấy khỏi vỉ nướng — vỏ căng bật, ruột mọng nước. Cắn kèm gừng tươi, ớt, chanh & đậu phộng.",
+    description: "Ba khúc xúc xích xay thô vừa lấy khỏi vỉ nướng — vỏ căng bật, ruột mọng nước. Cắn kèm gừng tươi, ớt, chanh và đậu phộng.",
     story: {
       lede: "Khúc xúc xích chua trứ danh của vùng Isaan (Đông Bắc Thái Lan) — mỗi tiếng cắn giòn là mấy ngày trời kiên nhẫn.",
       history: "Sai krok Isan là báu vật vỉa hè của miền Đông Bắc: thịt heo xay thô trộn cơm nếp, nêm tỏi, dồn bằng tay rồi để lên men cho tới khi men lactic tự nhiên đưa nó sang một vị chua dịu mà gây ghiền — chuyện của mấy ngày trời, không bao giờ chỉ vài tiếng. Bạn ngửi thấy mùi than trước khi kịp nhìn ra chiếc xe đẩy. Lệ xưa bắt buộc phải có đoàn tùy tùng đi kèm: bắp cải sống, gừng tươi, ớt hiểm và đậu phộng. Cứ cắn xen kẽ, để chua, cay và mát thay phiên nhau đổi chỗ.",
@@ -167,7 +167,7 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "tom-yum": {
-    description: "Món chua cay trứ danh — sả, riềng & lá chanh Thái bốc thơm trên nồi nước dùng đỏ ớt thả nấm rơm.",
+    description: "Món chua cay trứ danh — sả, riềng và lá chanh Thái bốc thơm trên nồi nước dùng đỏ ớt thả nấm rơm.",
     story: {
       lede: "Nồi nước lừng danh nhất của Thái Lan — thứ nước dùng chua cay đã dạy cả thế giới gọi tên sả và riềng.",
       history: "Tom nghĩa là nấu sôi; còn yam là cả một dòng họ lớn các món trộn chua cay của Thái Lan. Cuộc hôn phối ấy diễn ra ở vùng đồng bằng miền Trung Thái Lan chằng chịt sông rạch, nơi mẻ cá trong ngày gặp đúng những bụi sả, riềng và chanh Thái mọc dọc mọi bờ nước. Tom yum kung, phiên bản nấu tôm, lên ngôi cùng Bangkok thời Rattanakosin rồi trở thành tấm danh thiếp của cả xứ sở này với thế giới. Nồi của chúng tôi bốc khói cùng nấm rơm trong thứ nước dùng sáng rực màu ớt — trong veo, dữ dội, và hồi sức.",
@@ -181,7 +181,7 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "tom-kha": {
-    description: "Nước cốt dừa mượt mà xoa dịu chua cay thành một thứ béo ngậy, thơm vị chanh & ngon tới mức nguy hiểm.",
+    description: "Nước cốt dừa mượt mà xoa dịu chua cay thành một thứ béo ngậy, thơm vị chanh và ngon tới mức nguy hiểm.",
     ingredients: [
       "Nước cốt dừa tươi và cốt dừa đặc",
       "Riềng (kha) — xắt lát dày, món canh này lấy tên từ nó",
@@ -209,35 +209,35 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "po-tak-seafood": {
-    description: "“Nò cá vỡ toang” — nước dùng chua cay trong veo, rực lửa, chật kín hải sản & rau thơm Thái. Nguyên nồi.",
+    description: "“Nò cá vỡ toang” — nước dùng chua cay trong veo, rực lửa, chật kín hải sản và rau thơm Thái. Nguyên nồi.",
     story: {
       lede: "“Nò cá vỡ toang” — một nồi canh mang giọng khoác lác của dân chài, chất nhiều tới mức ngư cụ cũng chịu không nổi.",
       history: "Po là cái nò cá đóng cọc mà dân chài ven biển Thái Lan đã cắm nơi vùng nước cạn từ bao nhiêu đời nay; còn taek nghĩa là vỡ. Po taek là nồi canh dành cho cái ngày mẻ cá nhiều hơn sức chứa của ngư cụ — tất cả đổ hết vào một nồi nước dùng trong veo, rực lửa với sả, riềng và húng quế, và không có lấy một giọt nước cốt dừa nào để đỡ đòn. Người anh em gầy hơn, mặn mòi hơn của tom yum: thuần biển, thuần rau thơm, thuần cay.",
     },
   },
   "wonton-soup": {
-    description: "Hoành thánh nhân thịt heo & tôm mượt mềm trong nước dùng trong thanh, giá & hành lá — món hiền lành nhất trên bàn.",
+    description: "Hoành thánh nhân thịt heo và tôm mượt mềm trong nước dùng trong thanh, giá và hành lá — món hiền lành nhất trên bàn.",
     story: {
       lede: "Món hiền lành nhất trên bàn — những gói hoành thánh mượt mềm trong nước dùng trong thanh, món quà từ khu phố người Hoa của Bangkok.",
       history: "Hoành thánh theo tàu tới Xiêm La cùng những người Quảng Đông và Triều Châu di cư, mà mấy tiệm mì của họ đã biến con đường Yaowarat ở Bangkok thành một trong những con phố ăn uống lừng danh nhất châu Á — cái tên trong tiếng Quảng vẫn được truyền tụng là mang nghĩa “nuốt mây”. Đầu bếp Thái giữ cho nước dùng trong trẻo và thật thà, thêm giá và hành lá, rồi biến kiao nam thành món mà một gia đình Thái sẽ gọi cho tụi nhỏ, cho ông bà, và cho bất cứ ai đang cần được chăm sóc.",
     },
   },
   "panang-curry": {
-    description: "Sốt panang sánh đặc, ngọt mặn đậm đà, ôm lấy từng miếng trong cốt dừa đặc, ớt chuông đỏ & húng quế.",
+    description: "Sốt panang sánh đặc, ngọt mặn đậm đà, ôm lấy từng miếng trong cốt dừa đặc, ớt chuông đỏ và húng quế.",
     story: {
       lede: "Món cà ri nhung — sánh hơn, trầm hơn và béo hơn người anh em cà ri đỏ, đã có mặt trong sách nấu ăn Thái từ năm 1889.",
       history: "Phanaeng xuất hiện trên sách báo Thái từ sớm nhất là năm 1889, khi đó đã ngồi rất tự nhiên trên mâm cơm thời Rattanakosin. Cái tên của nó là một bí ẩn vui vẻ — người thì nghe ra chữ panggang trong tiếng Mã Lai, nghĩa là nướng; người lại nghe ra tên hòn đảo Penang; người khác thì quả quyết nó Thái tới tận xương. Chỉ có tính cách của nó là chắc chắn: nhiều cốt dừa đặc hơn, ít ớt hơn, đậu phộng được giã lẫn vào sốt cà ri, rồi riu lửa cho tới khi lớp dầu nổi lên và nước sốt bám lấy miếng thịt như nhung. Chúng tôi hoàn thiện nó bằng ớt chuông đỏ và húng quế.",
     },
   },
   "yellow-curry": {
-    description: "Vàng óng, hiền lành & ấm lòng — gà hầm mềm và khoai tây bở trong nồi cà ri béo ngậy, ấm mùi nghệ.",
+    description: "Vàng óng, hiền lành và ấm lòng — gà hầm mềm và khoai tây bở trong nồi cà ri béo ngậy, ấm mùi nghệ.",
     story: {
       lede: "Món vàng óng và hiền lành — nơi con đường gia vị Ấn Độ gặp cốt dừa đặc của người Thái.",
       history: "Kaeng kari là những gì mà mấy thế kỷ giao thương trên Ấn Độ Dương để lại trong nồi của người Thái: nghệ, thì là Ai Cập và hạt ngò, theo gió mùa mà tới, rồi được các căn bếp Thái theo đạo Hồi hòa vào nước cốt dừa cho tới khi tất cả tròn vị và ấm lòng. Gà hầm mềm, khoai tây bở, hành tây ngọt. Đây là món cà ri mà cha mẹ người Thái gọi cho con mình — và cũng là món mà người Thái xa xứ gọi cho chính mình mỗi khi nhớ nhà.",
     },
   },
   "green-curry": {
-    description: "Xanh màu rau thơm & dậy hương — bí ngòi, cà tím, ớt chuông & húng quế trong nồi cà ri nước cốt dừa tươi rói.",
+    description: "Xanh màu rau thơm và dậy hương — bí ngòi, cà tím, ớt chuông và húng quế trong nồi cà ri nước cốt dừa tươi rói.",
     story: {
       lede: "Món cà ri “xanh ngọt” — cái tên nói về màu sắc chứ không phải về đường — và tuổi đời vừa mới chạm tới một thế kỷ.",
       history: "Kaeng khiao wan là một món kinh điển còn trẻ, được ghi chép lần đầu trong khoảng từ 1908 đến 1926, vào cuối thời hoàng gia Xiêm La. Cái tên này đánh lừa người dịch: chữ wan, nghĩa là ngọt, nói về cái sắc xanh nhạt ngả màu kem mà người Thái gọi là “xanh ngọt” — chứ không nói về vị, vốn còn cay hơn cả cà ri đỏ. Ớt hiểm xanh tươi cho phần sốt cà ri cả màu sắc lẫn tính khí; rồi nước cốt dừa, cà tím, bí ngòi và húng quế bo tròn nó lại thành một trong những món cà ri được yêu nhất trên đời.",
@@ -251,28 +251,28 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "house-fried-rice": {
-    description: "Cơm gạo đỏ xào chảo lửa với trứng & hành lá, dọn kèm dưa leo mát lạnh.",
+    description: "Cơm gạo đỏ xào chảo lửa với trứng và hành lá, dọn kèm dưa leo mát lạnh.",
     story: {
       lede: "Màn hai vĩ đại nhất thế gian — hạt cơm khiêm nhường, tái sinh bóng lưỡng trong một chiếc chảo đang gào lửa.",
       history: "Cơm chiên theo chân những người Hoa di cư mà xuôi về phương Nam, rồi gặp đúng tri kỷ đời mình trong hạt gạo thơm của Thái Lan — khô hơn, dậy hương hơn, sinh ra là để dành cho chiếc chảo. Khao pad (cơm chiên Thái) trở thành niềm an ủi chung của cả nước: tiệm cơm nào cũng bán, bà ngoại nào cũng nấu được, cơn thèm nửa khuya nào cũng gọi tên. Bản của chúng tôi xào gạo đỏ với trứng và hành lá cho tới khi từng hạt cơm lên bóng, dọn kèm mấy lát dưa leo mát lạnh — dấu chấm câu quen thuộc của người Thái.",
     },
   },
   "spicy-basil-fried-rice": {
-    description: "Lửa cay của Krapow, cái ấm lòng của cơm chiên — ớt, tỏi & húng quế trong từng muỗng.",
+    description: "Lửa cay của Krapow, cái ấm lòng của cơm chiên — ớt, tỏi và húng quế trong từng muỗng.",
     story: {
       lede: "Hai huyền thoại Thái trong cùng một chiếc chảo — ngọn lửa krapow xào quyện vào cái ấm lòng của cơm chiên.",
       history: "Khi pad kaphrao trở thành bữa trưa mặc định của cả nước Thái, phiên bản cơm chiên nối gót theo sau chắc chắn như buổi trưa nối gót buổi sáng: vẫn ớt đó, tỏi đó, húng quế đó, chỉ khác là giờ chúng được những hạt cơm đã tự mình đi qua lửa mang trên lưng. Đó là lối tính toán của mấy tiệm cơm — một cái chảo, hai cơn thèm, không nhân nhượng chút nào. Úp thêm cái trứng ốp la lên mặt là bạn đang ăn y hệt một người khách ruột ở Bangkok.",
     },
   },
   "pineapple-fried-rice": {
-    description: "Thơm (khóm) ngọt lịm, nho khô, cà chua & hạt điều đảo đều trong cơm chiên trứng — ngọt mặn quyện nhau, ăn là ghiền.",
+    description: "Thơm (khóm) ngọt lịm, nho khô, cà chua và hạt điều đảo đều trong cơm chiên trứng — ngọt mặn quyện nhau, ăn là ghiền.",
     story: {
       lede: "Dĩa cơm của ngày vui — thơm ngọt, nho khô và hạt điều đảo cùng những hạt cơm vương trứng.",
       history: "Khao pad sapparot (cơm chiên thơm) là dĩa cơm chiên Thái khi diện áo dạ hội — nổi tiếng với cách dọn trong nguyên trái thơm khoét ruột mỗi khi nhà có chuyện đáng mừng. Ý tưởng ấy đến từ một lẽ khôn ngoan xưa của người Thái: trái cây có chỗ đứng đàng hoàng trong món mặn, và cái chua ngọt của trái thơm đánh thức dĩa cơm chiên y như miếng chanh đánh thức tô cà ri. Nho khô, cà chua và hạt điều béo ngậy khép lại một dĩa cơm đã thuyết phục được nhiều người hoài nghi hơn bất cứ món nào chúng tôi từng biết.",
     },
   },
   "narwhal-garlic-beef": {
-    description: "Cơm chiên đặc sản của quán — thịt bò áp chảo cùng một lượng tỏi vàng hào phóng tới mức lộng lẫy, từng hạt cơm bóng lưỡng & đậm đà.",
+    description: "Cơm chiên đặc sản của quán — thịt bò áp chảo cùng một lượng tỏi vàng hào phóng tới mức lộng lẫy, từng hạt cơm bóng lưỡng và đậm đà.",
     story: {
       lede: "Dĩa cơm của nhà, luật của nhà: trên đời này không có chuyện nhiều tỏi vàng quá tay.",
       history: "Món này thì Narwhal từ đầu tới cuối. Hồi còn thử công thức, bếp trưởng của chúng tôi cứ nhân đôi phần tỏi phi trên dĩa cơm chiên bò, chỉ để coi thử tới đâu thì dừng — vậy mà dĩa nào bưng ra cũng quay về sạch trơn. Bản cuối cùng áp chảo miếng thịt bò thật già lửa, đảo quyện vào cơm trứng bóng lưỡng, rồi phủ lên trên cả một trận lở tỏi phi đúng tới cái giây nó chuyển vàng và dậy ngọt. Món này chưa từng có ở Thái Lan. Nó chỉ có thể ra đời ở đây — và chúng tôi cũng hơi tự hào vì chuyện đó.",
@@ -286,21 +286,21 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "garlic-pepper-over-rice": {
-    description: "Tỏi vàng & tiêu giã dập rưới trên cơm trắng — giản dị, đậm đà, làm tới nơi tới chốn.",
+    description: "Tỏi vàng và tiêu giã dập rưới trên cơm trắng — giản dị, đậm đà, làm tới nơi tới chốn.",
     story: {
       lede: "Ký ức vị giác xưa nhất của người Thái — tỏi và tiêu trắng, cái cay có trước cả trái ớt.",
       history: "Mãi tới những năm 1600, trái ớt mới theo những con tàu Bồ Đào Nha mà cập bến Xiêm La. Trước đó, cái cay của người Thái là tiêu trắng với tỏi — và pad kratiem prik thai (xào tỏi tiêu) vẫn đang giữ ngọn lửa xưa ấy cháy tới hôm nay. Tỏi vàng, tiêu giã dập và một lớp sốt sánh đậm đà rưới lên cơm trắng: đúng cái vị của bếp Thái thuở châu Mỹ còn chưa bước vào, mà tới giờ ngày nào cũng có người gọi, chỉ vì họ muốn bữa trưa của mình có cảm giác được ai đó chăm nom.",
     },
   },
   "krapow-over-rice": {
-    description: "Huyền thoại bữa trưa của nước Thái — ớt cay xé & húng quế thơm nồng trên cơm trắng.",
+    description: "Huyền thoại bữa trưa của nước Thái — ớt cay xé và húng quế thơm nồng trên cơm trắng.",
     story: {
       lede: "Huyền thoại bữa trưa của nước Thái — món người Thái gọi khi không biết nên gọi món gì.",
       history: "Pad kaphrao ra đời vào thập niên 1920 và 1930, khi kỹ thuật đứng chảo của người Hoa gặp bai kaphrao — thứ húng quế Thái dậy mùi tiêu và phảng phất hương đinh hương mà người Thái đã trồng suốt mấy trăm năm — rồi sau thập niên 1950 thì nó càn quét cả nước. Ngày nay đây là bữa trưa quốc dân không cần ai phong, phổ biến tới mức krapow là câu trả lời có sẵn cho câu hỏi “bữa nay ăn gì?”. Chảo gào lửa, ớt, tỏi, húng quế, cơm. Nhớ kêu thêm cái trứng ốp la rìa giòn; ai cũng kêu.",
     },
   },
   "og-pad-thai": {
-    description: "Bánh phở dai mềm áo sốt me ngọt dịu, giá & hẹ — chanh cho bật vị, đậu phộng cho giòn.",
+    description: "Bánh phở dai mềm áo sốt me ngọt dịu, giá và hẹ — chanh cho bật vị, đậu phộng cho giòn.",
     ingredients: [
       "Bánh phở chantaboon cắt tay (jantaboon)",
       "Nước me cốt nhà nấu, đường thốt nốt, nước mắm",
@@ -321,21 +321,21 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "pad-see-ew": {
-    description: "Bánh phở sợi to áp lửa chảo cho ngọt thơm mùi khói, cải rổ & trứng.",
+    description: "Bánh phở sợi to áp lửa chảo cho ngọt thơm mùi khói, cải rổ và trứng.",
     story: {
       lede: "Dĩa bánh phở xào ấm lòng, thơm mùi khói ngọt — mấy cạnh sợi cháy xém mới chính là linh hồn của món.",
       history: "Pad see ew, nghĩa là “xào với nước tương”, là nhánh Thái Lan của một đại gia đình mì sợi trải dài từ món chow fun Quảng Đông cho tới char kway teow của Singapore — bén rễ ở bất cứ nơi nào có đầu bếp Hoa mang theo cái chảo của mình. Bánh phở sợi to gặp nước tương đen, trứng và cải rổ (cải làn) trong một chiếc chảo gào lửa; đường cháy xém lại còn sợi bánh thì phồng rộp lên. Chính cái đắng nhẹ thoảng mùi khói ấy — thứ người ta gọi là hơi thở của chiếc chảo — mới phân biệt được hàng thiệt với một dĩa xào thường. Chảo của chúng tôi làm sợi bánh phồng rộp đúng nghĩa.",
     },
   },
   "pad-kee-mao": {
-    description: "Ra lò từ chiếc chảo nóng gào lửa — ớt Thái, ớt chuông & húng quế. Cay tới nơi tới chốn, không đùa.",
+    description: "Ra lò từ chiếc chảo nóng gào lửa — ớt Thái, ớt chuông và húng quế. Cay tới nơi tới chốn, không đùa.",
     story: {
       lede: "Drunken Noodles (mì của kẻ say) — trong chảo chẳng có giọt rượu nào, sau cái tên là ba truyền thuyết, và trước mặt bạn là một độ cay rất nghiêm túc.",
       history: "Chẳng ai thống nhất được vì sao pad kee mao lại có nghĩa là mì của kẻ say. Có người nói đó là dĩa mì quăng đại vào chảo sau một đêm dài, với bất cứ thứ gì căn bếp còn sót lại; có người nói ớt được nêm mạnh tay như vậy là để xuyên qua một cái lưỡi đã tê. Lại có chuyện kể rằng một bà vợ đã nêm bữa tối của chồng cay lên thành một bài học nhớ đời. Nhưng ai cũng đồng ý về thang thuốc: bánh phở sợi to, một chiếc chảo nổi cơn, ớt Thái và húng quế. Chúng tôi nấu nó cay tới nơi tới chốn, không đùa.",
     },
   },
   "thai-boat-noodles": {
-    description: "Nước lèo bò hầm chậm, sậm màu & dậy mùi thảo mộc — thịt bò cục mềm rục, bò viên, cải rổ & giá.",
+    description: "Nước lèo bò hầm chậm, sậm màu và dậy mùi thảo mộc — thịt bò cục mềm rục, bò viên, cải rổ và giá.",
     story: {
       lede: "Một tô nước lèo cõng trên mình cả trăm năm sông nước — ngày trước được múc ra từ những căn bếp nổi trên kinh rạch Xiêm La.",
       history: "Trước khi nước Thái có xa lộ thì đã có kinh rạch, và trước khi có mấy khu ăn uống thì đã có boat noodles (mì ghe): người bán chèo ghe dọc những con khlong, giữa khoang đặt một nồi than cân thật khéo, múc thứ nước lèo bò sậm màu, thấm đẫm thảo mộc vào từng cái tô nhỏ — tô nhỏ, để khi con sóng của chiếc ghe khác trờ qua thì không sánh ra ngoài. Mấy con kinh Rangsit gần Bangkok đã làm nên tên tuổi cho món này; rồi đường sá dần đưa những chiếc ghe lên cạn, nhưng tô mì thì sống sót. Bản của chúng tôi tri ân điều đó bằng nước lèo hầm chậm, thịt bò cục, bò viên và rau xanh.",
@@ -349,21 +349,21 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "chow-mein": {
-    description: "Sợi mì yakisoba dai bật đảo cùng trứng, bắp cải, cần tây & cà rốt.",
+    description: "Sợi mì yakisoba dai bật đảo cùng trứng, bắp cải, cần tây và cà rốt.",
     story: {
       lede: "Kẻ lữ hành gốc Quảng Đông đã an cư ở mọi hải cảng trên trái đất này — sợi mì dai bật, chảo nóng già, và không hề có biên giới.",
       history: "Chow mein chỉ đơn giản có nghĩa là “mì xào”, vậy mà hiếm có món nào đi xa được đến thế chỉ với hai chữ. Hơn một thế kỷ trước, những đầu bếp Quảng Đông mang nó vượt Thái Bình Dương, và nó bén rễ ở bất cứ nơi nào nó đặt chân xuống — văn hóa chảo lửa của người Thái đón nhận nó mà chẳng cần nghĩ tới lần thứ hai. Bản của chúng tôi đảo sợi mì kiểu yakisoba dai bật cùng trứng, bắp cải, cần tây và cà rốt: một món ăn của ngã tư đường, dọn trên một cái bàn cũng là ngã tư đường.",
     },
   },
   "spaghetti-kee-mao": {
-    description: "Drunken Noodles đi lạc qua nước Ý — spaghetti quăng vào chảo nóng gào lửa, ớt Thái, ớt chuông & húng quế.",
+    description: "Drunken Noodles đi lạc qua nước Ý — spaghetti quăng vào chảo nóng gào lửa, ớt Thái, ớt chuông và húng quế.",
     story: {
       lede: "Cú bẻ lái kiểu Ý mà Bangkok mê nhất — sợi spaghetti bỏ nhà đi theo chiếc chảo.",
       history: "Người Thái phải lòng spaghetti từ mấy chục năm trước, rồi làm một chuyện mà nước Ý chưa bao giờ cho phép: quăng nó vào chiếc chảo đang bốc lửa cùng ớt, tỏi và húng quế. Spaghetti kee mao giờ đây là một món kinh điển hiện đại được cưng chiều khắp Bangkok — sợi mì al dente hứng trọn ngọn lửa của drunken noodles một cách đẹp đẽ, vẫn giữ nguyên độ dai qua lớp cháy xém. Bếp của chúng tôi nấu nó Thái tới bến, không xin lỗi ai hết. Ở đâu đó có một bà nội người Ý đang cau mày; và ở đâu đó có một bà nội người Thái đang nháy mắt.",
     },
   },
   "spaghetti-tom-yum": {
-    description: "Spaghetti al dente đảo trong thứ vị chua cay trứ danh — sốt ớt Thái, sả, lá chanh Thái & riềng.",
+    description: "Spaghetti al dente đảo trong thứ vị chua cay trứ danh — sốt ớt Thái, sả, lá chanh Thái và riềng.",
     story: {
       lede: "Nồi nước lèo trứ danh hóa thành nước sốt — sả, lá chanh Thái và sốt ớt Thái bám riết lấy từng sợi mì.",
       history: "Một khi đầu bếp Thái đã biết sợi spaghetti sống sót được trong chảo, thì câu hỏi kế tiếp là điều không thể tránh khỏi: liệu nó có gánh nổi Tom Yum không? Dĩa mì này chính là câu trả lời — sốt ớt Thái, sả, lá chanh Thái và riềng, tất cả được cô lại từ nồi súp trứ danh nhất nước Thái thành một lớp áo bóng lưỡng khoác lên sợi mì al dente. Đó là bếp Thái hiện đại lúc tự tin nhất: những hương vị quốc bảo đặt trên một bộ xương sống mượn của người Ý. Bếp thử nghiệm của chúng tôi đã nhất quyết không chịu buông món này ra.",
@@ -377,14 +377,14 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "garlic-pepper-alacarte": {
-    description: "Tỏi phi vàng ruộm & tiêu trắng đập giập, xào lửa lớn cho dậy vị mặn mà.",
+    description: "Tỏi phi vàng ruộm và tiêu trắng đập giập, xào lửa lớn cho dậy vị mặn mà.",
     story: {
       lede: "Bậc lão làng của họ nhà món xào Thái — tỏi và tiêu trắng, giữ vững trận địa từ thuở trái ớt còn chưa đặt chân tới Xiêm La.",
       history: "Pad kratiem prik thai (xào tỏi tiêu) dựng lên từ bộ ba khai quốc của bếp Thái: tỏi, tiêu trắng và rễ ngò, giã chung với nhau từ rất lâu trước khi thương nhân Bồ Đào Nha mang trái ớt tới hồi những năm 1600. Thứ hỗn hợp giã cổ xưa ấy tới giờ vẫn nằm dưới nền của phân nửa món ăn Thái; ở dĩa này, nó bước hẳn ra sân khấu và diễn một mình, xào tới vàng ruộm và đậm đà. Giản dị, xưa cũ, và đúng y như phải vậy.",
     },
   },
   "spicy-basil-alacarte": {
-    description: "Bản krapow kinh điển — ớt & húng quế Thái, ồn ào & thơm nức.",
+    description: "Bản krapow kinh điển — ớt và húng quế Thái, ồn ào và thơm nức.",
     story: {
       lede: "Bản krapow kinh điển dọn theo lối thuần túy nhất — bao nhiêu lửa dồn hết vào cái chảo.",
       history: "Ra đời hồi thập niên 1920, khi kỹ thuật chảo lửa của người Hoa gặp gỡ thứ húng quế linh thiêng của người Thái, pad kaphrao lớn lên thành món gọi mặc định của cả nước — món trả lời giùm mọi bữa trưa còn đang phân vân. Đây là bản à la carte dành cho bàn nào muốn đúng cái huyền thoại ấy: ớt, tỏi, phần thịt bạn chọn và cả một cơn bão lá kaphrao (húng quế Thái) thứ thiệt, ồn ào và thơm nức. Cái trứng ốp la thì tùy bạn, nhưng lịch sử xưa nay vẫn luôn khuyến khích.",
@@ -398,14 +398,14 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "spicy-basil-dino-rib": {
-    description: "Sườn bò (dino rib) hầm rục đem xào với húng quế Thái, tỏi & ớt.",
+    description: "Sườn bò (dino rib) hầm rục đem xào với húng quế Thái, tỏi và ớt.",
     story: {
       lede: "Phép krapow thi triển lên nguyên một miếng sườn bò (dino rib) hầm rục — lửa, tỏi, ớt và cả một cơn bão húng quế Thái.",
       history: "Pad kaphrao sinh ra vốn là để dành cho thịt xắt nhanh tay và một cái chảo thật nóng; dĩa này cố tình kéo chậm lại một nửa của phương trình đó. Miếng sườn bò (dino rib) — nguyên khối sườn bò còn nguyên xương — được hầm lửa liu riu suốt mấy tiếng cho tới khi đầu nĩa chạm vào là thịt rời ra, rồi mới đưa vào chảo hoàn tất cùng tỏi, ớt hiểm và lá húng quế Thái thứ thiệt, để nước sốt áp thẳng vào mặt thịt chứ không nằm bên dưới. Đây là món dành cho bàn nào muốn krapow thật ồn ào, và muốn chia nhau cùng ăn.",
     },
   },
   "chinese-broccoli": {
-    description: "Rau cải cọng giòn xào lửa lớn với tỏi & dầu hào.",
+    description: "Rau cải cọng giòn xào lửa lớn với tỏi và dầu hào.",
     story: {
       lede: "Cải rổ (cải làn), tỏi, dầu hào, lửa — bốn thứ đã dựng nên phân nửa nền ẩm thực Thái gốc Hoa.",
       history: "Pad khana (cải rổ xào) là chuyện xảy ra khi không ai nghĩ ngợi quá nhiều về một cọng rau. Cải rổ theo chân những người đầu bếp di cư đã vẽ lại bộ mặt ẩm thực Bangkok cách đây một thế kỷ mà tới, rồi người Thái mê đắm cái cọng giòn rôm cùng vị khoáng hơi chát của nó. Xào chớp nhoáng trên lửa lớn với tỏi và dầu hào, đây là dĩa rau tiêu chuẩn từ hàng quán vỉa hè cho tới bàn tiệc — và cũng là dĩa mà đầu bếp Thái gọi ra để thử xem một căn bếp có biết tôn trọng rau hay không.",
@@ -419,21 +419,21 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "mixed-vegetables": {
-    description: "Rau củ chợ đảo nhanh trên chảo lửa lớn, giòn & bóng mượt.",
+    description: "Rau củ chợ đảo nhanh trên chảo lửa lớn, giòn và bóng mượt.",
     story: {
       lede: "Món kinh điển của mâm cơm gia đình — hôm nay chợ có gì ngon nhất thì thứ đó lên chảo, đảo cho tới khi bóng mượt.",
       history: "Pad pak ruam (rau củ thập cẩm xào) không hẳn là một công thức, mà là cả một triết lý: người nội trợ Thái đi chợ trước rồi mới quyết định sau, và những cọng rau ngon nhất trong ngày gặp nhau trong cùng một cái chảo, với tỏi và một lớp sốt nhẹ, bóng mượt. Giữa một cái bàn chật kín cà ri và ớt, đây là khoảng lặng xanh — dĩa rau chịu lùi lại để mọi món khác được tỏa sáng. Dĩa của chúng tôi đổi theo phiên chợ, đúng như nó vốn phải vậy.",
     },
   },
   "ong-choy": {
-    description: "Rau muống xào chớp nhoáng trên ngọn lửa gầm — tỏi, dầu hào, cọng giòn rôm & lá bóng mượt.",
+    description: "Rau muống xào chớp nhoáng trên ngọn lửa gầm — tỏi, dầu hào, cọng giòn rôm và lá bóng mượt.",
     story: {
       lede: "Rau muống trên ngọn lửa gầm — một món xào kịch tính tới mức có hẳn một thị trấn Thái đem nó tung lên trời.",
       history: "Pad pak boong fai daeng — rau muống, lửa đỏ — được đặt tên theo ngọn lửa bùng lên khi mớ rau vừa chạm dầu nóng. Ở Phitsanulok, nó thành sân khấu đường phố theo đúng nghĩa đen: những người bán “rau bay” trứ danh hất nguyên chảo rau còn cháy phừng phừng bay ngang qua đường, cho một người đứng bên kia giữ thăng bằng cái dĩa mà hứng lấy. Nằm dưới màn trình diễn đó là một món ăn nghiêm túc — cọng rau rỗng ruột vẫn giữ nguyên độ giòn, tỏi, tương đậu nành và dầu hào, tất cả chín trong vài giây. Chúng tôi giữ ngọn lửa ở lại trong bếp; còn hương vị thì vẫn cứ bay.",
     },
   },
   "cashew-nut": {
-    description: "Hạt điều rang béo ngậy, hành lá & ớt khô rang thơm — món xào kinh điển vị ngọt mặn hài hòa.",
+    description: "Hạt điều rang béo ngậy, hành lá và ớt khô rang thơm — món xào kinh điển vị ngọt mặn hài hòa.",
     story: {
       lede: "Món cưng của bàn tiệc, mang tên một khu rừng trong thần thoại — di sản gốc Hoa dễ mến nhất của bếp Thái.",
       history: "Trong tiếng Thái, hạt điều gọi là med mamuang himmaphan — hạt của trái xoài xứ Himmaphan, khu rừng thần tiên trong thần thoại — bởi cái hạt ấy lủng lẳng bên dưới trái của nó như thể do một người kể chuyện bịa ra. Món xào này là hậu duệ của lối nấu tiệc Trung Hoa, được làm mềm lại cho vừa khẩu vị Thái: hạt điều rang béo ngậy, hành lá và ớt khô rang, thứ ớt chịu đổi cái rát bỏng lấy mùi thơm. Vị ngọt mặn hài hòa và hợp lòng tất cả mọi người, đây là dĩa hết sạch đầu tiên trên mọi mâm cơm gia đình.",
@@ -454,7 +454,7 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "narwhal-sundae": {
-    description: "Bạn chọn cái kết — vani, sô cô la hay dâu, một cái bánh ốc quế giòn & từng cụm mây kem tươi đánh bông.",
+    description: "Bạn chọn cái kết — vani, sô cô la hay dâu, một cái bánh ốc quế giòn và từng cụm mây kem tươi đánh bông.",
     story: {
       lede: "Màn khép lại của quán — kem của bạn, cái kết của bạn, và cả một hệ thống thời tiết bằng kem tươi của chúng tôi.",
       history: "Quán ăn gia đình nào cũng cần một món tráng miệng chẳng phải giải thích gì mà vẫn khiến cả bàn im lặng ngay tức khắc. Của chúng tôi là Narwhal Sundae: vani, sô cô la hoặc dâu, một cái bánh ốc quế giòn, và từng cụm mây kem tươi — làm ra cho đứa nhỏ trong bàn, và cho cả người lớn cứ thề thốt rằng mình chỉ ăn đúng một muỗng thôi. Chúng tôi lấy tên quán đặt cho nó, bởi giống như con kỳ lân biển, món này giản dị, hơi có chút phép màu, và không thể nào nhìn mà không mỉm cười.",
@@ -489,7 +489,7 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "thai-tea": {
-    description: "Trà ủ đậm, màu hổ phách ánh cam, ngọt & béo, rót trên đá.",
+    description: "Trà ủ đậm, màu hổ phách ánh cam, ngọt và béo, rót trên đá.",
     story: {
       lede: "Biểu tượng màu hổ phách — sinh ra từ nghề buôn trà ở khu Chinatown của Bangkok năm 1945, và từ đó tới nay vẫn được rót đầy ly đá cao.",
       history: "Trà Thái khởi đầu trên đường Yaowarat, nơi một gia đình người Triều Châu buôn trà nhận ra rằng bán trà Tàu nóng ở xứ nhiệt đới là chuyện khó vô cùng. Năm 1945, họ pha ra một loại hồng trà sinh ra để ủ thật đậm, thêm đường rồi rót lên đá — cha yen (trà Thái đá) ra đời từ đó. Sữa đặc và sữa cô đặc không đường, những thứ trữ được lâu trong cái nóng, đội lên cho ly trà cái vương miện béo ngậy; còn hương rang và hương gia vị trong hỗn hợp trà mới là thứ làm nên sắc hổ phách trứ danh. Chỉ một ngụm thôi, là bạn đã đứng trên vỉa hè Bangkok.",
@@ -517,7 +517,7 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "iced-tea": {
-    description: "Thanh sạch, lạnh & uống hoài không ngán.",
+    description: "Thanh sạch, lạnh và uống hoài không ngán.",
     story: {
       lede: "Ngụm nước thẳng thắn nhất — ủ trong veo, rót đầy ly cao, chẳng ai cãi vào đâu được.",
     },
@@ -530,13 +530,13 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "hot-coffee": {
-    description: "Cà phê rang đậm kiểu xưa, dọn ra nóng & thật thà.",
+    description: "Cà phê rang đậm kiểu xưa, dọn ra nóng và thật thà.",
     story: {
       lede: "Dành cho người hoài cổ — một ly nóng, uống thong thả để khép lại bữa ăn.",
     },
   },
   "hot-tea": {
-    description: "Trà Thái, nghi ngút khói & thơm lừng.",
+    description: "Trà Thái, nghi ngút khói và thơm lừng.",
     story: {
       lede: "Lời tạm biệt ấm áp — trà Thái bỏ đá đi, giữ trọn phần hương.",
     },
@@ -555,13 +555,13 @@ export const DISHES_VI: Record<string, DishL10n> = {
     },
   },
   "passion-fruit": {
-    description: "Chua ngọt & rực nắng.",
+    description: "Chua ngọt và rực nắng.",
     story: {
       lede: "Chua ngọt và rực nắng — cứ để xứ nhiệt đới lên tiếng.",
     },
   },
   "fresh-cucumber": {
-    description: "Mát, xanh & đã khát.",
+    description: "Mát, xanh và đã khát.",
     story: {
       lede: "Mát, xanh và đã khát — ly nước điềm tĩnh nhất trên thực đơn này.",
     },
