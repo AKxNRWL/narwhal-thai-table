@@ -181,7 +181,7 @@ async function callAnthropic(key: string, messages: ApiMsg[], table?: string | n
         ...(locale !== 'en'
           ? [{
               type: 'text',
-              text: `EDITION: This guest opened the ${EDITION_LANGUAGE[locale]} edition of the website, so greet and reply in ${EDITION_LANGUAGE[locale]} unless they write to you in another language — then follow their language as usual.`,
+              text: `GUEST LANGUAGE: ${EDITION_LANGUAGE[locale]}. This guest opened the ${EDITION_LANGUAGE[locale]} edition of the website, so reply in ${EDITION_LANGUAGE[locale]} from your very first message. A short message made of dish names, menu words, numbers or one or two English words ("pad thai?", "hours?", "menu") is NOT a language switch — answer it in ${EDITION_LANGUAGE[locale]}, keeping dish names and prices exactly as on the menu. Switch languages only when the guest writes a full sentence in another language; then follow their language as usual.`,
             }]
           : []),
         ...(table
