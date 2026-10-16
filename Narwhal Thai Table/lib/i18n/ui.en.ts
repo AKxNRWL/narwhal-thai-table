@@ -77,7 +77,7 @@ export const en = {
   },
   marquee: {
     eyebrow: 'From the kitchen',
-    /** {count} → number of photographed plates */
+    /** {count} → DISHES.length — the same number /about and /press quote ("75 dishes across 13 categories") */
     title: '{count} plates, *one wok at a time*.',
     lede: 'Every plate here travels with its papers — Over Rice, À La Carte, Curry, Noodles — so the dish you picture is the dish that arrives. Tap one for the story behind it.',
     spicy: 'Spicy',

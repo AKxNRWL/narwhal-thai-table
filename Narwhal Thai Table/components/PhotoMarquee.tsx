@@ -40,7 +40,9 @@ export default function PhotoMarquee({ locale = 'en' }: { locale?: Locale }) {
       <Container className="mb-10 flex flex-col items-center gap-4 text-center">
         <Eyebrow>{t.eyebrow}</Eyebrow>
         <Heading as="h2" size="md" id="kitchen-marquee-title">
-          <Rich text={t.title} vars={{ count: tiles.length }} locale={locale} />
+          {/* The whole menu's count (75), not the photographed subset (56): a reader
+              compared it with "75 dishes" on /about and /press — 16 Oct 2026. */}
+          <Rich text={t.title} vars={{ count: DISHES.length }} locale={locale} />
         </Heading>
         <p className="max-w-xl font-serif text-[16px] italic text-cream/65">{t.lede}</p>
       </Container>
