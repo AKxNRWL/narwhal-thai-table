@@ -315,16 +315,17 @@ export default function Hero({
               </span>
             </p>
           )}
-          {/* Local event chip (lib/events.ts) — e.g. the airshow weekend: one
-              line, links where the event copy points; gone after the window. */}
+          {/* Local event chip (lib/events.ts) — e.g. the airshow weekend or
+              Halloween: one line in the page's language (chip.i18n, English
+              fallback), links where the event copy points; gone after the window. */}
           {event?.chip && (
             <Link
               href={href(event.chip.href)}
               className="mt-4 inline-flex max-w-xl items-start gap-2.5 self-start rounded-2xl border border-brass/45 bg-navy-deep/60 px-4 py-2.5 font-sans text-[13px] leading-snug text-cream/90 backdrop-blur-md transition-[border-color,background-color] duration-300 hover:border-brass-light hover:bg-navy-deep/80 max-[760px]:order-2"
               style={{ animation: 'heroIn 0.9s var(--ease-out-soft) 0.36s both' }}
             >
-              <span aria-hidden="true" className="mt-px shrink-0 text-brass-light">✈</span>
-              <span>{event.chip.text}</span>
+              <span aria-hidden="true" className="mt-px shrink-0 text-brass-light">{event.chip.icon ?? '✈'}</span>
+              <span>{(locale && event.chip.i18n?.[locale]) || event.chip.text}</span>
             </Link>
           )}
 
