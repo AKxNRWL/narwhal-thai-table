@@ -130,7 +130,7 @@ export default function Halloween({ className }: Props) {
       for (let i = cols.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cols[i], cols[j]] = [cols[j], cols[i]]; }
       const slot = (c: number) => ({
         x: left + ((c + rand(0.25, 0.75)) / nSlots) * (w - left - margin),
-        y: bandY(phone ? rand(0.08, 0.42) : rand(0.15, 0.85)),
+        y: bandY(phone ? rand(0.08, 0.42) : rand(0.3, 0.85)),
       });
       const base = (kind: Kind, sprite: Sprite, s: { x: number; y: number }, size: number, tIn: number, tOut: number): Actor => ({
         kind, sprite, flip: false,
@@ -545,8 +545,9 @@ export default function Halloween({ className }: Props) {
           sprite = 'peek';
         }
         draw(sprite, x, y, size, rot, 1, false);
-        if (bk > 0) bubble('boo!', x - size * 0.5, y - size * 0.56, size, bk);
-        if (hk > 0) bubble('Happy Halloween!', x - size * 0.2, y - size * 0.62, size, hk);
+        const by = (dy: number) => Math.max(yT + size * 0.2, y - dy); // keep bubbles out of the nav
+        if (bk > 0) bubble('boo!', x - size * 0.5, by(size * 0.56), size, bk);
+        if (hk > 0) bubble('Happy Halloween!', x - size * 0.2, by(size * 0.62), size, hk);
       }
 
       raf = requestAnimationFrame(step);
