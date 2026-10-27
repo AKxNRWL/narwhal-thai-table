@@ -9,8 +9,8 @@ import Halloween from '@/components/fx/Halloween';
 /**
  * Mounts the site-wide sky decoration on every guest page while lib/events.ts
  * has an event with an `fx` in its window: `airshow` → components/fx/Airshow
- * (jets + smoke), `halloween` → components/fx/Halloween (laughing
- * jack-o'-lanterns + bats). Resolved after mount so SSR and the first paint
+ * (jets + smoke), `halloween` → components/fx/Halloween (little white
+ * ghosts). Resolved after mount so SSR and the first paint
  * never disagree about "today". Staff screens are left alone.
  */
 const STAFF = ['/stats', '/orders', '/calls', '/cal', '/os'];

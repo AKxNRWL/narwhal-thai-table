@@ -19,7 +19,7 @@ export type LocalEvent = {
   label: string;
   note: string;
   /** Optional site-wide decoration while the event is on (components/fx/AirshowLayer):
-   *  'airshow' = jets + smoke trails, 'halloween' = laughing jack-o'-lanterns + bats. */
+   *  'airshow' = jets + smoke trails, 'halloween' = little white ghosts. */
   fx?: 'airshow' | 'halloween';
   /** Last day of the decoration when it should outlive the event itself
    *  (YYYY-MM-DD, inclusive). Defaults to `to`. The AI note and the chip
@@ -43,16 +43,17 @@ export const EVENTS: LocalEvent[] = [
       'The Pacific Airshow is on at Huntington Beach Friday–Sunday, October 2–4, 2026, flying about 10:30 AM – 4:30 PM each day, centred at Huntington St & Pacific Coast Highway, about five minutes down Beach Blvd from us. We are OPEN with normal hours all weekend. Expect very heavy traffic on Beach Blvd and PCH, especially 8–11 AM heading to the beach and 4:30–7:30 PM leaving it; downtown and beach parking is scarce. Our plaza lot is for our guests — mention it as a plus (park once, eat, no PCH traffic). Dinner right after the last flight (about 4:30–8 PM) is the busiest time: warmly suggest reserving a table for the evening or ordering pickup ahead through the online ordering page, and be honest that walk-in waits and delivery times can run longer than usual that weekend.',
   },
   {
-    // Owner (26 Oct 2026): "เอาเป็นตีมฮาโลวีน … มีฟักหัวเราะลอยไปมา" — laughing
-    // jack-o'-lanterns drifting across the top of every page, through the
-    // weekend after Halloween; the chip and the hosts' note stop on the 31st.
+    // Owner (26 Oct 2026): "เอาเป็นตีมฮาโลวีน … มีฟักหัวเราะลอยไปมา", then
+    // "ยังไม่สวยครับ เอาเป็นผี ghost สีขาวก็ได้" — little white ghosts drifting
+    // across the top of every page, through the weekend after Halloween;
+    // the chip and the hosts' note stop on the 31st.
     from: '2026-10-26',
     to: '2026-10-31',
     label: 'Halloween',
     fx: 'halloween',
     fxTo: '2026-11-01',
     chip: {
-      icon: '🎃',
+      icon: '👻',
       href: '/contact/reservation',
       text: 'Happy Halloween from our table — open as always, Halloween night included. Save a seat →',
       i18n: {
@@ -66,7 +67,7 @@ export const EVENTS: LocalEvent[] = [
       },
     },
     note:
-      'Halloween is Saturday, October 31, 2026. We are OPEN with normal hours that day and all week. There is no special Halloween menu, event, costume contest, candy or discount — the laughing jack-o\'-lanterns on the website are decoration only, so never promise treats or offers. If a guest asks about Halloween plans, say warmly that we are open as usual and would love to seat them that evening; Saturday dinner tends to be busy, so suggest reserving a table or ordering pickup ahead through the online ordering page.',
+      'Halloween is Saturday, October 31, 2026. We are OPEN with normal hours that day and all week. There is no special Halloween menu, event, costume contest, candy or discount — the little white ghosts floating on the website are decoration only, so never promise treats or offers. If a guest asks about Halloween plans, say warmly that we are open as usual and would love to seat them that evening; Saturday dinner tends to be busy, so suggest reserving a table or ordering pickup ahead through the online ordering page.',
   },
 ];
 

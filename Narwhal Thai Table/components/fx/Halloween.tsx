@@ -4,192 +4,177 @@ import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/cn';
 
 /**
- * Halloween — jack-o'-lanterns floating across the top of every page, drawn
- * on a fixed canvas in the placemat's hand (navy ink line, cream fill, brass
- * edge) with an amber candle flickering inside. Owner, 26 Oct 2026:
- * "เอาเป็นตีมฮาโลวีน … มีฟักหัวเราะลอยไปมา" — so every few seconds one of them
- * laughs: the grin opens and closes, the eyes squint, it wobbles and bobs.
- * A small bat crosses now and then.
+ * Halloween — little white ghosts floating across the top of every page,
+ * drawn on a fixed canvas. Owner, 26 Oct 2026: first asked for laughing
+ * jack-o'-lanterns ("ฟักหัวเราะลอยไปมา"), then "ยังไม่สวยครับ เอาเป็นผี ghost
+ * สีขาวก็ได้" — so: the classic sheet ghost, white with a soft halo, navy
+ * ink line so it still reads on cream pages, brass hairline edge and brass
+ * cheeks to keep it in the placemat family. They drift, bob, their hems
+ * ripple; every few seconds one laughs (^ ^ eyes, wide mouth, arms up,
+ * little hop); now and then one fades out and reappears somewhere else;
+ * on desktop they shy away from the pointer with a startled face.
  *
  * Same conventions as components/fx/Airshow.tsx: the canvas is the strip of
- * sky under the nav down to ~45 % of the viewport; two-tone drawing so it
- * reads on navy pages (cream silhouettes, brass edge) and cream pages (navy
- * line art) alike; pauses when the tab is hidden; half-ghosts itself once
- * the reader has scrolled into content; motion always on (owner's rule).
- * Mounted by components/fx/AirshowLayer.tsx while lib/events.ts has an
- * event with `fx: 'halloween'` in its window.
+ * sky under the nav (42 % of the viewport on desktop, a tighter strip on
+ * phones so they hover above the headline rather than across it); pauses
+ * when the tab is hidden; half-ghosts itself once the reader has scrolled
+ * into content; motion always on (owner's rule). Mounted by
+ * components/fx/AirshowLayer.tsx while lib/events.ts has an event with
+ * `fx: 'halloween'` in its window.
  */
 type Props = { className?: string };
 
-const CREAM = [247, 240, 225] as const;
+const WHITE = [255, 255, 255] as const;
 const NAVY = [13, 43, 62] as const;
+const INK = [23, 52, 74] as const;
 const BRASS = [212, 178, 106] as const;
-const AMBER = [255, 178, 74] as const;
-const FLAME = [255, 232, 160] as const;
 const NAV_H = 72; // components/Nav.tsx h-[72px]
 
-type Pumpkin = {
-  x: number; y: number; s: number; vx: number; depth: number;
-  bob: number; bobA: number; bobF: number; rot: number; flick: number;
+type Mood = { eyes: number; mouth: number; arms: number; wide: number };
+type Ghost = {
+  x: number; y: number; s: number; vx: number;
+  bob: number; bobA: number; bobF: number; ph: number;
   laughIn: number; laugh: number; // seconds until the next laugh / seconds into the current one
+  vanishIn: number; vanish: number; // seconds until the next vanishing act / seconds into it
+  ox: number; oy: number; // easing offset away from the pointer
+  alpha: number;
 };
-type Bat = { x: number; y: number; s: number; dir: 1 | -1; v: number; ph: number };
 
-const rgba = (c: readonly [number, number, number], a: number) => `rgba(${c[0]},${c[1]},${c[2]},${a.toFixed(3)})`;
+const rgba = (c: readonly [number, number, number], a: number) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const LAUGH_LEN = 1.6; // s
-const LAUGH_HZ = 17; // rad/s — the ha-ha-ha
+const LAUGH_HZ = 14; // rad/s — the hee-hee-hee
+const VANISH_LEN = 2.2; // s: 0.7 fade out, 0.8 gone, 0.7 fade in
+const SHY_R = 150; // px — how close the pointer gets before a ghost backs off
 
-// five lobes: [centre offset, width] in units of s; outer ones drawn first so the middle sits on top
-const LOBES: [number, number][] = [[-0.78, 0.5], [0.78, 0.5], [-0.42, 0.78], [0.42, 0.78], [0, 1.0]];
-
-/** s = body half-width · mouth 0..1 how open · squint 0..1 · flicker 0..1 · facing ±1 */
-function drawPumpkin(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, rot: number, mouth: number, squint: number, flicker: number, facing: 1 | -1) {
+/** s = half-width of the body (arms reach ±1.4 s, head to −1.26 s, hem to ≈ +1.2 s). */
+function drawGhost(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, rot: number, mood: Mood, t: number, phase: number, alpha: number) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(rot);
+  ctx.globalAlpha = alpha;
   ctx.lineJoin = 'round';
-  const H = s * 0.82;
-  // candle glow behind the whole lantern (reads on both grounds)
-  const g = ctx.createRadialGradient(0, H * 0.15, s * 0.1, 0, H * 0.1, s * 1.9);
-  g.addColorStop(0, rgba(AMBER, 0.28 + 0.12 * flicker));
-  g.addColorStop(0.5, rgba(AMBER, 0.08));
-  g.addColorStop(1, rgba(AMBER, 0));
-  ctx.fillStyle = g;
+  ctx.lineCap = 'round';
+  // halo (reads on navy pages, vanishes on cream ones)
+  const halo = ctx.createRadialGradient(0, 0, s * 0.3, 0, 0, s * 2.1);
+  halo.addColorStop(0, rgba(WHITE, 0.22));
+  halo.addColorStop(0.55, rgba(WHITE, 0.07));
+  halo.addColorStop(1, rgba(WHITE, 0));
+  ctx.fillStyle = halo;
   ctx.beginPath();
-  ctx.arc(0, H * 0.1, s * 1.9, 0, Math.PI * 2);
+  ctx.arc(0, 0, s * 2.1, 0, Math.PI * 2);
   ctx.fill();
-  // navy ink under everything (the outline on cream pages; vanishes on navy)
-  for (const [dx, w] of LOBES) {
-    ctx.beginPath();
-    ctx.ellipse(dx * s, 0, w * s * 0.62, H * (0.86 + 0.14 * w), 0, 0, Math.PI * 2);
-    ctx.lineWidth = Math.max(1.2, s * 0.07);
-    ctx.strokeStyle = rgba(NAVY, 0.9);
-    ctx.stroke();
-  }
-  // cream fill with a brass edge (the silhouette on navy pages)
-  for (const [dx, w] of LOBES) {
-    ctx.beginPath();
-    ctx.ellipse(dx * s, 0, w * s * 0.62, H * (0.86 + 0.14 * w), 0, 0, Math.PI * 2);
-    ctx.fillStyle = rgba(CREAM, 0.95);
-    ctx.fill();
-    ctx.lineWidth = Math.max(0.6, s * 0.024);
-    ctx.strokeStyle = rgba(BRASS, 0.85);
-    ctx.stroke();
-  }
-  // ridges
-  ctx.lineWidth = Math.max(0.6, s * 0.02);
-  ctx.strokeStyle = rgba(NAVY, 0.35);
-  for (const dx of [-0.31, 0.31]) {
-    ctx.beginPath();
-    ctx.ellipse(dx * s * 1.25, 0, s * 0.26, H * 0.97, 0, -Math.PI / 2, Math.PI / 2, dx < 0);
-    ctx.stroke();
-  }
-  // stem + a curl of vine
-  ctx.beginPath();
-  ctx.moveTo(-s * 0.09, -H * 0.98);
-  ctx.quadraticCurveTo(-s * 0.14, -H * 1.3, s * 0.12, -H * 1.34);
-  ctx.quadraticCurveTo(s * 0.2, -H * 1.2, s * 0.13, -H * 0.98);
-  ctx.closePath();
-  ctx.fillStyle = rgba(CREAM, 0.95);
-  ctx.fill();
-  ctx.lineWidth = Math.max(1, s * 0.05);
-  ctx.strokeStyle = rgba(NAVY, 0.9);
-  ctx.stroke();
-  ctx.lineWidth = Math.max(0.6, s * 0.022);
-  ctx.strokeStyle = rgba(BRASS, 0.9);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(s * 0.16, -H * 1.1);
-  ctx.bezierCurveTo(s * 0.4, -H * 1.25, s * 0.46, -H * 1.0, s * 0.3, -H * 0.98);
-  ctx.lineWidth = Math.max(0.8, s * 0.03);
-  ctx.strokeStyle = rgba(BRASS, 0.9);
-  ctx.stroke();
-  // the carved face, lit from inside
-  const eyeH = H * 0.26 * (1 - 0.75 * squint);
-  const eyeW = s * 0.22;
-  const ey = -H * 0.22;
-  const ex = s * 0.3 * facing;
-  ctx.beginPath();
-  for (const sgn of [-1, 1]) {
-    ctx.moveTo(sgn * ex - sgn * eyeW * 0.15, ey + eyeH / 2);
-    ctx.lineTo(sgn * ex + sgn * eyeW * 0.9, ey + eyeH / 2);
-    ctx.lineTo(sgn * ex + sgn * eyeW * 0.2, ey - eyeH / 2);
-    ctx.closePath();
-  }
-  ctx.moveTo(0, ey + H * 0.1);
-  ctx.lineTo(-s * 0.09, ey + H * 0.34);
-  ctx.lineTo(s * 0.09, ey + H * 0.34);
-  ctx.closePath();
-  const my = H * 0.22;
-  const mw = s * 0.62;
-  const mh = H * (0.16 + 0.3 * mouth);
-  ctx.moveTo(-mw, my - mh * 0.15);
-  ctx.quadraticCurveTo(0, my + mh * 1.25, mw, my - mh * 0.15);
-  ctx.lineTo(mw * 0.62, my - mh * 0.4);
-  ctx.lineTo(mw * 0.5, my - mh * 0.02);
-  ctx.lineTo(mw * 0.36, my - mh * 0.48);
-  ctx.lineTo(-mw * 0.2, my - mh * 0.48);
-  ctx.lineTo(-mw * 0.32, my - mh * 0.02);
-  ctx.lineTo(-mw * 0.44, my - mh * 0.4);
-  ctx.closePath();
-  ctx.fillStyle = rgba(FLAME, 0.85 + 0.15 * flicker);
-  ctx.fill();
-  ctx.lineWidth = Math.max(0.8, s * 0.03);
-  ctx.strokeStyle = rgba(AMBER, 0.95);
-  ctx.stroke();
-  // light spilling onto the skin around the face
-  const g2 = ctx.createRadialGradient(0, H * 0.05, s * 0.05, 0, H * 0.05, s * 0.9);
-  g2.addColorStop(0, rgba(AMBER, 0.22 * (0.6 + 0.4 * flicker)));
-  g2.addColorStop(1, rgba(AMBER, 0));
-  ctx.fillStyle = g2;
-  ctx.beginPath();
-  ctx.ellipse(0, 0, s * 1.1, H, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-}
 
-/** a small bat, wings flapping with `flap` (-1..1) */
-function drawBat(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, dir: 1 | -1, flap: number) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(dir, 1);
-  ctx.lineJoin = 'round';
-  const wy = -s * 0.55 * flap;
-  const shape = () => {
+  // body: dome, two mitten arms (raised while laughing), rippling hem
+  const top = -1.6 * s; // bezier control height → apex ≈ −1.26 s
+  const hemY = 0.85 * s;
+  const armY = 0.22 * s;
+  const up = mood.arms;
+  const n = 4;
+  const path = () => {
     ctx.beginPath();
-    ctx.moveTo(0, -s * 0.18);
-    ctx.quadraticCurveTo(s * 0.5, -s * 0.6 + wy * 0.3, s * 1.1, wy);
-    ctx.quadraticCurveTo(s * 0.92, s * 0.1, s * 0.72, s * 0.12);
-    ctx.quadraticCurveTo(s * 0.56, s * 0.3, s * 0.38, s * 0.22);
-    ctx.quadraticCurveTo(s * 0.22, s * 0.4, 0, s * 0.32);
-    ctx.quadraticCurveTo(-s * 0.22, s * 0.4, -s * 0.38, s * 0.22);
-    ctx.quadraticCurveTo(-s * 0.56, s * 0.3, -s * 0.72, s * 0.12);
-    ctx.quadraticCurveTo(-s * 0.92, s * 0.1, -s * 1.1, wy);
-    ctx.quadraticCurveTo(-s * 0.5, -s * 0.6 + wy * 0.3, 0, -s * 0.18);
+    ctx.moveTo(-s, hemY);
+    ctx.lineTo(-s, armY + 0.28 * s);
+    ctx.bezierCurveTo(-1.05 * s, armY + 0.22 * s - 0.35 * s * up, -1.42 * s, armY + 0.18 * s - 0.55 * s * up, -1.36 * s, armY - 0.05 * s - 0.45 * s * up);
+    ctx.bezierCurveTo(-1.3 * s, armY - 0.25 * s - 0.35 * s * up, -1.02 * s, armY - 0.22 * s - 0.12 * s * up, -s, armY - 0.18 * s);
+    ctx.lineTo(-s, -0.25 * s);
+    ctx.bezierCurveTo(-0.96 * s, top, 0.96 * s, top, s, -0.25 * s);
+    ctx.lineTo(s, armY - 0.18 * s);
+    ctx.bezierCurveTo(1.02 * s, armY - 0.22 * s - 0.12 * s * up, 1.3 * s, armY - 0.25 * s - 0.35 * s * up, 1.36 * s, armY - 0.05 * s - 0.45 * s * up);
+    ctx.bezierCurveTo(1.42 * s, armY + 0.18 * s - 0.55 * s * up, 1.05 * s, armY + 0.22 * s - 0.35 * s * up, s, armY + 0.28 * s);
+    ctx.lineTo(s, hemY);
+    const w = (2 * s) / n;
+    for (let i = 0; i < n; i++) {
+      const x0 = s - i * w;
+      const x1 = x0 - w;
+      const dip = hemY + 0.32 * s + Math.sin(t * 2.6 + phase + i * 1.3) * 0.08 * s;
+      const lift = hemY + Math.sin(t * 2.6 + phase + i * 1.3 + 0.9) * 0.05 * s;
+      ctx.quadraticCurveTo((x0 + x1) / 2, dip, x1, i === n - 1 ? hemY : lift);
+    }
     ctx.closePath();
-    ctx.moveTo(-s * 0.1, -s * 0.16);
-    ctx.lineTo(-s * 0.16, -s * 0.4);
-    ctx.lineTo(-s * 0.02, -s * 0.22);
-    ctx.moveTo(s * 0.1, -s * 0.16);
-    ctx.lineTo(s * 0.16, -s * 0.4);
-    ctx.lineTo(s * 0.02, -s * 0.22);
   };
-  shape();
-  ctx.lineWidth = Math.max(1, s * 0.1);
-  ctx.strokeStyle = rgba(NAVY, 0.9);
+  // ink line under everything (the outline on cream pages; melts into navy ones)
+  path();
+  ctx.lineWidth = Math.max(1.2, s * 0.07);
+  ctx.strokeStyle = rgba(INK, 0.85);
   ctx.stroke();
-  shape();
-  ctx.fillStyle = rgba(CREAM, 0.92);
+  // white body
+  path();
+  ctx.fillStyle = rgba(WHITE, 0.95);
   ctx.fill();
-  ctx.lineWidth = Math.max(0.5, s * 0.03);
-  ctx.strokeStyle = rgba(BRASS, 0.9);
+  // a breath of shade on the lower-left so it has volume
+  ctx.save();
+  path();
+  ctx.clip();
+  const sh = ctx.createRadialGradient(0.45 * s, -0.55 * s, 0.2 * s, 0.1 * s, 0.3 * s, 2.1 * s);
+  sh.addColorStop(0, rgba(WHITE, 0));
+  sh.addColorStop(0.6, rgba(NAVY, 0.035));
+  sh.addColorStop(1, rgba(NAVY, 0.13));
+  ctx.fillStyle = sh;
+  ctx.fillRect(-2 * s, -2 * s, 4 * s, 4 * s);
+  ctx.restore();
+  // brass hairline — the placemat edge
+  path();
+  ctx.lineWidth = Math.max(0.6, s * 0.022);
+  ctx.strokeStyle = rgba(BRASS, 0.75);
   ctx.stroke();
-  ctx.fillStyle = rgba(AMBER, 0.95);
-  ctx.beginPath();
-  ctx.arc(-s * 0.08, -s * 0.05, s * 0.035, 0, Math.PI * 2);
-  ctx.arc(s * 0.08, -s * 0.05, s * 0.035, 0, Math.PI * 2);
-  ctx.fill();
+
+  // face
+  const ex = 0.34 * s;
+  const ey = -0.38 * s;
+  if (mood.eyes < 0.5) {
+    const sq = 1 + 0.25 * mood.wide; // startled → rounder, wider eyes
+    for (const k of [-1, 1]) {
+      ctx.beginPath();
+      ctx.ellipse(k * ex, ey, 0.13 * s * sq, 0.2 * s * sq, 0, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(INK, 0.95);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(k * ex - 0.04 * s, ey - 0.07 * s, 0.045 * s, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(WHITE, 0.95);
+      ctx.fill();
+    }
+  } else {
+    ctx.lineWidth = Math.max(1.4, s * 0.075);
+    ctx.strokeStyle = rgba(INK, 0.95);
+    for (const k of [-1, 1]) {
+      ctx.beginPath();
+      ctx.arc(k * ex, ey + 0.06 * s, 0.15 * s, Math.PI * 1.08, Math.PI * 1.92);
+      ctx.stroke();
+    }
+  }
+  for (const k of [-1, 1]) {
+    ctx.beginPath();
+    ctx.ellipse(k * 0.56 * s, -0.1 * s, 0.11 * s, 0.07 * s, 0, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(BRASS, 0.22);
+    ctx.fill();
+  }
+  const m = mood.mouth;
+  const my = 0.1 * s;
+  if (m < 0.15) {
+    const o = 1 + 0.6 * mood.wide; // startled → bigger "oh"
+    ctx.beginPath();
+    ctx.ellipse(0, my + 0.08 * s, 0.11 * s * o, 0.14 * s * o, 0, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(INK, 0.95);
+    ctx.fill();
+  } else {
+    const mw = 0.14 * s + 0.22 * s * m;
+    const mh = 0.1 * s + 0.42 * s * m;
+    ctx.beginPath();
+    ctx.moveTo(-mw, my);
+    ctx.quadraticCurveTo(0, my - 0.06 * s, mw, my);
+    ctx.quadraticCurveTo(0, my + mh * 2, -mw, my);
+    ctx.closePath();
+    ctx.fillStyle = rgba(INK, 0.95);
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    ctx.beginPath();
+    ctx.ellipse(0, my + mh * 0.95, mw * 0.55, mh * 0.45, 0, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(BRASS, 0.9);
+    ctx.fill();
+    ctx.restore();
+  }
   ctx.restore();
 }
 
@@ -205,34 +190,38 @@ export default function Halloween({ className }: Props) {
     let w = 0;
     let h = 0; // canvas height = bottom of the band
     let yT = 110; // top of the band (under the nav)
-    let S = 36; // base pumpkin half-width
+    let S = 40; // base ghost half-width
     let raf = 0;
     let running = true;
     let t = 0;
     let lastNow = performance.now();
-    let pumpkins: Pumpkin[] = [];
-    const bats: Bat[] = [];
-    let nextBat = rand(2, 5);
+    let ghosts: Ghost[] = [];
+    let phone = false;
+    const pointer = { x: -9999, y: -9999, on: false };
+
+    // phones: a single lane right under the nav (over the eyebrow line, above
+    // the headline); wider screens: anywhere in the upper sky
+    const spawnY = () => (phone ? yT + rand(24, 38) : yT + (h - yT) * rand(0.2, 0.75));
 
     const seed = () => {
-      const n = w < 700 ? 3 : w < 1100 ? 4 : 5;
-      pumpkins = Array.from({ length: n }, (_, i) => {
-        const depth = rand(0.65, 1);
-        return {
-          x: ((i + rand(0.15, 0.85)) / n) * w,
-          y: yT + (h - yT) * rand(0.12, 0.8),
-          s: S * (0.55 + 0.6 * depth),
-          vx: rand(7, 20) * (Math.random() < 0.5 ? 1 : -1),
-          depth,
-          bob: rand(0, Math.PI * 2),
-          bobA: rand(6, 14),
-          bobF: rand(0.22, 0.42),
-          rot: rand(-0.1, 0.1),
-          flick: rand(0, Math.PI * 2),
-          laughIn: rand(1, 9),
-          laugh: 0,
-        };
-      });
+      const n = phone ? 3 : w < 1100 ? 4 : 5;
+      ghosts = Array.from({ length: n }, (_, i) => ({
+        x: ((i + rand(0.2, 0.8)) / n) * w,
+        y: spawnY(),
+        s: S * rand(0.8, 1.15),
+        vx: rand(6, 16) * (Math.random() < 0.5 ? 1 : -1),
+        bob: rand(0, Math.PI * 2),
+        bobA: phone ? rand(5, 9) : rand(8, 16),
+        bobF: rand(0.22, 0.4),
+        ph: rand(0, Math.PI * 2),
+        laughIn: rand(2, 8) + i * 1.5,
+        laugh: 0,
+        vanishIn: rand(12, 30) + i * 4,
+        vanish: 0,
+        ox: 0,
+        oy: 0,
+        alpha: 1,
+      }));
     };
 
     const resize = () => {
@@ -240,17 +229,15 @@ export default function Halloween({ className }: Props) {
       const vh = Math.max(1, window.innerHeight);
       const ticker = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cs-ticker-h')) || 0;
       yT = ticker + NAV_H + 6;
-      // phones: a tighter strip under the nav so the lanterns hover above the
-      // headline more than across it; wider screens get the whole upper sky
-      const phone = w < 700;
-      h = Math.max(yT + (phone ? 150 : 200), Math.round(vh * (phone ? 0.3 : 0.42)));
+      phone = w < 700;
+      h = phone ? yT + 130 : Math.max(yT + 200, Math.round(vh * 0.42));
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      S = Math.min(40, Math.max(22, w * 0.025));
+      S = phone ? 21 : Math.min(46, Math.max(26, w * 0.029));
       seed();
     };
 
@@ -262,49 +249,67 @@ export default function Halloween({ className }: Props) {
       t += dt;
       ctx.clearRect(0, 0, w, h);
 
-      // bats: one at a time, every few seconds, across the band
-      nextBat -= dt;
-      if (nextBat <= 0 && bats.length < 2) {
-        const fromLeft = Math.random() < 0.5;
-        bats.push({ x: fromLeft ? -40 : w + 40, y: yT + (h - yT) * rand(0.05, 0.6), s: S * rand(0.36, 0.5), dir: fromLeft ? 1 : -1, v: rand(120, 200), ph: rand(0, Math.PI * 2) });
-        nextBat = rand(5, 11);
-      }
-      for (let i = bats.length - 1; i >= 0; i--) {
-        const b = bats[i];
-        b.x += b.dir * b.v * dt;
-        b.y += Math.sin(t * 3 + b.ph) * 0.6;
-        if (b.x < -80 || b.x > w + 80) bats.splice(i, 1);
-        else drawBat(ctx, b.x, b.y, b.s, b.dir, Math.sin(t * 14 + b.ph));
-      }
+      for (const g of ghosts) {
+        g.x += g.vx * dt;
+        if (g.x < -g.s * 2.5) g.x = w + g.s * 2.5;
+        if (g.x > w + g.s * 2.5) g.x = -g.s * 2.5;
 
-      // pumpkins: drift, bob, flicker, and every so often one of them laughs
-      for (const p of pumpkins) {
-        p.x += p.vx * dt * p.depth;
-        if (p.x < -p.s * 2.2) p.x = w + p.s * 2.2;
-        if (p.x > w + p.s * 2.2) p.x = -p.s * 2.2;
-        let mouth = 0.15;
-        let squint = 0;
-        let wob = 0;
-        let hop = 0;
-        if (p.laugh > 0) {
-          p.laugh += dt;
-          if (p.laugh < LAUGH_LEN) {
-            const k = Math.abs(Math.sin(p.laugh * LAUGH_HZ));
-            mouth = 0.5 + 0.5 * k;
-            squint = 0.7;
-            wob = Math.sin(p.laugh * LAUGH_HZ) * 0.06;
-            hop = k * 6;
-          } else {
-            p.laugh = 0;
-            p.laughIn = rand(5, 13);
-          }
+        // vanishing act: fade out, pop up somewhere else, fade in
+        if (g.vanish > 0) {
+          g.vanish += dt;
+          if (g.vanish < 0.7) g.alpha = 1 - g.vanish / 0.7;
+          else if (g.vanish < 1.5) {
+            if (g.alpha !== 0) { g.alpha = 0; g.x = rand(g.s * 2, w - g.s * 2); g.y = spawnY(); }
+          } else if (g.vanish < VANISH_LEN) g.alpha = (g.vanish - 1.5) / 0.7;
+          else { g.vanish = 0; g.alpha = 1; g.vanishIn = rand(14, 32); }
         } else {
-          p.laughIn -= dt;
-          if (p.laughIn <= 0) p.laugh = 0.0001;
+          g.vanishIn -= dt;
+          if (g.vanishIn <= 0 && g.laugh === 0) g.vanish = 0.0001;
         }
-        const y = p.y + Math.sin(t * p.bobF * Math.PI * 2 + p.bob) * p.bobA - hop;
-        const flick = 0.5 + 0.5 * Math.sin(t * 9 + p.flick) * Math.sin(t * 2.3 + p.flick);
-        drawPumpkin(ctx, p.x, y, p.s, p.rot + Math.sin(t * 0.7 + p.bob) * 0.06 + wob, mouth, squint, flick, p.vx > 0 ? 1 : -1);
+
+        // laugh
+        const mood: Mood = { eyes: 0, mouth: 0, arms: 0, wide: 0 };
+        let hop = 0;
+        let wob = 0;
+        if (g.laugh > 0) {
+          g.laugh += dt;
+          if (g.laugh < LAUGH_LEN) {
+            const k = Math.abs(Math.sin(g.laugh * LAUGH_HZ));
+            mood.eyes = 1;
+            mood.mouth = 0.55 + 0.45 * k;
+            mood.arms = 0.6 + 0.4 * k;
+            hop = k * 8;
+            wob = Math.sin(g.laugh * LAUGH_HZ) * 0.07;
+          } else {
+            g.laugh = 0;
+            g.laughIn = rand(6, 14);
+          }
+        } else if (g.vanish === 0) {
+          g.laughIn -= dt;
+          if (g.laughIn <= 0) g.laugh = 0.0001;
+        }
+
+        // shy of the pointer (desktop): ease away and look startled
+        const by = g.y + Math.sin(t * g.bobF * Math.PI * 2 + g.bob) * g.bobA - hop;
+        let tx = 0;
+        let ty = 0;
+        if (pointer.on && g.alpha > 0.5) {
+          const dx = g.x + g.ox - pointer.x;
+          const dy = by + g.oy - pointer.y;
+          const d = Math.hypot(dx, dy);
+          if (d < SHY_R && d > 0.001) {
+            const push = (SHY_R - d) * 0.9;
+            tx = (dx / d) * push;
+            ty = (dy / d) * push;
+            if (g.laugh === 0) mood.wide = Math.min(1, (SHY_R - d) / 80);
+          }
+        }
+        const ease = Math.min(1, dt * 5);
+        g.ox += (tx - g.ox) * ease;
+        g.oy += (ty - g.oy) * ease;
+
+        const rot = Math.sin(t * 0.6 + g.bob) * 0.06 + wob + (g.vx > 0 ? 0.04 : -0.04);
+        drawGhost(ctx, g.x + g.ox, by + g.oy, g.s, rot, mood, t, g.ph, g.alpha);
       }
       raf = requestAnimationFrame(step);
     };
@@ -319,18 +324,29 @@ export default function Halloween({ className }: Props) {
     const onScroll = () => {
       canvas.style.opacity = window.scrollY > 160 ? '0.5' : '1';
     };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return;
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      pointer.on = true;
+    };
+    const onLeave = () => { pointer.on = false; };
 
     resize();
     onScroll();
     raf = requestAnimationFrame(step);
     window.addEventListener('resize', resize);
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('pointermove', onMove, { passive: true });
+    document.addEventListener('pointerleave', onLeave);
     document.addEventListener('visibilitychange', onVis);
     return () => {
       running = false;
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerleave', onLeave);
       document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
