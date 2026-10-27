@@ -60,7 +60,8 @@ const T_RIDER_LOOP = 16.4; // the daredevil's loop-the-loop
 const T_TOSS = 17.6; // ditches the broom, flies solo
 const ROARS = [21.8, 26.2]; // the boss roars, everyone gasps
 const T_PARTY = 22;
-const T_HH = 23.5; // "Happy Halloween!" bubble
+const T_HH = 23.5; // host's "Happy Halloween!" bubble (stays up ~4 s)
+const T_TRICK = 27.6; // the pumpkin hugger's "Trick or treat!"
 const T_LEAD_BYE = 33.5; // lead waves goodbye at the edge
 const T_REST = 35.5; // lead slips behind the edge
 const T_LOOP = 38;
@@ -238,7 +239,7 @@ export default function Halloween({ className }: Props) {
       const bw = tw + size * 0.3;
       const bh = size * 0.36;
       ctx.save();
-      ctx.translate(x, y);
+      ctx.translate(Math.min(Math.max(x, bw / 2 + 8), w - bw / 2 - 8), y); // never off the side of the screen
       ctx.scale(k, k);
       ctx.beginPath();
       const r = bh * 0.45;
@@ -469,6 +470,12 @@ export default function Halloween({ className }: Props) {
             }
             if (p >= 1) { f.act = 'none'; f.actIn = rand(tr.every[0], tr.every[1]); }
           }
+          if (f.kind === 'pumpkin' && t >= T_TRICK && t < T_TRICK + 0.9) {
+            // holds the lantern up for its line
+            const p = (t - T_TRICK) / 0.9;
+            y -= Math.sin(p * Math.PI) * f.size * 0.32;
+            rot = Math.sin(p * Math.PI) * -0.12;
+          }
           if (f.kind === 'pirate') rot += Math.sin(t * 2.2) * 0.09; // still at sea
           if (f.kind === 'vampire') rot += Math.sin(t * 0.8) * 0.08; // dramatic
           if (f.kind === 'rider') {
@@ -566,6 +573,10 @@ export default function Halloween({ className }: Props) {
           travel(p, -1);
         } else continue;
         draw(sprite, x, y, f.size * scale, rot, alpha, flip);
+        if (f.kind === 'pumpkin' && t >= T_TRICK && t < T_TRICK + 2.6) {
+          const k = pop(T_TRICK, T_TRICK + 2.2);
+          if (k > 0) bubble('Trick or treat!', x - f.size * 0.1, Math.max(yT + f.size * 0.2, y - f.size * 0.74), f.size * 1.1, k);
+        }
       }
 
       // the ditched broom tumbles away
@@ -631,7 +642,7 @@ export default function Halloween({ className }: Props) {
           } else if (p >= 1 && shy(leadShy, x, y, size, dt)) sprite = 'nar-wow';
           x += leadShy.ox;
           y += leadShy.oy;
-          hk = pop(T_HH, T_HH + 3.2);
+          hk = pop(T_HH, T_HH + 4.0);
         } else if (t < T_REST) {
           // waves goodbye from near the edge, then slips behind it
           const p = easeOutCubic(prog(t, T_LEAD_BYE, 0.9));
