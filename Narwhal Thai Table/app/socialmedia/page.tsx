@@ -118,7 +118,7 @@ export default async function SocialMediaPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <NarwhalTV films={films} channels={channels} picks={picks} />
+      <NarwhalTV films={films} channels={channels} picks={picks} dishCount={DISHES.length} />
     </>
   );
 }

@@ -432,6 +432,13 @@ export const DISHES_VI: Record<string, DishL10n> = {
       history: "Pad pak boong fai daeng — rau muống, lửa đỏ — được đặt tên theo ngọn lửa bùng lên khi mớ rau vừa chạm dầu nóng. Ở Phitsanulok, nó thành sân khấu đường phố theo đúng nghĩa đen: những người bán “rau bay” trứ danh hất nguyên chảo rau còn cháy phừng phừng bay ngang qua đường, cho một người đứng bên kia giữ thăng bằng cái dĩa mà hứng lấy. Nằm dưới màn trình diễn đó là một món ăn nghiêm túc — cọng rau rỗng ruột vẫn giữ nguyên độ giòn, tỏi, tương đậu nành và dầu hào, tất cả chín trong vài giây. Chúng tôi giữ ngọn lửa ở lại trong bếp; còn hương vị thì vẫn cứ bay.",
     },
   },
+  "bok-choy": {
+    description: "Cải thìa xào chớp nhoáng trên ngọn lửa gầm — tỏi, dầu hào, cọng giòn rôm và lá bóng mượt.",
+    story: {
+      lede: "Cải thìa non qua chảo lửa gầm — chỉ vài giây lửa, để cọng còn giòn và lá lên bóng.",
+      history: "“Bok choy” là tiếng Quảng Đông, nghĩa là “rau trắng” — những cọng nhạt màu, hình thìa của một giống cải Trung Hoa mà nông dân Trung Quốc đã trồng hơn một nghìn năm; một sách nông nghiệp thế kỷ thứ sáu đã ghi tổ tiên của nó trong danh sách rau vườn. Cải thìa đến Thái Lan cùng người Hoa di cư, nên người Thái gọi nó là phak kwang tung — “rau Quảng Đông”. Cách nấu kinh điển cũng là cách đơn giản nhất: chảo nóng rực, tỏi, dầu hào và vài giây — vừa đủ để lá héo mềm mà cọng vẫn giòn. Đầu bếp của chúng tôi xào nó đúng như cách xào bông cải và rau muống ở đây: lửa trước, rồi thẳng ra bàn.",
+    },
+  },
   "cashew-nut": {
     description: "Hạt điều rang béo ngậy, hành lá và ớt khô rang thơm — món xào kinh điển vị ngọt mặn hài hòa.",
     story: {

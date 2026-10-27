@@ -422,11 +422,18 @@ export const DISHES: Dish[] = [
       lede: "The family-table classic — whatever the market did best today, tossed glossy in a hot wok.",
       history: "Pad pak ruam is less a recipe than a philosophy: the Thai home cook shops first and decides later, and the day's best vegetables meet in one wok with garlic and a light, glossy sauce. On a table crowded with curry and chili, this is the green pause — the dish that lets every other dish shine. Ours changes with the market, exactly as it should.",
     }  },
-  { slug: 'ong-choy', name: 'Ong Choy', thai: 'ผัดผักบุ้งไฟแดง', category: 'alacarte',
+  { slug: 'ong-choy', name: 'Ong Choy', thai: 'ผัดผักบุ้งไฟแดง', category: 'alacarte', protein: true,
     description: "Morning glory flash-seared over roaring flame — garlic, oyster sauce, crisp stems & glossy leaves.", price: '$13',
     story: {
       lede: "Morning glory over roaring flame — a stir-fry so theatrical one Thai town started throwing it through the air.",
       history: "Pad pak boong fai daeng — morning glory, red flame — is named for the fire that leaps when the greens hit hot oil. In Phitsanulok it became literal street theater: the famous 'flying vegetable' vendors hurl flaming wokfuls across the street to a catcher balancing a plate. Under the show is a serious dish — hollow-stemmed greens that stay crisp, garlic, soybean paste and oyster sauce, cooked in seconds. We keep the fire in the kitchen; the flavor still flies.",
+    }  },
+  // 26 Oct 2026: owner — "ตอนนี้ที่ร้านมีเมนู Bok-choy Stirfry ด้วย" — same price and protein choices as Ong Choy (Toast: MENU › A La Carte › Bok Choy Stir-fry).
+  { slug: 'bok-choy', name: 'Bok Choy', thai: 'ผัดผักกวางตุ้ง', category: 'alacarte', protein: true,
+    description: "Bok choy flash-seared over roaring flame — garlic, oyster sauce, crisp stems & glossy leaves.", price: '$13',
+    story: {
+      lede: "Baby bok choy through a roaring wok — seconds of fire, so the stems stay crisp and the leaves turn glossy.",
+      history: "Bok choy is Cantonese for 'white vegetable' — the pale, spoon-shaped stems of a Chinese cabbage that farmers in China have grown for well over a thousand years; a sixth-century agricultural manual already lists its ancestor among the garden greens. It reached Thailand with Chinese immigrants, which is why Thais call it phak kwang tung, the 'Guangdong vegetable'. The classic treatment is the simplest one: a screaming-hot wok, garlic, oyster sauce and a few seconds — just long enough to wilt the leaves while the stems keep their snap. Our chef cooks it the way the broccoli and the morning glory are cooked here: fire first, then straight to the table.",
     }  },
   { slug: 'cashew-nut', name: 'Cashew Nut', thai: 'ผัดเม็ดมะม่วงหิมพานต์', category: 'alacarte', protein: true,
     description: "Buttery roasted cashews, green onion & toasted chilies — the sweet-savory wok classic.", price: '$16',

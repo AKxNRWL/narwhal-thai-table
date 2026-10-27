@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Button from '@/components/ui/Button';
 import { Section, Container, SectionHead } from '@/components/ui/Section';
 import { SITE_URL, ORDER_ONLINE_URL, DIRECTIONS_URL, RESTAURANT } from '@/lib/site';
+import { DISHES } from '@/lib/dishes';
 
 /**
  * /thai-food-fountain-valley — for neighbors one city east.
@@ -140,7 +141,7 @@ export default function ThaiFoodFountainValleyPage() {
         <div className="mt-14 flex flex-wrap items-center gap-3 border-t border-cream/10 pt-10">
           <Button href="/lunch" variant="primary" arrow>See lunch specials</Button>
           <Button href={DIRECTIONS_URL} variant="secondary" target="_blank" rel="noopener" className="max-[760px]:hidden">Directions from Fountain Valley</Button>
-          <Button href="/menu" variant="secondary">Browse all 75 dishes</Button>
+          <Button href="/menu" variant="secondary">Browse all {DISHES.length} dishes</Button>
         </div>
 
         <p className={`mt-8 text-[15px] leading-relaxed text-cream/60 ${tailLinks}`}>

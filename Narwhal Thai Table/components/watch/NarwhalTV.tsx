@@ -380,7 +380,7 @@ function ChannelPanel({ ch }: { ch: Channel }) {
 /* ------------------------------------------------------------------ */
 /* the screen                                                          */
 /* ------------------------------------------------------------------ */
-export default function NarwhalTV({ films, channels, picks }: { films: Film[]; channels: Channel[]; picks: Pick[] }) {
+export default function NarwhalTV({ films, channels, picks, dishCount }: { films: Film[]; channels: Channel[]; picks: Pick[]; dishCount: number }) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
@@ -415,7 +415,7 @@ export default function NarwhalTV({ films, channels, picks }: { films: Film[]; c
         {byKey('facebook') && <AppTile accent="facebook" label="Facebook" sub={byKey('facebook')!.handle} note="News" href={byKey('facebook')!.url} external />}
         {byKey('google') && <AppTile accent="google" label="Google" sub="Reviews & directions" note="Reviews" href={byKey('google')!.review ?? byKey('google')!.url} external />}
         {byKey('yelp') && <AppTile accent="yelp" label="Yelp" sub="Reviews & photos" note="Reviews" href={byKey('yelp')!.review ?? byKey('yelp')!.url} external />}
-        <AppTile accent="house" label="The Menu" sub="75 dishes, with photos" note="House" href="/menu" />
+        <AppTile accent="house" label="The Menu" sub={`${dishCount} dishes, with photos`} note="House" href="/menu" />
         <AppTile accent="house" label="Reserve" sub="Save a seat" note="House" href="/contact/reservation" />
         <AppTile accent="house" label="Rewards" sub="Earn points at the table" note="House" href="/points" />
         <AppTile accent="house" label="Bubble Glide" sub="A little game" note="Play" href="/play" />

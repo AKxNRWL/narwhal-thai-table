@@ -87,6 +87,7 @@ export const DISH_FACTS: Record<string, DishFacts> = {
   'american-broccoli': { key: 'broccoli, light gravy', allergens: ['shellfish (oyster sauce)', 'soy', 'gluten (soy sauce)'] },
   'mixed-vegetables': { key: 'market vegetables, light stir-fry sauce', allergens: ['shellfish (oyster sauce)', 'soy', 'gluten (soy sauce)'] },
   'ong-choy': { key: 'morning glory, garlic, soybean paste, oyster sauce, flash-seared', allergens: ['shellfish (oyster sauce)', 'soy (soybean paste)', 'gluten (soy sauce)'] },
+  'bok-choy': { key: 'bok choy, garlic, oyster sauce, flash-seared', allergens: ['shellfish (oyster sauce)', 'soy (soy sauce)', 'gluten (soy sauce)'] },
   'cashew-nut': { key: 'choice of protein, roasted cashews, green onion, toasted chilies, sweet-savory sauce', allergens: ['tree nut (cashew)', 'soy', 'gluten (soy sauce)', 'fish (oyster sauce)'] },
 
   // ---------- Poseidon ----------

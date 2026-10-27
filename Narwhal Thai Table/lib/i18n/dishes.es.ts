@@ -420,6 +420,13 @@ export const DISHES_ES: Record<string, DishL10n> = {
       history: "Pad pak boong fai daeng — espinaca de agua, llama roja — se llama así por el fuego que brinca cuando la verdura cae en el aceite hirviendo. En Phitsanulok se volvió teatro callejero literal: los famosos vendedores de la “verdura voladora” lanzan el wok en llamas de un lado a otro de la calle, hacia un atrapador que equilibra un plato. Debajo del espectáculo hay un platillo serio — hojas de tallo hueco que se mantienen crujientes, ajo, pasta de soya y salsa de ostión, todo cocinado en segundos. Nosotros dejamos el fuego en la cocina; el sabor vuela de todos modos.",
     },
   },
+  "bok-choy": {
+    description: "Bok choy al fuego rugiente — ajo, salsa de ostión, tallos crujientes y hojas brillosas.",
+    story: {
+      lede: "Bok choy baby por un wok al rojo vivo — segundos de fuego, para que el tallo quede crujiente y la hoja brillosa.",
+      history: "“Bok choy” es cantonés y significa “verdura blanca” — los tallos pálidos en forma de cuchara de una col china que los campesinos de China llevan cultivando más de mil años; un manual agrícola del siglo VI ya anota a su antepasado entre las verduras de huerto. Llegó a Tailandia con los inmigrantes chinos, y por eso los tailandeses le dicen phak kwang tung, “la verdura de Cantón”. La preparación clásica es la más sencilla: un wok hirviendo, ajo, salsa de ostión y unos segundos — justo lo necesario para que la hoja se ablande mientras el tallo conserva su crujido. Nuestra chef lo cocina igual que el brócoli y la espinaca de agua de esta casa: primero el fuego, y luego directo a la mesa.",
+    },
+  },
   "cashew-nut": {
     description: "Nueces de la India tostadas y mantequillosas, cebollín y chiles tostados — el clásico dulce-salado del wok.",
     story: {
