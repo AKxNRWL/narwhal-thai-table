@@ -4,29 +4,31 @@ import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/cn';
 
 /**
- * Halloween — the ghost gang. A shy little ghost peeks out from the right
- * edge of the page, works up the courage to come out, calls its friends
- * ("boo!") and the whole gang pours in: the regulars, a sly one in a witch
- * hat that zig-zags in and cackles, one hugging a jack-o'-lantern that hops
- * to show it off, a daredevil that zooms in on a broomstick, loops the loop,
- * ditches the broom and flies solo, and last the big FIERCE one that lumbers
- * in and roars — everyone gasps and jumps back. They party ("Happy
- * Halloween!"), the boss roars once more, then they all drift off behind the
- * edge and it starts again. Owner, 27 Oct 2026: "ผีแบบนี้ … แอบมองอยู่ตรงกรอบ
- * แล้วมีจังหวะออกมา และก็เรียกเพื่อนมา ทีนี้มากันเต็มเลย … อนิเมชั่นลูป", then
- * "น่ารักไป เอาให้มีตัวที่ดูดุด้วย บางตัวใส่หมวกแม่มด บางตัวถือฟักทอง บางตัวขี่
- * ไม้กวาดแต่ทิ้งไม้กวาดและบินเอง แต่ละตัวมีบุคลิกภาพของตัวเอง".
+ * Halloween — the ghost gang. A shy little ghost in a candy-corn hat peeks
+ * out from the right edge of the page, works up the courage to come out,
+ * calls its friends ("boo!") and ten costumed ghosts pour in, each with its
+ * own way of moving: a vampire that swoops, a black cat that pounces and
+ * darts, a pirate rolling in on the swell, a sly one in a witch hat that
+ * zig-zags and cackles, the restaurant's own narwhal hiding under a sheet
+ * (tusk and tail poking out) that swims rather than floats, a stiff mummy
+ * that shuffles, a little devil that spins, a daredevil that zooms in on a
+ * broomstick, loops the loop, ditches the broom and flies solo, one hugging
+ * a jack-o'-lantern that hops to show it off, and last the big FIERCE boss
+ * that lumbers in and roars — everyone gasps and jumps back. They party
+ * ("Happy Halloween!"), the boss roars once more, then they all drift off
+ * behind the edge and it starts again. Owner, 27 Oct 2026: "แอบมองอยู่ตรงกรอบ
+ * แล้วมีจังหวะออกมา และก็เรียกเพื่อนมา ทีนี้มากันเต็มเลย", "แต่ละตัวมีบุคลิกภาพ
+ * ของตัวเอง", "มี 1 ตัวเป็นปลานาวาลของร้าน แต่เนียน ใส่ชุดคลุมผี … สัก 10 ตัว
+ * แต่ละตัวไม่เหมือนกัน มีชุดตีมฮาโลวีนหมดเลย".
  *
- * Art: one original ghost cast, generated as sticker sheets (gpt_image_2_5,
+ * Art: one original ghost cast generated as sticker sheets (gpt_image_2_5,
  * transparent background) and cut into public/images/halloween/ghost-*.webp
- * (560 px tall, 26–41 KB each): peek / wave / laugh / wow (the regulars and
- * the lead), fierce, witch, pumpkin, rider (on the broom), flyer (off it),
- * broom. All the motion — peeking, waving, bubbles, flights, the broom toss,
- * the roar — is this canvas script.
+ * (560 px tall, 25–48 KB each). All the motion — peeking, waving, bubbles,
+ * flights, the broom toss, the roar — is this canvas script.
  *
  * Same conventions as components/fx/Airshow.tsx: fixed canvas in the strip
  * under the nav (42 % of the viewport; a 160 px lane on phones — the gang
- * keeps to the right ~54 % on wide screens so the headline stays readable),
+ * keeps to the right half on wide screens so the headline stays readable),
  * pauses when the tab is hidden, half-ghosts itself once the reader has
  * scrolled into content, motion always on (owner's rule). Mounted by
  * components/fx/AirshowLayer.tsx while lib/events.ts has an event with
@@ -34,10 +36,11 @@ import { cn } from '@/lib/cn';
  */
 type Props = { className?: string };
 
-type Sprite = 'peek' | 'wave' | 'laugh' | 'wow' | 'fierce' | 'witch' | 'pumpkin' | 'rider' | 'flyer' | 'broom';
-const SPRITES: Sprite[] = ['peek', 'wave', 'laugh', 'wow', 'fierce', 'witch', 'pumpkin', 'rider', 'flyer', 'broom'];
-const REGULAR: Sprite[] = ['peek', 'wave', 'laugh', 'wow'];
-const CHEERY: Sprite[] = ['laugh', 'wave', 'laugh', 'wave', 'peek']; // what the regulars wear by default
+type Sprite =
+  | 'lead-peek' | 'lead-wave' | 'lead-laugh' | 'lead-wow'
+  | 'fierce' | 'witch' | 'pumpkin' | 'rider' | 'flyer' | 'broom'
+  | 'narwhal' | 'vampire' | 'mummy' | 'pirate' | 'cat' | 'devil';
+const SPRITES: Sprite[] = ['lead-peek', 'lead-wave', 'lead-laugh', 'lead-wow', 'fierce', 'witch', 'pumpkin', 'rider', 'flyer', 'broom', 'narwhal', 'vampire', 'mummy', 'pirate', 'cat', 'devil'];
 const NAV_H = 72; // components/Nav.tsx h-[72px]
 const NAVY = '#0D2B3E';
 
@@ -45,39 +48,45 @@ const NAVY = '#0D2B3E';
 const T_PEEK = 1; // lead's first peek from the edge
 const T_OUT = 7; // lead comes all the way out
 const T_CALL = 9; // lead waves and calls ("boo!")
-const T_FRIENDS = 12.5; // regulars stream in
-const T_WITCH = 13.2;
-const T_RIDER = 15.0; // zooms in on the broom
-const T_RIDER_LOOP = 16.4; // loop-the-loop
+const T_RIDER_LOOP = 16.4; // the daredevil's loop-the-loop
 const T_TOSS = 17.6; // ditches the broom, flies solo
-const T_PUMPKIN = 15.5;
-const T_FIERCE = 19.5; // the boss lumbers in
-const ROARS = [21.8, 26.2]; // everyone gasps
+const ROARS = [21.8, 26.2]; // the boss roars, everyone gasps
 const T_PARTY = 22;
 const T_HH = 23.5; // "Happy Halloween!" bubble
-const T_LEAVE = 29; // regulars drift off
-const T_WITCH_OUT = 30;
-const T_PUMPKIN_OUT = 30.5;
-const T_RIDER_OUT = 31;
-const T_FIERCE_OUT = 32;
 const T_LEAD_BYE = 33.5; // lead waves goodbye at the edge
 const T_REST = 35.5; // lead slips behind the edge
 const T_LOOP = 38;
 
-type Kind = 'reg' | 'witch' | 'pumpkin' | 'rider' | 'fierce';
+type Kind = 'vampire' | 'cat' | 'pirate' | 'witch' | 'narwhal' | 'mummy' | 'devil' | 'rider' | 'pumpkin' | 'fierce';
+type Style = 'arc' | 'swoop' | 'pounce' | 'roll' | 'zigzag' | 'swim' | 'shuffle' | 'slow';
+type Trick = 'none' | 'swoop' | 'dash' | 'hop' | 'cackle' | 'nod' | 'wobble' | 'spin' | 'lift';
+type Trait = { tIn: number; tOut: number; inDur: number; outDur: number; style: Style; size: number; bobA: number; bobF: number; trick: Trick; every: [number, number]; trickDur: number; phone: boolean };
+/** who comes when, how they move, what they do once they're here (size = × lead) */
+const TRAITS: Record<Kind, Trait> = {
+  vampire: { tIn: 12.5, tOut: 29.2, inDur: 1.3, outDur: 1.1, style: 'swoop', size: 0.84, bobA: 5, bobF: 0.3, trick: 'swoop', every: [3.5, 6], trickDur: 0.9, phone: true },
+  cat: { tIn: 12.9, tOut: 29.0, inDur: 0.9, outDur: 0.8, style: 'pounce', size: 0.7, bobA: 4, bobF: 0.9, trick: 'dash', every: [2.5, 4.5], trickDur: 0.7, phone: true },
+  pirate: { tIn: 13.4, tOut: 29.6, inDur: 1.8, outDur: 1.4, style: 'roll', size: 0.8, bobA: 7, bobF: 0.35, trick: 'hop', every: [3, 5.5], trickDur: 0.7, phone: false },
+  witch: { tIn: 13.8, tOut: 30.0, inDur: 2.0, outDur: 1.6, style: 'zigzag', size: 0.82, bobA: 6, bobF: 0.4, trick: 'cackle', every: [3, 5.5], trickDur: 1.1, phone: true },
+  narwhal: { tIn: 14.2, tOut: 30.2, inDur: 2.4, outDur: 1.8, style: 'swim', size: 0.78, bobA: 4, bobF: 0.5, trick: 'nod', every: [3.5, 6], trickDur: 0.8, phone: true },
+  mummy: { tIn: 14.6, tOut: 30.4, inDur: 2.8, outDur: 2.2, style: 'shuffle', size: 0.8, bobA: 1.5, bobF: 0.6, trick: 'wobble', every: [4, 7], trickDur: 0.9, phone: false },
+  devil: { tIn: 15.2, tOut: 29.9, inDur: 1.2, outDur: 1.0, style: 'arc', size: 0.72, bobA: 6, bobF: 0.6, trick: 'spin', every: [2.5, 4.5], trickDur: 0.85, phone: false },
+  rider: { tIn: 15.0, tOut: 31.0, inDur: 1.4, outDur: 1.1, style: 'arc', size: 0.88, bobA: 5, bobF: 0.4, trick: 'none', every: [9, 9], trickDur: 0, phone: true },
+  pumpkin: { tIn: 15.5, tOut: 30.5, inDur: 2.6, outDur: 2.0, style: 'slow', size: 0.86, bobA: 5, bobF: 0.25, trick: 'lift', every: [3.5, 6], trickDur: 0.9, phone: true },
+  fierce: { tIn: 19.5, tOut: 32.0, inDur: 2.2, outDur: 2.0, style: 'slow', size: 1.15, bobA: 3, bobF: 0.25, trick: 'none', every: [9, 9], trickDur: 0, phone: true },
+};
+const CAST = Object.keys(TRAITS) as Kind[];
+
 type Actor = {
-  kind: Kind; sprite: Sprite; flip: boolean;
-  sx: number; sy: number; size: number;
-  tIn: number; tOut: number; fromY: number;
-  bobPh: number; bobA: number; bobF: number;
-  act: 'none' | 'hop' | 'spin' | 'cackle' | 'lift'; actT: number; actSprite: Sprite; actIn: number;
+  kind: Kind; sprite: Sprite; tr: Trait; flip: boolean;
+  sx: number; sy: number; size: number; fromY: number;
+  bobPh: number;
+  act: Trick; actT: number; actIn: number; actDir: 1 | -1;
   ox: number; oy: number; // easing offset away from the pointer
   gx: number; gy: number; // scatter direction when the boss roars
 };
 type Broom = { on: boolean; x: number; y: number; vx: number; vy: number; rot: number; vr: number; alpha: number; size: number };
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
-const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const easeOutCubic = (p: number) => 1 - Math.pow(1 - p, 3);
 const easeInCubic = (p: number) => p * p * p;
@@ -120,45 +129,34 @@ export default function Halloween({ className }: Props) {
     const outX = (size: number) => w - size * 0.5 - (phone ? 18 : 56);
 
     const seed = () => {
-      const nReg = phone ? 3 : w < 1100 ? 6 : 8;
+      const cast = CAST.filter((k) => !phone || TRAITS[k].phone);
       const margin = phone ? 24 : 60;
-      // the gang gathers around the edge it came from: the right ~54 % of
+      // the gang gathers around the edge it came from: the right half of
       // wide screens (the headline lives on the left), the whole width on phones
       const left = phone ? margin : Math.max(margin, w * 0.5);
-      const nSlots = nReg + 5; // + lead, witch, pumpkin, rider, fierce
+      const nSlots = cast.length + 1; // + lead
       const cols = Array.from({ length: nSlots }, (_, i) => i);
       for (let i = cols.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cols[i], cols[j]] = [cols[j], cols[i]]; }
       const slot = (c: number) => ({
         x: left + ((c + rand(0.25, 0.75)) / nSlots) * (w - left - margin),
         y: bandY(phone ? rand(0.08, 0.42) : rand(0.3, 0.85)),
       });
-      const base = (kind: Kind, sprite: Sprite, s: { x: number; y: number }, size: number, tIn: number, tOut: number): Actor => ({
-        kind, sprite, flip: false,
-        sx: s.x, sy: s.y, size, tIn, tOut,
-        fromY: leadY() + rand(-50, 50),
-        bobPh: rand(0, Math.PI * 2), bobA: rand(4, 9), bobF: rand(0.3, 0.55),
-        act: 'none', actT: 0, actSprite: sprite, actIn: rand(1, 4),
-        ox: 0, oy: 0, gx: 0, gy: 0,
-      });
       leadSlot = slot(cols[0]);
       // the boss parks in the middle of the gang — keep the lead (drawn on top) off its face
       const bx = (left + w - margin) / 2;
       if (Math.abs(leadSlot.x - bx) < lead * 1.1) leadSlot.x = bx + (leadSlot.x < bx ? -1 : 1) * lead * 1.2;
-      actors = [];
-      for (let i = 0; i < nReg; i++) {
-        const a = base('reg', pick(CHEERY), slot(cols[1 + i]), lead * (phone ? rand(0.42, 0.72) : rand(0.45, 0.82)), T_FRIENDS + i * (phone ? 0.45 : 0.3) + rand(0, 0.15), T_LEAVE + rand(0, 2.2));
-        a.flip = Math.random() < 0.4;
-        actors.push(a);
-      }
-      const wi = base('witch', 'witch', slot(cols[nReg + 1]), lead * (phone ? 0.78 : 0.82), T_WITCH, T_WITCH_OUT);
-      const pu = base('pumpkin', 'pumpkin', slot(cols[nReg + 2]), lead * (phone ? 0.8 : 0.86), T_PUMPKIN, T_PUMPKIN_OUT);
-      pu.bobF = 0.25; pu.bobA = 5;
-      const ri = base('rider', 'rider', slot(cols[nReg + 3]), lead * (phone ? 0.82 : 0.88), T_RIDER, T_RIDER_OUT);
-      ri.flip = true; // the sprite faces right; it comes in heading left
-      // the boss: biggest, parks in the middle of the gang
-      const fi = base('fierce', 'fierce', { x: (left + w - margin) / 2, y: bandY(phone ? 0.3 : 0.5) }, lead * 1.15, T_FIERCE, T_FIERCE_OUT);
-      fi.bobA = 3; fi.bobF = 0.25;
-      actors.push(wi, pu, ri, fi);
+      actors = cast.map((kind, i) => {
+        const tr = TRAITS[kind];
+        const s = kind === 'fierce' ? { x: bx, y: bandY(phone ? 0.3 : 0.5) } : slot(cols[1 + i]);
+        return {
+          kind, sprite: kind, tr, flip: kind === 'rider',
+          sx: s.x, sy: s.y, size: lead * tr.size * (phone ? 0.9 : 1),
+          fromY: leadY() + rand(-50, 50),
+          bobPh: rand(0, Math.PI * 2),
+          act: 'none', actT: 0, actIn: rand(tr.every[0], tr.every[1]), actDir: Math.random() < 0.5 ? -1 : 1,
+          ox: 0, oy: 0, gx: 0, gy: 0,
+        };
+      });
       leadBob = rand(0, Math.PI * 2);
       broom.on = false;
     };
@@ -279,51 +277,113 @@ export default function Halloween({ className }: Props) {
 
       // ---- the gang ----------------------------------------------------
       for (const f of actors) {
-        if (t < f.tIn) continue;
-        let x: number;
-        let y: number;
+        const tr = f.tr;
+        if (t < tr.tIn) continue;
+        let x = 0;
+        let y = 0;
         let rot = 0;
         let scale = 1;
         let sprite = f.sprite;
         let flip = f.flip;
-        const bob = Math.sin(t * f.bobF * Math.PI * 2 + f.bobPh) * f.bobA;
-        const settledIdle = () => {
-          // everyone's idle: bob, party tricks, shy of the pointer, gasp at the roar
-          x = f.sx;
-          y = f.sy + bob;
-          if (t >= T_PARTY && f.kind === 'reg') {
-            if (f.act === 'none' && Math.random() < dt * 0.22) {
-              f.act = Math.random() < 0.65 ? 'hop' : 'spin';
-              f.actT = 0;
-              f.actSprite = pick(CHEERY.filter((p) => p !== f.sprite));
+        const bob = Math.sin(t * tr.bobF * Math.PI * 2 + f.bobPh) * tr.bobA;
+
+        /** travel between the edge and the slot in this ghost's own style; dir 1 = arriving, -1 = leaving */
+        const travel = (p: number, dir: 1 | -1) => {
+          // q: 0 at the edge, 1 at the slot, whichever way it's going
+          const q = dir === 1 ? p : 1 - p;
+          const e = dir === 1 ? easeOutCubic(q) : 1 - easeInCubic(1 - q);
+          const x0 = edgeHidden(f.size);
+          const y0 = f.fromY;
+          switch (tr.style) {
+            case 'swoop': {
+              // dives under the slot and comes up into it
+              x = lerp(x0, f.sx, e);
+              y = lerp(y0, f.sy, e) + Math.sin(q * Math.PI) * 70;
+              rot = Math.sin(q * Math.PI) * -0.35;
+              break;
+            }
+            case 'pounce': {
+              const eb = dir === 1 ? easeOutBack(q) : easeInCubic(q);
+              x = lerp(x0, f.sx, eb);
+              y = lerp(y0, f.sy, eb) - Math.sin(q * Math.PI) * 45;
+              rot = (1 - q) * -0.3;
+              break;
+            }
+            case 'roll': {
+              // rolling in on the swell
+              x = lerp(x0, f.sx, e);
+              y = lerp(y0, f.sy, e) + Math.sin(q * Math.PI * 2.5) * 22;
+              rot = Math.cos(q * Math.PI * 2.5) * 0.16;
+              break;
+            }
+            case 'zigzag': {
+              x = lerp(x0, f.sx, e);
+              y = lerp(y0, f.sy, e) + Math.sin(q * Math.PI * 3) * 42 * (1 - q * 0.6);
+              rot = Math.cos(q * Math.PI * 3) * 0.28 * (1 - q * 0.5);
+              break;
+            }
+            case 'swim': {
+              // a fish, not a ghost: wriggles along a gentle wave, tail wagging
+              const el = easeInOut(q);
+              x = lerp(x0, f.sx, el);
+              y = lerp(y0 + 20, f.sy, el) + Math.sin(q * Math.PI * 4) * 14;
+              rot = Math.sin(t * 7) * 0.06 + Math.cos(q * Math.PI * 4) * 0.08;
+              break;
+            }
+            case 'shuffle': {
+              // stiff little steps, no bob
+              const el = easeInOut(q);
+              x = lerp(x0, f.sx, el) + Math.sin(t * 9) * 2;
+              y = lerp(y0, f.sy, el) + Math.abs(Math.sin(t * 9)) * 4;
+              rot = Math.sin(t * 9) * 0.03;
+              break;
+            }
+            case 'slow': {
+              const el = easeInOut(q);
+              x = lerp(x0, f.sx, el);
+              y = lerp(y0 + 30, f.sy, el) + Math.sin(t * 2.5) * 4;
+              rot = (1 - q) * -0.1;
+              break;
+            }
+            default: {
+              // the plain arc
+              x = lerp(x0, f.sx, e);
+              y = lerp(y0, f.sy, e) - Math.sin(q * Math.PI) * 55 + bob * q;
+              rot = (1 - q) * -0.35 * (f.flip ? -1 : 1);
             }
           }
-          if (f.kind === 'witch') {
+          if (dir === -1) rot = -rot;
+        };
+
+        const settled = () => {
+          x = f.sx;
+          y = f.sy + bob;
+          // this ghost's own party trick, every so often
+          if (tr.trick !== 'none') {
             f.actIn -= dt;
-            if (f.act === 'none' && f.actIn <= 0) { f.act = 'cackle'; f.actT = 0; }
-          }
-          if (f.kind === 'pumpkin') {
-            f.actIn -= dt;
-            if (f.act === 'none' && f.actIn <= 0) { f.act = 'lift'; f.actT = 0; }
+            if (f.act === 'none' && f.actIn <= 0 && t >= T_PARTY - 2) { f.act = tr.trick; f.actT = 0; f.actDir = Math.random() < 0.5 ? -1 : 1; }
           }
           if (f.act !== 'none') {
             f.actT += dt;
-            const d = f.act === 'hop' ? 0.7 : f.act === 'spin' ? 0.85 : f.act === 'cackle' ? 1.1 : 0.9;
-            const p = clamp01(f.actT / d);
-            if (f.act === 'hop') { y -= Math.sin(p * Math.PI) * f.size * 0.45; sprite = f.actSprite; }
-            else if (f.act === 'spin') { rot = easeInOut(p) * Math.PI * 2; sprite = p > 0.5 ? f.actSprite : f.sprite; }
-            else if (f.act === 'cackle') { rot = Math.sin(p * Math.PI * 7) * 0.16; y -= Math.abs(Math.sin(p * Math.PI * 3.5)) * 8; }
-            else if (f.act === 'lift') { y -= Math.sin(p * Math.PI) * f.size * 0.32; rot = Math.sin(p * Math.PI) * -0.12; }
-            if (p >= 1) {
-              f.act = 'none';
-              if (f.kind === 'reg') f.sprite = f.actSprite;
-              f.actIn = f.kind === 'witch' ? rand(3, 5.5) : rand(3.5, 6);
+            const p = clamp01(f.actT / tr.trickDur);
+            switch (f.act) {
+              case 'swoop': y += Math.sin(p * Math.PI) * 50; rot = Math.sin(p * Math.PI) * -0.3; break;
+              case 'dash': x += Math.sin(p * Math.PI) * 45 * f.actDir; y -= Math.sin(p * Math.PI * 2) * 10; flip = f.actDir < 0; rot = Math.sin(p * Math.PI) * 0.2 * f.actDir; break;
+              case 'hop': y -= Math.sin(p * Math.PI) * f.size * 0.45; break;
+              case 'cackle': rot = Math.sin(p * Math.PI * 7) * 0.16; y -= Math.abs(Math.sin(p * Math.PI * 3.5)) * 8; break;
+              case 'nod': rot = Math.sin(p * Math.PI) * -0.22; y += Math.sin(p * Math.PI) * 6; break; // tips its tusk
+              case 'wobble': rot = Math.sin(p * Math.PI * 6) * 0.15 * (1 - p * 0.5); break;
+              case 'spin': rot = easeInOut(p) * Math.PI * 2 * f.actDir; break;
+              case 'lift': y -= Math.sin(p * Math.PI) * f.size * 0.32; rot = Math.sin(p * Math.PI) * -0.12; break;
             }
+            if (p >= 1) { f.act = 'none'; f.actIn = rand(tr.every[0], tr.every[1]); }
           }
+          if (f.kind === 'narwhal') rot += Math.sin(t * 2.2) * 0.04; // never quite still
+          if (f.kind === 'pirate') rot += Math.sin(t * 2.2) * 0.09; // still at sea
+          if (f.kind === 'vampire') rot += Math.sin(t * 0.8) * 0.08; // dramatic
           if (f.kind === 'rider') {
             // hovers in a lazy figure-8 on its own
-            const dx = Math.sin(t * 1.1) * 18;
-            x += dx;
+            x += Math.sin(t * 1.1) * 18;
             y += Math.sin(t * 2.2) * 10;
             rot = Math.sin(t * 1.1) * 0.15;
             flip = Math.cos(t * 1.1) < 0;
@@ -336,7 +396,7 @@ export default function Halloween({ className }: Props) {
               rot = Math.sin(r * 40) * 0.06;
             }
           } else if (g > 0 && f.kind !== 'rider') {
-            // the boss roared: gasp and jump back
+            // the boss roared: jump back
             if (f.gx === 0 && f.gy === 0) {
               const dx = f.sx - bossX;
               const dy = f.sy - bossY;
@@ -346,69 +406,22 @@ export default function Halloween({ className }: Props) {
             }
             x += f.gx * g;
             y += f.gy * g;
-            if (f.kind === 'reg') sprite = 'wow';
             rot += Math.sin(g * Math.PI * 4) * 0.08;
           } else { f.gx = 0; f.gy = 0; }
-          if (f.kind !== 'rider' && f.kind !== 'fierce' && shy(f, x, y, f.size, dt) && f.kind === 'reg') sprite = 'wow';
-          if (f.kind !== 'rider' && f.kind !== 'fierce') { x += f.ox; y += f.oy; }
+          if (f.kind !== 'rider' && f.kind !== 'fierce') {
+            shy(f, x, y, f.size, dt);
+            x += f.ox;
+            y += f.oy;
+          }
         };
 
-        if (f.kind === 'reg') {
-          if (t < f.tIn + 1.5) {
-            // fly in from behind the right edge along a little arc
-            const p = easeOutCubic(prog(t, f.tIn, 1.5));
-            x = lerp(edgeHidden(f.size), f.sx, p);
-            y = lerp(f.fromY, f.sy, p) - Math.sin(p * Math.PI) * 55 + bob * p;
-            rot = (1 - p) * -0.35 * (f.flip ? -1 : 1);
-            sprite = p < 0.7 ? 'wow' : f.sprite;
-          } else if (t < f.tOut) settledIdle();
-          else if (t < f.tOut + 1.3) {
-            const p = easeInCubic(prog(t, f.tOut, 1.3));
-            x = lerp(f.sx + f.ox, edgeHidden(f.size), p);
-            y = lerp(f.sy + f.oy, f.fromY, p) - Math.sin(p * Math.PI) * 40 + bob * (1 - p);
-            rot = p * 0.3 * (f.flip ? -1 : 1);
-            sprite = 'wave';
-            f.ox = 0; f.oy = 0; f.act = 'none';
-          } else continue;
-        } else if (f.kind === 'witch') {
-          if (t < f.tIn + 2) {
-            // zig-zags in, cackling
-            const p = prog(t, f.tIn, 2);
-            const e = easeOutCubic(p);
-            x = lerp(edgeHidden(f.size), f.sx, e);
-            y = lerp(f.fromY, f.sy, e) + Math.sin(p * Math.PI * 3) * 42 * (1 - p * 0.6);
-            rot = Math.cos(p * Math.PI * 3) * 0.28 * (1 - p * 0.5);
-          } else if (t < f.tOut) settledIdle();
-          else if (t < f.tOut + 1.6) {
-            const p = prog(t, f.tOut, 1.6);
-            const e = easeInCubic(p);
-            x = lerp(f.sx + f.ox, edgeHidden(f.size), e);
-            y = lerp(f.sy + f.oy, f.fromY, e) + Math.sin(p * Math.PI * 3) * 36;
-            rot = Math.cos(p * Math.PI * 3) * 0.25;
-            f.ox = 0; f.oy = 0; f.act = 'none';
-          } else continue;
-        } else if (f.kind === 'pumpkin') {
-          if (t < f.tIn + 2.6) {
-            // takes its time — it's carrying something
-            const p = easeOutCubic(prog(t, f.tIn, 2.6));
-            x = lerp(edgeHidden(f.size), f.sx, p);
-            y = lerp(f.fromY + 30, f.sy, p) + Math.sin(t * 3) * 5;
-            rot = (1 - p) * -0.12;
-          } else if (t < f.tOut) settledIdle();
-          else if (t < f.tOut + 2) {
-            const p = easeInCubic(prog(t, f.tOut, 2));
-            x = lerp(f.sx + f.ox, edgeHidden(f.size), p);
-            y = lerp(f.sy + f.oy, f.fromY + 30, p) + Math.sin(t * 3) * 5;
-            rot = p * 0.12;
-            f.ox = 0; f.oy = 0; f.act = 'none';
-          } else continue;
-        } else if (f.kind === 'rider') {
+        if (f.kind === 'rider') {
           const cx = phone ? w * 0.5 : w * 0.62; // where the loop happens
           const cy = ly - 10;
           const R = f.size * 0.5;
           if (t < T_RIDER_LOOP) {
             // zooms in on the broom, weaving
-            const p = prog(t, f.tIn, T_RIDER_LOOP - f.tIn);
+            const p = prog(t, tr.tIn, T_RIDER_LOOP - tr.tIn);
             const e = easeOutCubic(p);
             x = lerp(edgeHidden(f.size * 1.3), cx, e);
             y = lerp(f.fromY - 20, cy, e) + Math.sin(p * Math.PI * 2) * 26;
@@ -437,32 +450,25 @@ export default function Halloween({ className }: Props) {
             rot = easeInOut(p) * Math.PI * 2;
             sprite = 'flyer';
             flip = f.sx > cx;
-          } else if (t < f.tOut) { sprite = 'flyer'; settledIdle(); }
-          else if (t < f.tOut + 1.1) {
+          } else if (t < tr.tOut) { sprite = 'flyer'; settled(); }
+          else if (t < tr.tOut + tr.outDur) {
             // zooms out the way it came — no broom needed
-            const p = easeInCubic(prog(t, f.tOut, 1.1));
+            const p = easeInCubic(prog(t, tr.tOut, tr.outDur));
             x = lerp(f.sx, edgeHidden(f.size * 1.3), p);
             y = lerp(f.sy, f.fromY - 30, p) - Math.sin(p * Math.PI) * 30;
             rot = -0.25 * p;
             sprite = 'flyer';
             flip = false;
           } else continue;
-        } else {
-          // the boss
-          if (t < f.tIn + 2.2) {
-            const p = easeInOut(prog(t, f.tIn, 2.2));
-            x = lerp(edgeHidden(f.size), f.sx, p);
-            y = lerp(f.fromY, f.sy, p) + Math.sin(t * 2.5) * 3;
-            rot = Math.sin(t * 2.5) * 0.04;
-          } else if (t < f.tOut) settledIdle();
-          else if (t < f.tOut + 2) {
-            const p = easeInOut(prog(t, f.tOut, 2));
-            x = lerp(f.sx, edgeHidden(f.size), p);
-            y = lerp(f.sy, f.fromY, p) + Math.sin(t * 2.5) * 3;
-            rot = Math.sin(t * 2.5) * 0.04;
-          } else continue;
-        }
-        draw(sprite, x!, y!, f.size * scale, rot, 1, flip);
+        } else if (t < tr.tIn + tr.inDur) {
+          travel(prog(t, tr.tIn, tr.inDur), 1);
+        } else if (t < tr.tOut) {
+          settled();
+        } else if (t < tr.tOut + tr.outDur) {
+          f.ox = 0; f.oy = 0; f.act = 'none';
+          travel(prog(t, tr.tOut, tr.outDur), -1);
+        } else continue;
+        draw(sprite, x, y, f.size * scale, rot, 1, flip);
       }
 
       // the ditched broom tumbles away
@@ -482,7 +488,7 @@ export default function Halloween({ className }: Props) {
         let x = edgeHidden(size);
         let y = ly;
         let rot = 0;
-        let sprite: Sprite = 'peek';
+        let sprite: Sprite = 'lead-peek';
         let bk = 0; // "boo!" bubble
         let hk = 0; // "Happy Halloween!" bubble
         if (t < T_PEEK) {
@@ -495,26 +501,26 @@ export default function Halloween({ className }: Props) {
           else if (p < 2.7) { x = lerp(edgeIn(size), edgeHidden(size), easeInCubic((p - 2.2) / 0.5)); rot = lean * (1 - (p - 2.2) / 0.5); }
           else if (p < 3.4) { x = edgeHidden(size); }
           else if (p < 4.0) { x = lerp(edgeHidden(size), w - size * 0.55, easeOutBack((p - 3.4) / 0.6)); y = ly + 26; rot = lean * easeOutCubic((p - 3.4) / 0.6); }
-          else { x = w - size * 0.55; y = ly + 26 + bobL; rot = lean + Math.sin((p - 4) * 3.2) * 0.05; if (p > 5.4) sprite = 'wow'; }
+          else { x = w - size * 0.55; y = ly + 26 + bobL; rot = lean + Math.sin((p - 4) * 3.2) * 0.05; if (p > 5.4) sprite = 'lead-wow'; }
         } else if (t < T_CALL) {
           const p = prog(t, T_OUT, 0.9);
           x = lerp(w - size * 0.55, outX(size), easeOutBack(p));
           y = ly + 26 * (1 - p) - Math.sin(p * Math.PI) * 34 + bobL * p;
           rot = -0.17 * (1 - easeOutCubic(p));
-          sprite = t < T_OUT + 1.2 ? 'wow' : 'wave';
-        } else if (t < T_FRIENDS) {
+          sprite = t < T_OUT + 1.2 ? 'lead-wow' : 'lead-wave';
+        } else if (t < TRAITS.vampire.tIn) {
           x = outX(size);
           y = ly + bobL;
           rot = Math.sin((t - T_CALL) * Math.PI * 2 * 2.3) * 0.12; // waving
-          sprite = 'wave';
-          bk = pop(T_CALL + 0.25, T_FRIENDS - 0.3);
+          sprite = 'lead-wave';
+          bk = pop(T_CALL + 0.25, TRAITS.vampire.tIn - 0.3);
         } else if (t < T_LEAD_BYE) {
           // slides to its own spot and parties with everyone
-          const p = easeOutCubic(prog(t, T_FRIENDS, 1.2));
+          const p = easeOutCubic(prog(t, TRAITS.vampire.tIn, 1.2));
           x = lerp(outX(size), leadSlot.x, p);
           y = lerp(ly, leadSlot.y, p) + bobL;
           const wave = t >= T_PARTY && Math.floor((t - T_PARTY) / 1.7) % 3 === 1;
-          sprite = wave ? 'wave' : 'laugh';
+          sprite = wave ? 'lead-wave' : 'lead-laugh';
           rot = wave ? Math.sin(t * Math.PI * 2 * 2.3) * 0.1 : Math.sin(t * 1.3) * 0.05;
           if (g > 0) {
             // the boss roared
@@ -523,9 +529,9 @@ export default function Halloween({ className }: Props) {
             const d = Math.hypot(dx, dy) || 1;
             x += (dx / d) * (phone ? 26 : 55) * g;
             y += ((dy / d) * (phone ? 14 : 30) - 14) * g;
-            sprite = 'wow';
+            sprite = 'lead-wow';
             rot = Math.sin(g * Math.PI * 4) * 0.08;
-          } else if (p >= 1 && shy(leadShy, x, y, size, dt)) sprite = 'wow';
+          } else if (p >= 1 && shy(leadShy, x, y, size, dt)) sprite = 'lead-wow';
           x += leadShy.ox;
           y += leadShy.oy;
           hk = pop(T_HH, T_HH + 3.2);
@@ -535,14 +541,14 @@ export default function Halloween({ className }: Props) {
           x = lerp(leadSlot.x + leadShy.ox, outX(size), p);
           y = lerp(leadSlot.y + leadShy.oy, ly, p) + bobL;
           rot = Math.sin(t * Math.PI * 2 * 2.3) * 0.12;
-          sprite = 'wave';
+          sprite = 'lead-wave';
           if (p >= 1) { leadShy.ox = 0; leadShy.oy = 0; }
         } else if (t < T_REST + 0.6) {
           const p = easeInCubic(prog(t, T_REST, 0.6));
           x = lerp(outX(size), edgeHidden(size), p);
           y = ly + bobL;
           rot = -0.17 * p;
-          sprite = 'peek';
+          sprite = 'lead-peek';
         }
         draw(sprite, x, y, size, rot, 1, false);
         const by = (dy: number) => Math.max(yT + size * 0.2, y - dy); // keep bubbles out of the nav
