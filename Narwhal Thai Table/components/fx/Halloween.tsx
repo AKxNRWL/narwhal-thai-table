@@ -141,6 +141,9 @@ export default function Halloween({ className }: Props) {
         ox: 0, oy: 0, gx: 0, gy: 0,
       });
       leadSlot = slot(cols[0]);
+      // the boss parks in the middle of the gang — keep the lead (drawn on top) off its face
+      const bx = (left + w - margin) / 2;
+      if (Math.abs(leadSlot.x - bx) < lead * 1.1) leadSlot.x = bx + (leadSlot.x < bx ? -1 : 1) * lead * 1.2;
       actors = [];
       for (let i = 0; i < nReg; i++) {
         const a = base('reg', pick(CHEERY), slot(cols[1 + i]), lead * (phone ? rand(0.42, 0.72) : rand(0.45, 0.82)), T_FRIENDS + i * (phone ? 0.45 : 0.3) + rand(0, 0.15), T_LEAVE + rand(0, 2.2));
