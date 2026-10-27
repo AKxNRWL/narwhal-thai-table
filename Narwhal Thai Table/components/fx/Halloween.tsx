@@ -30,9 +30,12 @@ import { cn } from '@/lib/cn';
  * (560 px tall, 25–48 KB each). All the motion — peeking, waving, bubbles,
  * flights, the broom toss, the roar — is this canvas script.
  *
- * Same conventions as components/fx/Airshow.tsx: fixed canvas in the strip
- * under the nav (42 % of the viewport; a 160 px lane on phones — the gang
- * keeps to the right half on wide screens so the headline stays readable),
+ * Same conventions as components/fx/Airshow.tsx: a fixed full-viewport
+ * canvas (so a hem or a tail is never clipped — owner, 27 Oct) laid out in
+ * the strip under the nav (42 % of the viewport; a 160 px lane on phones —
+ * the gang keeps to the right half on wide screens so the headline stays
+ * readable); ghosts fade in on arrival and fade out before they reach the
+ * edge of the screen; only the host's peek is clipped by the edge, on purpose,
  * pauses when the tab is hidden, half-ghosts itself once the reader has
  * scrolled into content, motion always on (owner's rule). Mounted by
  * components/fx/AirshowLayer.tsx while lib/events.ts has an event with
@@ -77,7 +80,7 @@ const TRAITS: Record<Kind, Trait> = {
   devil: { tIn: 15.2, tOut: 29.9, inDur: 1.2, outDur: 1.0, style: 'arc', size: 0.72, bobA: 6, bobF: 0.6, trick: 'spin', every: [2.5, 4.5], trickDur: 0.85, phone: false },
   rider: { tIn: 15.0, tOut: 31.0, inDur: 1.4, outDur: 1.1, style: 'arc', size: 0.88, bobA: 5, bobF: 0.4, trick: 'none', every: [9, 9], trickDur: 0, phone: true },
   pumpkin: { tIn: 15.5, tOut: 30.5, inDur: 2.6, outDur: 2.0, style: 'slow', size: 0.86, bobA: 5, bobF: 0.25, trick: 'lift', every: [3.5, 6], trickDur: 0.9, phone: true },
-  fierce: { tIn: 19.5, tOut: 32.0, inDur: 2.2, outDur: 2.0, style: 'slow', size: 1.15, bobA: 3, bobF: 0.25, trick: 'none', every: [9, 9], trickDur: 0, phone: true },
+  fierce: { tIn: 19.5, tOut: 32.0, inDur: 2.2, outDur: 2.0, style: 'slow', size: 1.1, bobA: 3, bobF: 0.25, trick: 'none', every: [9, 9], trickDur: 0, phone: true },
 };
 const CAST = Object.keys(TRAITS) as Kind[];
 /** what each kind wears */
@@ -123,7 +126,8 @@ export default function Halloween({ className }: Props) {
     if (!ctx) return;
 
     let w = 0;
-    let h = 0; // canvas height = bottom of the band
+    let h = 0; // bottom of the band (layout only — the canvas itself runs the full viewport so nothing is ever clipped)
+    let ch = 0; // canvas height = viewport height
     let yT = 110; // top of the band (under the nav)
     let phone = false;
     let lead = 150; // lead ghost drawn height
@@ -172,8 +176,8 @@ export default function Halloween({ className }: Props) {
         const back = shuffle(cast.filter((k) => ['cat', 'devil', 'candy', 'rider', 'mummy'].includes(k)));
         const frontOrder: (Kind | 'host')[] = [...front.slice(0, 2), 'host', 'fierce', ...front.slice(2)];
         const step = (right - left) / frontOrder.length;
-        frontOrder.forEach((k, i) => seats.push({ kind: k, x: left + step * (i + 0.5), y: bandY(0.74), mul: 1, row: 1 }));
-        back.forEach((k, i) => seats.push({ kind: k, x: left + step * (i + 1) + rand(-10, 10), y: bandY(0.34) + rand(-8, 8), mul: 0.9, row: 0 }));
+        frontOrder.forEach((k, i) => seats.push({ kind: k, x: left + step * (i + 0.5), y: bandY(0.66), mul: 1, row: 1 }));
+        back.forEach((k, i) => seats.push({ kind: k, x: left + step * (i + 1) + rand(-10, 10), y: bandY(0.3) + rand(-6, 6), mul: 0.9, row: 0 }));
       }
       const host = seats.find((s) => s.kind === 'host')!;
       leadSlot = { x: host.x, y: host.y };
@@ -202,12 +206,13 @@ export default function Halloween({ className }: Props) {
       yT = ticker + NAV_H + 6;
       phone = w < 700;
       h = phone ? yT + 160 : Math.max(yT + 220, Math.round(vh * 0.42));
+      ch = vh;
       lead = phone ? 72 : Math.min(170, Math.max(120, vh * 0.2));
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       canvas.width = w * dpr;
-      canvas.height = h * dpr;
+      canvas.height = ch * dpr;
       canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
+      canvas.style.height = `${ch}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       seed();
     };
@@ -300,7 +305,7 @@ export default function Halloween({ className }: Props) {
       lastNow = now;
       t += dt;
       if (t >= T_LOOP) { t -= T_LOOP; seed(); }
-      ctx.clearRect(0, 0, w, h);
+      ctx.clearRect(0, 0, w, ch);
 
       const ly = leadY();
       const bobL = Math.sin(t * 0.9 * Math.PI * 2 + leadBob) * 4;
@@ -317,8 +322,12 @@ export default function Halloween({ className }: Props) {
         let y = 0;
         let rot = 0;
         let scale = 1;
+        let alpha = 1;
         let sprite = f.sprite;
         let flip = f.flip;
+        /** ghosts materialise as they arrive and fade as they go — nothing gets sliced by the edge of the screen */
+        const fadeIn = (p: number) => clamp01((p - 0.12) / 0.3); // still fully outside the viewport while invisible
+        const fadeOut = (p: number) => clamp01((0.92 - p) / 0.3); // gone before the edge can slice it
         const bob = Math.sin(t * tr.bobF * Math.PI * 2 + f.bobPh) * tr.bobA;
 
         /** travel between the edge and the slot in this ghost's own style; dir 1 = arriving, -1 = leaving */
@@ -505,6 +514,7 @@ export default function Halloween({ className }: Props) {
             // zooms in on the broom, weaving
             const p = prog(t, tr.tIn, T_RIDER_LOOP - tr.tIn);
             const e = easeOutCubic(p);
+            alpha = fadeIn(p);
             x = lerp(edgeHidden(f.size * 1.3), cx, e);
             y = lerp(f.fromY - 20, cy, e) + Math.sin(p * Math.PI * 2) * 26;
             rot = -0.12 + Math.cos(p * Math.PI * 2) * 0.12;
@@ -536,6 +546,7 @@ export default function Halloween({ className }: Props) {
           else if (t < tr.tOut + tr.outDur) {
             // zooms out the way it came — no broom needed
             const p = easeInCubic(prog(t, tr.tOut, tr.outDur));
+            alpha = fadeOut(prog(t, tr.tOut, tr.outDur));
             x = lerp(f.sx, edgeHidden(f.size * 1.3), p);
             y = lerp(f.sy, f.fromY - 30, p) - Math.sin(p * Math.PI) * 30;
             rot = -0.25 * p;
@@ -543,14 +554,18 @@ export default function Halloween({ className }: Props) {
             flip = false;
           } else continue;
         } else if (t < tr.tIn + tr.inDur) {
-          travel(prog(t, tr.tIn, tr.inDur), 1);
+          const p = prog(t, tr.tIn, tr.inDur);
+          alpha = fadeIn(p);
+          travel(p, 1);
         } else if (t < tr.tOut) {
           settled();
         } else if (t < tr.tOut + tr.outDur) {
           f.ox = 0; f.oy = 0; f.act = 'none';
-          travel(prog(t, tr.tOut, tr.outDur), -1);
+          const p = prog(t, tr.tOut, tr.outDur);
+          alpha = fadeOut(p);
+          travel(p, -1);
         } else continue;
-        draw(sprite, x, y, f.size * scale, rot, 1, flip);
+        draw(sprite, x, y, f.size * scale, rot, alpha, flip);
       }
 
       // the ditched broom tumbles away
@@ -560,7 +575,7 @@ export default function Halloween({ className }: Props) {
         broom.y += broom.vy * dt;
         broom.rot += broom.vr * dt;
         broom.alpha -= dt / 1.4;
-        if (broom.alpha <= 0 || broom.y > h + broom.size) broom.on = false;
+        if (broom.alpha <= 0 || broom.y > ch + broom.size) broom.on = false;
         else draw('broom', broom.x, broom.y, broom.size, broom.rot, broom.alpha, false);
       }
 
