@@ -30,6 +30,7 @@ export default function Marquee({
         <div
           key={i}
           aria-hidden={i === 1 ? true : undefined}
+          inert={i === 1 ? true : undefined}
           className={cn(
             'marquee-track flex shrink-0 items-center gap-[var(--gap)] pr-[var(--gap)]',
             reverse && '[animation-direction:reverse]',

@@ -323,7 +323,7 @@ function SidesPanel({ locale }: { locale: Locale }) {
 function SideList({ title, rows }: { title: string; rows: SideRow[] }) {
   return (
     <div className="rounded-[var(--radius-card)] border border-cream/10 bg-white/[0.035] p-6 shadow-card sm:p-7">
-      <h4 className="font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{title}</h4>
+      <h3 className="font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{title}</h3>
       <ul className="mt-4">
         {rows.map((r) => (
           <li key={r.name} className="border-t border-cream/[0.06] py-2.5 first:border-t-0">

@@ -306,6 +306,7 @@ export default function ChatWidget() {
         role="dialog"
         aria-label={t.dialog}
         aria-hidden={!open}
+        inert={!open}
       >
         <div className="nara-head">
           <div className="nara-head-mark" aria-hidden="true"><NarwhalIcon style={{ width: 24, height: 24 }} /></div>

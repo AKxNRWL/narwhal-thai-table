@@ -88,7 +88,7 @@ export default function Footer() {
 
           {/* visit */}
           <div>
-            <h3 className="mb-4 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{t.visit}</h3>
+            <h2 className="mb-4 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{t.visit}</h2>
             <address className="not-italic text-[15px] leading-relaxed text-cream/75">
               {address.street}
               <br />
@@ -116,7 +116,7 @@ export default function Footer() {
 
           {/* hours */}
           <div>
-            <h3 className="mb-4 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{t.hours}</h3>
+            <h2 className="mb-4 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{t.hours}</h2>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[15px] text-cream/75">
               <dt className="text-cream/50">{t.weekdays}</dt>
               <dd>{t.weekdayHours}</dd>
@@ -133,7 +133,7 @@ export default function Footer() {
 
           {/* explore */}
           <div>
-            <h3 className="mb-4 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{t.explore}</h3>
+            <h2 className="mb-4 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">{t.explore}</h2>
             <nav aria-label={t.siteMap} className="grid grid-cols-2 gap-x-6 gap-y-2 text-[15px] text-cream/75 lg:grid-cols-1">
               {EXPLORE.map((l) => (
                 <Link key={l.href} href={href(l.href)} className="transition-colors hover:text-brass-light">
@@ -159,7 +159,7 @@ export default function Footer() {
               </a>
             ))}
           </nav>
-          <p className="font-sans text-[11px] tracking-[0.12em] text-cream/45">{t.copyright}</p>
+          <p className="font-sans text-[11px] tracking-[0.12em] text-cream/65">{t.copyright}</p>
         </div>
       </div>
     </footer>

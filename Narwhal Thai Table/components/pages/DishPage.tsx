@@ -243,13 +243,13 @@ export default function DishPage({ dish: raw, locale = 'en' }: { dish: Dish; loc
                   <div className="grid gap-4 sm:grid-cols-2">
                     {dish.pairing.drink && (
                       <div className={cn(glass, 'p-5 sm:p-6')}>
-                        <h4 className={miniLabel}>{t.toDrink}</h4>
+                        <h3 className={miniLabel}>{t.toDrink}</h3>
                         <p className="mt-3 text-[15.5px] leading-relaxed text-cream/80">{dish.pairing.drink}</p>
                       </div>
                     )}
                     {dish.pairing.sides && dish.pairing.sides.length > 0 && (
                       <div className={cn(glass, 'p-5 sm:p-6')}>
-                        <h4 className={miniLabel}>{t.onTheSide}</h4>
+                        <h3 className={miniLabel}>{t.onTheSide}</h3>
                         <p className="mt-3 text-[15.5px] leading-relaxed text-cream/80">{dish.pairing.sides.join(' · ')}</p>
                       </div>
                     )}
