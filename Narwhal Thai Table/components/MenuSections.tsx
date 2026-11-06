@@ -163,7 +163,6 @@ export default function MenuSections({
             key={cat.id}
             id={`cat-${cat.id}`}
             ref={(el) => { sectionRefs.current[cat.id] = el; }}
-            aria-labelledby={`cat-${cat.id}-title`}
             className="border-t border-cream/[0.08] first-of-type:border-t-0"
           >
             {/* Course heading = the fold/unfold control (real H2 for structure). */}

@@ -26,6 +26,7 @@ const item =
 export default function MobileActionBar() {
   const locale = useLocale();
   const t = chrome(locale).mobileBar;
+  const ta = chrome(locale).a11y;
   return (
     <nav
       aria-label={t.label}
@@ -44,7 +45,7 @@ export default function MobileActionBar() {
             <path d="M4 8h16l-1.2 11a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 8Z" />
             <path d="M9 8V6a3 3 0 0 1 6 0v2" />
           </svg>
-          <span>{t.order}</span>
+          <span>{t.order}<span className="visually-hidden"> ({ta.newTab})</span></span>
         </a>
       )}
       <a className={item} href={`tel:${RESTAURANT.phone.replace(/[^\d+]/g, '')}`}>
@@ -58,7 +59,7 @@ export default function MobileActionBar() {
           <path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z" />
           <circle cx="12" cy="10" r="2.6" />
         </svg>
-        <span>{t.directions}</span>
+        <span>{t.directions}<span className="visually-hidden"> ({ta.newTab})</span></span>
       </a>
       <Link className={item} href={localePath(locale, '/contact/reservation')}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" focusable="false">

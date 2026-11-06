@@ -27,12 +27,29 @@ export default function LanguageSwitch({ variant = 'bar', className }: { variant
   const t = chrome(locale).locale;
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setOpen(false); }, [pathname]);
+  // menu-button keyboard pattern: focus lands on the current language when the
+  // menu opens, arrows walk the list, Escape closes and returns focus to the button
   useEffect(() => {
     if (!open) return;
+    const items = () => Array.from(menu.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+    window.setTimeout(() => (menu.current?.querySelector<HTMLElement>('[aria-current]') ?? items()[0])?.focus(), 30);
     const onDown = (e: PointerEvent) => { if (root.current && !root.current.contains(e.target as Node)) setOpen(false); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setOpen(false); btn.current?.focus(); return; }
+      const list = items();
+      const at = list.indexOf(document.activeElement as HTMLElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const next = at < 0 ? 0 : (at + (e.key === 'ArrowDown' ? 1 : list.length - 1)) % list.length;
+        list[next]?.focus();
+      } else if (e.key === 'Home') { e.preventDefault(); list[0]?.focus(); }
+      else if (e.key === 'End') { e.preventDefault(); list[list.length - 1]?.focus(); }
+      else if (e.key === 'Tab') { setOpen(false); }
+    };
     document.addEventListener('pointerdown', onDown);
     document.addEventListener('keydown', onKey);
     return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
@@ -70,10 +87,11 @@ export default function LanguageSwitch({ variant = 'bar', className }: { variant
   return (
     <div ref={root} className={cn('relative', className)}>
       <button
+        ref={btn}
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label={t.switch}
+        aria-label={icon ? `${t.switch}: ${LOCALE_NAME[locale]}` : `${LOCALE_CODE[locale]} · ${t.switch}: ${LOCALE_NAME[locale]}`}
         title={t.switch}
         onClick={() => setOpen((v) => !v)}
         className={cn(
@@ -97,6 +115,7 @@ export default function LanguageSwitch({ variant = 'bar', className }: { variant
         )}
       </button>
       <div
+        ref={menu}
         role="menu"
         aria-label={t.switch}
         hidden={!open}

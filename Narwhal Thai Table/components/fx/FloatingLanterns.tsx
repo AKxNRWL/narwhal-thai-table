@@ -34,7 +34,7 @@ export default function FloatingLanterns({
     return { i, left, size, dur, delay, sway, opacity };
   });
   return (
-    <div aria-hidden="true" className={cn('pointer-events-none absolute inset-0 -z-[5] overflow-hidden', className)}>
+    <div aria-hidden="true" data-decor="" className={cn('fx-decor pointer-events-none absolute inset-0 -z-[5] overflow-hidden', className)}>
       {lanterns.map((l) => (
         <span
           key={l.i}

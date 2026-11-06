@@ -11,3 +11,6 @@ _utf8_test.txt
 
 # sync-orderline output (local prompt snapshots)
 scripts/agent-prompt.*.txt
+
+# accessibility sweep output (scripts/a11y-sweep.mjs)
+a11y-report*/

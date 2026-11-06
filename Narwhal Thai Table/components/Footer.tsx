@@ -22,6 +22,7 @@ function explore(t: ChromeDict['footer']['links'], locale: Locale) {
     { href: '/thai-food-orange-county', label: t.guide },
     { href: '/press', label: t.press },
     { href: '/socialmedia', label: t.media },
+    { href: '/accessibility', label: t.accessibility },
     // the mini-game's only doorway is the tile on /socialmedia (owner, 9 Oct 2026: "เอาให้อยู่แค่ใน The Entertainment")
   ];
 }
@@ -36,6 +37,7 @@ function explore(t: ChromeDict['footer']['links'], locale: Locale) {
 export default function Footer() {
   const locale = useLocale();
   const t = chrome(locale).footer;
+  const ta = chrome(locale).a11y;
   const href = (p: string) => localePath(locale, p);
   const { address } = RESTAURANT;
   const live = SOCIAL.filter((s) => s.url);
@@ -152,10 +154,10 @@ export default function Footer() {
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={fmt(t.on, { label: s.label })}
                 className="font-sans text-[11px] font-medium uppercase tracking-[0.22em] text-cream/70 transition-colors hover:text-brass-light"
               >
                 {s.label}
+                <span className="visually-hidden"> — {fmt(t.on, { label: s.label })} ({ta.newTab})</span>
               </a>
             ))}
           </nav>

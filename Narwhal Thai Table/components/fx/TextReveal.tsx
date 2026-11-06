@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn';
 export default function TextReveal({
   text,
   className,
-  from = 0.18,
+  from = 0.7,
 }: {
   text: string;
   className?: string;

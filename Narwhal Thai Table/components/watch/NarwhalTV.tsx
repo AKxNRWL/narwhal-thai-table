@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import BorderBeam from '@/components/fx/BorderBeam';
 import Marquee from '@/components/fx/Marquee';
+import { useReducedMotion } from '@/lib/a11y';
+import { chrome } from '@/lib/i18n/chrome';
+import { useLocale } from '@/lib/i18n/useLocale';
 import Particles from '@/components/fx/Particles';
 import Tilt from '@/components/fx/Tilt';
 import { cn } from '@/lib/cn';
@@ -117,13 +120,17 @@ function Spotlight({
 }) {
   const film = films[index] ?? films[0];
   const [cycle, setCycle] = useState(0); // restarts the progress animation after a manual pick
+  // WCAG 2.2.2: the slideshow can be paused, and "reduce motion" stops it by itself
+  const [paused, setPaused] = useState(false);
+  const reduced = useReducedMotion();
+  const ta = chrome(useLocale()).a11y;
 
   // auto-advance while nothing is playing
   useEffect(() => {
-    if (playing || films.length < 2) return;
+    if (playing || paused || reduced || films.length < 2) return;
     const id = setTimeout(() => onIndex((index + 1) % films.length), DWELL_MS);
     return () => clearTimeout(id);
-  }, [index, playing, films.length, onIndex]);
+  }, [index, playing, paused, reduced, films.length, onIndex]);
 
   if (!film) return null;
   return (
@@ -167,7 +174,22 @@ function Spotlight({
             <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-5 sm:p-8 lg:max-w-[60%] lg:p-10">
               <span className="inline-flex items-center gap-3 font-sans text-[10.5px] font-medium uppercase tracking-[0.3em] text-brass-light">
                 <span className="shiny-text">Now showing</span>
-                {films.length > 1 && <span className="text-cream/50">· {index + 1} / {films.length}</span>}
+                {films.length > 1 && <span className="text-cream/70">· {index + 1} / {films.length}</span>}
+                {films.length > 1 && (
+                  <button
+                    type="button"
+                    className="fx-pause fx-inline"
+                    aria-pressed={paused || reduced}
+                    aria-label={paused || reduced ? ta.playShow : ta.pauseShow}
+                    onClick={() => setPaused((p) => !p)}
+                  >
+                    {paused || reduced ? (
+                      <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.2 1l6.8 4-6.8 4z" fill="currentColor" /></svg>
+                    ) : (
+                      <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1h2.3v8H2zM5.7 1H8v8H5.7z" fill="currentColor" /></svg>
+                    )}
+                  </button>
+                )}
               </span>
               <h1 className="heading-gold font-display text-[clamp(30px,5.2vw,60px)] font-medium leading-[1.02] tracking-[-0.015em] text-cream text-balance">
                 {film.title}
@@ -208,9 +230,11 @@ function Spotlight({
                       onIndex(i);
                       setCycle((c) => c + 1);
                     }}
-                    className={cn('relative h-1 overflow-hidden rounded-full bg-cream/25 transition-[width] duration-500', i === index ? 'w-9' : 'w-3 hover:bg-cream/50')}
+                    className="group/dot relative flex h-6 min-w-6 items-center justify-center px-1"
                   >
-                    {i === index && <span key={cycle} className="tv-progress absolute inset-0 block rounded-full bg-brass-light" style={{ ['--tv-dwell' as string]: `${DWELL_MS}ms` }} />}
+                    <span aria-hidden="true" className={cn('relative block h-1 overflow-hidden rounded-full bg-cream/25 transition-[width] duration-500', i === index ? 'w-9' : 'w-3 group-hover/dot:bg-cream/50')}>
+                      {i === index && <span key={cycle} className="tv-progress absolute inset-0 block rounded-full bg-brass-light" style={{ ['--tv-dwell' as string]: `${DWELL_MS}ms` }} />}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -365,7 +389,7 @@ function ChannelPanel({ ch }: { ch: Channel }) {
         </a>
       </header>
       {ch.embed && <SocialEmbed src={ch.embed.src} height={ch.embed.height} title={`${ch.label} — ${ch.handle}`} className="rounded-b-[var(--radius-card)]" />}
-      <footer className="relative flex items-center justify-between px-5 py-3 text-cream/45">
+      <footer className="relative flex items-center justify-between px-5 py-3 text-cream/70">
         <span className="font-serif text-[13px] italic">{ch.note}</span>
         <span className="tv-eq flex h-3 items-end gap-[3px]" aria-hidden="true">
           {[0, 1, 2, 3].map((i) => (
@@ -454,7 +478,7 @@ export default function NarwhalTV({ films, channels, picks, dishCount }: { films
             </span>
             <span className="block px-4 py-3">
               <span className="block truncate font-display text-[15px] tracking-[0.02em] text-cream">{f.title}</span>
-              <span className="mt-0.5 block font-sans text-[9.5px] uppercase tracking-[0.22em] text-cream/45">{i === index && playing ? 'Now playing' : 'YouTube'}</span>
+              <span className="mt-0.5 block font-sans text-[9.5px] uppercase tracking-[0.22em] text-cream/75">{i === index && playing ? 'Now playing' : 'YouTube'}</span>
             </span>
           </button>
         ))}
@@ -548,13 +572,13 @@ export default function NarwhalTV({ films, channels, picks, dishCount }: { films
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.image} alt={p.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
                 ) : (
-                  <span className="flex h-full w-full items-center justify-center font-serif text-[18px] italic text-brass-light/70">{p.thai}</span>
+                  <span lang="th" className="flex h-full w-full items-center justify-center font-serif text-[18px] italic text-brass-light/70">{p.thai}</span>
                 )}
               </span>
               <span className="block px-4 py-3">
                 <span className="block truncate font-display text-[15px] tracking-[0.02em] text-cream">{p.name}</span>
                 <span className="mt-0.5 flex items-baseline justify-between gap-3">
-                  <span className="truncate font-serif text-[13px] italic text-cream/55">{p.thai}</span>
+                  <span lang="th" className="truncate font-serif text-[13px] italic text-cream/55">{p.thai}</span>
                   {p.price && <span className="font-mono text-[11px] text-brass-light">{p.price}</span>}
                 </span>
               </span>
@@ -575,7 +599,7 @@ export default function NarwhalTV({ films, channels, picks, dishCount }: { films
           ))}
         </Marquee>
       </div>
-      <p className="mt-6 px-5 text-center font-serif text-[14px] italic text-cream/45 sm:px-8">
+      <p className="mt-6 px-5 text-center font-serif text-[14px] italic text-cream/70 sm:px-8">
         Scanned from the placemat? Welcome — this is Narwhal TV, everything we post in one place. Press play, follow along, and if tonight was good, say so.
       </p>
     </div>

@@ -442,5 +442,5 @@ export default function Airshow({ className }: Props) {
     };
   }, []);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className={cn('pointer-events-none fixed inset-x-0 top-0 z-[80] transition-opacity duration-700', className)} />;
+  return <canvas ref={canvasRef} aria-hidden="true" data-decor="" className={cn('pointer-events-none fixed inset-x-0 top-0 z-[80] transition-opacity duration-700', className)} />;
 }

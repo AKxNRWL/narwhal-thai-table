@@ -37,7 +37,7 @@ export default function PlayPage() {
       <Container narrow>
         <SectionHead
           align="left"
-          as="h2"
+          as="h1"
           size="md"
           eyebrow="While You Wait for Us to Open"
           title={<>Bubble Glide — <em>a little something from the kitchen</em>.</>}

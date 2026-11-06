@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SHOW_CHEF, ORDER_ONLINE_URL } from '@/lib/site';
 import { cn } from '@/lib/cn';
 import { chrome, type ChromeDict } from '@/lib/i18n/chrome';
 import { localePath, stripLocale } from '@/lib/i18n/locales';
 import { useLocale } from '@/lib/i18n/useLocale';
 import LanguageSwitch from '@/components/i18n/LanguageSwitch';
+import A11yButton from '@/components/A11yPanel';
 
 /* Labels come from lib/i18n/chrome.ts (EN / VI); hrefs are English paths and
    are localised per page (/vi/menu …) — English-only pages such as /play stay
@@ -37,6 +38,7 @@ export default function Nav() {
   const pathname = usePathname();
   const locale = useLocale();
   const t = chrome(locale).nav;
+  const ta = chrome(locale).a11y;
   const NAV_LINKS = navLinks(t);
   const href = (p: string) => localePath(locale, p);
   // Translated labels run wider than English; tighten the desktop row so the
@@ -45,6 +47,9 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(false);
 
   // Solid bar after 40px; "floating navbar" behaviour after 360px — slides
   // away while reading down, returns on the first scroll up (Aceternity
@@ -78,9 +83,27 @@ export default function Nav() {
 
   useEffect(() => {
     document.body.dataset.navOpen = String(open);
+    // keyboard: Escape closes; Tab stays inside the drawer; focus moves in on
+    // open and back to the hamburger on close (WCAG 2.4.3 / 2.1.2)
+    if (open) {
+      // the drawer fades in (visibility transition) — keep trying until the link can take focus
+      const first = drawerRef.current?.querySelector<HTMLElement>('a[href], button');
+      let tries = 0;
+      const tryFocus = () => { first?.focus(); if (document.activeElement !== first && tries++ < 12) window.setTimeout(tryFocus, 50); };
+      window.setTimeout(tryFocus, 50);
+    } else if (wasOpen.current) {
+      toggleRef.current?.focus();
+    }
+    wasOpen.current = open;
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') { setOpen(false); return; }
+      if (e.key !== 'Tab' || !drawerRef.current) return;
+      const items = Array.from(drawerRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
+      if (!items.length) return;
+      const a = items[0], z = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+      else if (!e.shiftKey && (document.activeElement === z || !drawerRef.current.contains(document.activeElement))) { e.preventDefault(); a.focus(); }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -171,6 +194,7 @@ export default function Nav() {
                 className="btn-shine inline-flex items-center whitespace-nowrap rounded-full bg-brass px-4 py-2.5 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-navy 2xl:px-5 transition-[background-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-brass-light hover:shadow-[0_14px_30px_-12px_rgba(200,162,78,0.8)]"
               >
                 {t.order}
+                <span className="visually-hidden"> ({ta.newTab})</span>
               </a>
             )}
             <Link
@@ -185,6 +209,7 @@ export default function Nav() {
               {t.reserve}
             </Link>
             <LanguageSwitch />
+            <A11yButton />
           </div>
 
           {/* Phone header: flag button (language menu) right beside the hamburger —
@@ -192,6 +217,7 @@ export default function Nav() {
           <div className="flex items-center gap-2 xl:hidden">
             <LanguageSwitch variant="icon" />
             <button
+              ref={toggleRef}
               type="button"
               aria-expanded={open}
               aria-controls="nav-drawer"
@@ -226,9 +252,11 @@ export default function Nav() {
 
       {/* Mobile drawer */}
       <div
+        ref={drawerRef}
         id="nav-drawer"
         data-open={open}
         aria-hidden={!open}
+        inert={!open}
         className={cn(
           // overflow-y-auto: on short phones (or the taller Thai/CJK line boxes) the
           // drawer scrolls instead of clipping its bottom buttons at the fold.
@@ -256,6 +284,9 @@ export default function Nav() {
             </Link>
           ))}
         </nav>
+        <div className="relative mt-6">
+          <A11yButton variant="row" onNavigate={() => setOpen(false)} />
+        </div>
         <div className="relative mt-auto flex flex-col gap-3 pt-8">
           {ORDER_ONLINE_URL && (
             <a
@@ -266,6 +297,7 @@ export default function Nav() {
               className="inline-flex items-center justify-center rounded-full bg-brass px-6 py-4 font-sans text-[11px] font-medium uppercase tracking-[0.18em] text-navy"
             >
               {t.orderDrawer}
+              <span className="visually-hidden"> ({ta.newTab})</span>
             </a>
           )}
           <Link
@@ -278,7 +310,7 @@ export default function Nav() {
           >
             {t.reserve}
           </Link>
-          <p className="mt-2 text-center font-serif text-[13px] italic text-cream/50">{t.address}</p>
+          <p className="mt-2 text-center font-serif text-[13px] italic text-cream/70">{t.address}</p>
         </div>
       </div>
     </>

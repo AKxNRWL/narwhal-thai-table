@@ -45,7 +45,7 @@ export const NON_LATIN: ReadonlySet<Locale> = new Set<Locale>(['th', 'zh', 'zh-t
  * guide, /order, /play, the city pages) stays English-only, so links to those
  * are never prefixed.
  */
-const TWIN_ROUTES = ['/', '/menu', '/lunch', '/about', '/contact', '/contact/reservation', '/contact/message', '/contact/catering'];
+const TWIN_ROUTES = ['/', '/menu', '/lunch', '/about', '/contact', '/contact/reservation', '/contact/message', '/contact/catering', '/accessibility'];
 
 export function hasTwin(path: string): boolean {
   const clean = path.split(/[?#]/)[0] || '/';

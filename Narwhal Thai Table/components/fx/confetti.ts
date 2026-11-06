@@ -4,6 +4,8 @@
  */
 export async function fireConfetti(origin: { x: number; y: number } = { x: 0.5, y: 0.6 }) {
   if (typeof window === 'undefined') return;
+  // the guest's reduce-motion switch / OS setting (lib/a11y.ts) — no fireworks
+  if (document.documentElement.classList.contains('a11y-motion')) return;
   try {
     const { default: confetti } = await import('canvas-confetti');
     const colors = ['#E3C581', '#C8A24E', '#F5F0E6', '#9C7A33'];

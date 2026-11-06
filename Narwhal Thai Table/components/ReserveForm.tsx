@@ -230,7 +230,7 @@ export default function ReserveForm({ locale = 'en' }: { locale?: Locale }) {
             onClick={() => setMore((v) => !v)}
             aria-expanded={more}
             aria-controls="rsv-more"
-            className="inline-flex items-center gap-2 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-brass-light transition-colors hover:text-cream"
+            className="inline-flex min-h-6 items-center gap-2 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-brass-light transition-colors hover:text-cream"
           >
             <span aria-hidden="true" className={cn('inline-block transition-transform duration-300', more && 'rotate-90')}>›</span>
             {t.more}

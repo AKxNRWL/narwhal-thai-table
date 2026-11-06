@@ -17,6 +17,7 @@ import AirshowLayer from '@/components/fx/AirshowLayer';
 import LangSync from '@/components/i18n/LangSync';
 import LangSuggestBar from '@/components/i18n/LangSuggestBar';
 import { htmlLangScript } from '@/lib/i18n/locales';
+import { a11yBootScript } from '@/lib/a11yBoot';
 import { RESTAURANT, SITE_URL, sameAsUrls, GBP_MAP_URL, RESTAURANT_ID, ORDER_ONLINE_URL } from '@/lib/site';
 import { CLOSURES } from '@/lib/closures';
 
@@ -80,6 +81,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={fontVars} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: htmlLangScript() }} />
+        {/* the guest's accessibility switches (lib/a11y.ts) — applied before the first paint */}
+        <script dangerouslySetInnerHTML={{ __html: a11yBootScript() }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* The ticker's Noto Sans webfonts are no longer loaded on the English

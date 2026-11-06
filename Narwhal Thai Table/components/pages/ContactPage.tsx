@@ -33,7 +33,7 @@ function ContactCard({ href, num, title, email, go, children }: { href: string; 
   return (
     <Link href={href} className={cardSurface('h-full p-7 sm:p-8')}>
       <span className="font-sans text-[11px] font-medium tracking-[0.3em] text-brass/80">{num}</span>
-      <h3 className="mt-5 font-display text-[22px] font-medium leading-tight text-cream">{title}</h3>
+      <h2 className="mt-5 font-display text-[22px] font-medium leading-tight text-cream">{title}</h2>
       <p className="mt-3 text-[15px] leading-relaxed text-cream/70">{children}</p>
       <span className="mt-5 block break-all font-sans text-[12.5px] text-cream/50">{email}</span>
       <span className="mt-auto inline-flex items-center gap-2 pt-6 font-sans text-[10.5px] font-medium uppercase tracking-[0.18em] text-brass-light">
@@ -57,7 +57,7 @@ export default function ContactPage({ locale = 'en' }: { locale?: Locale }) {
   return (
     <Section first tone="glow" id="contact">
       <Container>
-        <SectionHead eyebrow={t.eyebrow} title={<Rich text={t.title} locale={locale} />} />
+        <SectionHead as="h1" eyebrow={t.eyebrow} title={<Rich text={t.title} locale={locale} />} />
 
         <div className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-3 lg:gap-8">
           <ContactCard href={href('/contact/reservation')} num="01" title={c.reservation.title} email="reservations@narwhalthaihb.com" go={c.reservation.go}>
@@ -75,7 +75,7 @@ export default function ContactPage({ locale = 'en' }: { locale?: Locale }) {
         <div className="mt-16 grid gap-10 border-t border-cream/10 pt-14 lg:mt-20 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:gap-16 lg:pt-16">
           <div className="flex flex-col items-start gap-5">
             <Eyebrow>{t.findEyebrow}</Eyebrow>
-            <Heading as="h3" size="md">{t.findTitle}</Heading>
+            <Heading as="h2" size="md">{t.findTitle}</Heading>
             <p className="text-[16.5px] leading-[1.8] text-cream/75">19072 Beach Boulevard<br/>Huntington Beach, CA 92648<br/><a href="tel:+17143786003" className="text-cream transition-colors duration-300 hover:text-brass-light">(714) 378-6003</a><br/>{t.findHours}</p>
           </div>
           <MapEmbed title={ui(locale).contactHome.mapTitle} label={ui(locale).contactHome.mapLink} />

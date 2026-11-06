@@ -126,6 +126,13 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+  // focus goes back to the launcher when the panel closes (WCAG 2.4.3)
+  useEffect(() => {
+    if (!open && wasOpen.current) fabRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -288,6 +295,7 @@ export default function ChatWidget() {
   return (
     <>
       <button
+        ref={fabRef}
         className={`nara-fab${open ? ' is-open' : ''}`}
         type="button"
         aria-label={open ? t.fabClose : t.fabOpen}
@@ -353,7 +361,7 @@ export default function ChatWidget() {
           </button>
         )}
 
-        <div className="nara-msgs" data-lenis-prevent ref={scrollRef}>
+        <div className="nara-msgs" data-lenis-prevent ref={scrollRef} role="log" aria-live="polite" aria-relevant="additions">
           {/* Messaging-app layout (owner, 11 Sep 2026): Aileen's bubbles carry a
               small avatar on the left, the guest's sit on the right. */}
           {msgs.map((m, i) =>
@@ -369,7 +377,7 @@ export default function ChatWidget() {
           {loading && (
             <div className="nara-row">
               <span className="nara-ava" aria-hidden="true"><NarwhalIcon /></span>
-              <div className="nara-msg nara-assistant nara-typing" aria-label={t.typing}>
+              <div className="nara-msg nara-assistant nara-typing" role="status" aria-label={t.typing}>
                 <span /><span /><span />
               </div>
             </div>

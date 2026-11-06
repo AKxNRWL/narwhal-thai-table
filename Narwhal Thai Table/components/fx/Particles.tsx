@@ -120,5 +120,5 @@ export default function Particles({ className, quantity = 70, color = '#E3C581',
     };
   }, [quantity, color, size, parallax]);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className={cn('pointer-events-none absolute inset-0 h-full w-full', className)} />;
+  return <canvas ref={canvasRef} aria-hidden="true" data-decor="" className={cn('pointer-events-none absolute inset-0 h-full w-full', className)} />;
 }

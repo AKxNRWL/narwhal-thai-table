@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { ReactLenis, type LenisRef } from 'lenis/react';
+import { useReducedMotion } from '@/lib/a11y';
 
 /**
  * SmoothScroll — inertial page scrolling (Lenis, MIT). Mounted once in the
@@ -12,6 +13,7 @@ import { ReactLenis, type LenisRef } from 'lenis/react';
  */
 export default function SmoothScroll() {
   const ref = useRef<LenisRef>(null);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     const body = document.body;
@@ -27,6 +29,9 @@ export default function SmoothScroll() {
     sync();
     return () => mo.disconnect();
   }, []);
+
+  // "Reduce motion" (guest switch or OS): native scrolling, no inertia.
+  if (reduced) return null;
 
   return (
     <ReactLenis

@@ -16,7 +16,7 @@ export default function Ripple({
   className?: string;
 }) {
   return (
-    <div aria-hidden="true" className={cn('pointer-events-none absolute inset-0 select-none', className)}>
+    <div aria-hidden="true" className={cn('fx-decor pointer-events-none absolute inset-0 select-none', className)}>
       {Array.from({ length: circles }, (_, i) => {
         const s = baseSize + i * step;
         return (

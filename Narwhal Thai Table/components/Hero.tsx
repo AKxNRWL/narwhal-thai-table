@@ -13,6 +13,8 @@ import Ripple from '@/components/fx/Ripple';
 import Tilt from '@/components/fx/Tilt';
 import CircularText from '@/components/fx/CircularText';
 import { cn } from '@/lib/cn';
+import { useReducedMotion } from '@/lib/a11y';
+import { chrome } from '@/lib/i18n/chrome';
 import { localePath, type Locale } from '@/lib/i18n/locales';
 import type { UiDict } from '@/lib/i18n/ui.en';
 
@@ -56,6 +58,17 @@ export default function Hero({
   useEffect(() => { setEvent(activeEvents().find((e) => e.chip) ?? null); }, []);
   const fallbackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // WCAG 2.2.2: the background video (when one is in use) can be paused; "reduce motion" keeps it still
+  const reduced = useReducedMotion();
+  const [vidMode, setVidMode] = useState<'auto' | 'play' | 'pause'>('auto');
+  const vidStopped = vidMode === 'pause' || (vidMode === 'auto' && reduced);
+  const ta = chrome(locale).a11y;
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (vidStopped) v.pause();
+    else v.play().catch(() => {});
+  }, [vidStopped]);
   const artRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
 
@@ -377,6 +390,22 @@ export default function Hero({
           </Tilt>
         </div>
       </div>
+
+      {media.video && (
+        <button
+          type="button"
+          className="fx-pause bottom-6 right-5 z-[3]"
+          aria-pressed={vidStopped}
+          aria-label={vidStopped ? ta.playVideo : ta.pauseVideo}
+          onClick={() => setVidMode(vidStopped ? 'play' : 'pause')}
+        >
+          {vidStopped ? (
+            <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.2 1l6.8 4-6.8 4z" fill="currentColor" /></svg>
+          ) : (
+            <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1h2.3v8H2zM5.7 1H8v8H5.7z" fill="currentColor" /></svg>
+          )}
+        </button>
+      )}
 
       {/* scroll cue */}
       <div

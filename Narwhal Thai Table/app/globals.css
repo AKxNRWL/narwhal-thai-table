@@ -888,3 +888,111 @@ html:is([lang="zh-CN"], [lang="zh-TW"], [lang="ko"], [lang="ja"]) :is(em, .itali
 .tv-tile{ background-size:220% 220%; animation:tv-gradient 9s ease-in-out infinite alternate; }
 @keyframes tv-pulse{ 0%{ box-shadow:0 0 0 0 rgba(74,222,128,.55); } 70%{ box-shadow:0 0 0 7px rgba(74,222,128,0); } 100%{ box-shadow:0 0 0 0 rgba(74,222,128,0); } }
 .tv-live{ animation:tv-pulse 2s ease-out infinite; }
+
+
+/* ============================================================
+   ACCESSIBILITY (6 Nov 2026) — lib/a11y.ts · components/A11yPanel.tsx
+   The guest's switches are classes on <html>: a11y-motion, a11y-contrast,
+   a11y-text, a11y-underline, a11y-spacing. The OS settings (prefers-reduced-
+   motion, prefers-contrast, forced-colors) switch the same classes on from
+   the boot script, so one set of rules serves both.
+   ============================================================ */
+
+/* 1 · Keyboard focus is always visible: a two-tone ring that reads on navy
+      AND on cream. :where() keeps it at zero specificity, so any component
+      with its own ring (focus-visible:ring-2 …) still wins. */
+:where(a, button, input, select, textarea, summary, iframe, [tabindex]):focus-visible {
+  outline: 2px solid var(--brass-light);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(6, 18, 31, 0.9);
+}
+:where(.nara-panel, .promo-card, .on-light) :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline-color: var(--navy);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.95);
+}
+
+/* 2 · The hours ticker really pauses (the button existed; its styles had been
+      dropped with the old stylesheet) and the control meets the 24×24 target. */
+.cs-ticker-track.is-paused { animation-play-state: paused; }
+.cs-ticker-toggle {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 999px;
+  background: var(--navy-deep); color: var(--brass-light);
+  border: 1px solid rgba(200, 162, 78, 0.45);
+  box-shadow: -10px 0 12px var(--navy-deep);
+  cursor: pointer; opacity: 0.85;
+}
+.cs-ticker-toggle:hover, .cs-ticker-toggle:focus-visible { opacity: 1; border-color: var(--brass-light); }
+.cs-ticker--notice .cs-ticker-toggle { background: #2A1F14; box-shadow: -10px 0 12px #2A1F14; }
+
+/* 3 · Pause controls on the photo strips and background videos (WCAG 2.2.2):
+      quiet brass dots that only sharpen on hover / focus. */
+.fx-pause {
+  position: absolute; z-index: 5; display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 999px;
+  background: rgba(6, 18, 31, 0.72); color: var(--brass-light);
+  border: 1px solid rgba(200, 162, 78, 0.45);
+  opacity: 0.55; transition: opacity 0.3s, border-color 0.3s; cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.fx-pause:hover, .fx-pause:focus-visible, .fx-pause[aria-pressed="true"] { opacity: 1; border-color: var(--brass-light); }
+.fx-pause svg { width: 12px; height: 12px; }
+.marquee-track.is-paused { animation-play-state: paused !important; }
+
+/* 4 · Reduce motion — guest switch or the OS setting. Every animation and
+      transition collapses to nothing, scroll-revealed text is simply shown,
+      strips and the ticker stand still (and can be scrolled by hand), the
+      decorative canvases (embers, lanterns, jets) stay hidden, and the
+      scroll-linked word reveal paints its sentence in full. */
+html.a11y-motion *, html.a11y-motion *::before, html.a11y-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+html.a11y-motion .fade-up, html.a11y-motion .fade-up.stagger > * { opacity: 1 !important; transform: none !important; filter: none !important; }
+html.a11y-motion span[data-w] { opacity: 1 !important; }
+html.a11y-motion .marquee-track, html.a11y-motion .cs-ticker-track { animation: none !important; transform: none !important; }
+html.a11y-motion .cs-ticker { overflow-x: auto; scrollbar-width: none; }
+html.a11y-motion .cs-ticker-toggle { display: none; }
+html.a11y-motion .fx-decor, html.a11y-motion canvas[data-decor] { display: none !important; }
+html.a11y-motion .tv-kenburns, html.a11y-motion .tv-tile, html.a11y-motion .tv-shimmer, html.a11y-motion .tv-live, html.a11y-motion .tv-eq span { animation: none !important; transform: none !important; }
+html.a11y-motion .lg\:animate-drift { animation: none !important; }
+
+/* 5 · Higher contrast — guest switch, prefers-contrast: more, or Windows
+      High Contrast. Translucent text goes solid, glass goes opaque, hairline
+      borders thicken. (Opacity-tinted utilities are matched by their class
+      name — Tailwind writes them as text-cream/60 etc.) */
+html.a11y-contrast [class*="text-cream/"], html.a11y-contrast [class*="text-white/"] { color: var(--off-white) !important; }
+html.a11y-contrast [class*="text-brass/"], html.a11y-contrast [class*="text-brass-light/"] { color: var(--brass-light) !important; }
+html.a11y-contrast [class*="text-navy/"] { color: var(--navy) !important; }
+html.a11y-contrast [class*="placeholder:text-cream/"]::placeholder { color: rgba(245, 240, 230, 0.8) !important; }
+html.a11y-contrast [class*="border-cream/"], html.a11y-contrast [class*="border-brass/"] { border-color: rgba(227, 197, 129, 0.8) !important; }
+html.a11y-contrast [class*="bg-navy-deep/"], html.a11y-contrast [class*="bg-navy/"] { background-color: var(--navy-deep) !important; backdrop-filter: none !important; }
+html.a11y-contrast .heading-gold, html.a11y-contrast .shiny-text { background: none !important; -webkit-text-fill-color: var(--brass-light) !important; color: var(--brass-light) !important; }
+html.a11y-contrast .cs-ticker, html.a11y-contrast .cs-ticker-item { color: #FFF1C9 !important; }
+html.a11y-contrast .nara-foot, html.a11y-contrast .nara-head-sub { color: var(--navy) !important; }
+html.a11y-contrast span[data-w] { opacity: 1 !important; }
+html.a11y-contrast a:not([class*="bg-"]) { text-decoration: underline; text-underline-offset: 3px; }
+
+/* 6 · Larger text — the site sets most sizes in px, so the honest lever is
+      page zoom (20 %) on the page body and footer. The fixed bars (ticker, nav,
+      chat) stay as they are — zooming a fixed element overflows the viewport. */
+html.a11y-text main, html.a11y-text footer { zoom: 1.2; }
+
+/* 7 · Underline links everywhere, not only on hover. */
+html.a11y-underline a { text-decoration: underline !important; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+
+/* 8 · Reading spacing — the WCAG 1.4.12 values, on request. */
+html.a11y-spacing body { letter-spacing: 0.06em; word-spacing: 0.12em; line-height: 1.6; }
+html.a11y-spacing p { margin-bottom: 1.2em; }
+
+/* 9 · Windows High Contrast / forced colors: keep the controls drawn. */
+@media (forced-colors: active) {
+  .btn-shine, .fx-pause, .cs-ticker-toggle, .nara-fab, .skip-link { border: 1px solid ButtonText; forced-color-adjust: auto; }
+  .fade-up, .fade-up.stagger > * { opacity: 1 !important; transform: none !important; filter: none !important; }
+  span[data-w] { opacity: 1 !important; }
+}
+
+.fx-pause.fx-inline { position: static; transform: none; width: 28px; height: 28px; margin-left: 6px; }
